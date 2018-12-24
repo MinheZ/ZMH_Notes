@@ -37,4 +37,21 @@ synchronized (lock){
 **获得内置锁的唯一途径**就是进入由这个锁保护的同步代码块或者方法。
 Java的内置锁相当于一种**互斥体(或互斥锁)**，这意味着同时最多只有一个线程能持有这种锁。当线程A尝试获得由线程B持有的锁时，线程A必须等待或者阻塞，等到B释放锁之后才有可能获得这个锁，如果B永远不释放锁，则A永远等待下去。
 
+### 3.2 重入
+当某个线程请求一个由其他线程持有的锁时，发出请求的线程就会阻塞。然而，由于内置锁是可以**重入**的，因此某个线程试图获得一个已由它自己持有的锁，那么这个请求就会成功。
 
+重入进一步提升了加锁行为的封装性，因此简化了面向对象并发代码的开发
+``` bash
+	public class Widget{
+        public synchronized void doSomething(){
+            ...
+        }
+    }
+    public class LoggingWidget extends Widget{
+        public synchronized void doSomething(){
+            System.out.println(toString() + ": calling doSomething");
+            super.doSomething();
+        }
+    }
+```
+上述程序清单中，子类重写了父类的synchronized方法，然后调用父类中的方法，由于Widget和loggingWidget中的doSomething方法在执行前都会获得Widget上的锁，此时如果没有可重入的锁，子类调用父类的doSomething方法时，将永远无法获得Widget上的锁，因此这段代码将产生死锁。

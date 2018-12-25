@@ -67,8 +67,8 @@ Java的内置锁相当于一种**互斥体(或互斥锁)**，这意味着同时�
 
 如果只是将每个方法作为同步方法，例如Vector，那么并不足以确保Vector上的复合操作都是原子的，例如：
 ```java
-    if(!vector.contains(element))
-	    vector.add(element);
+	if(!vector.contains(element))
+		vector.add(element);
 ```
 虽然contains和add 方法都是原子的，假设contains方法由A线程占有，add方法由B线程占有，但是在执行完if判断条件之后，被其它线程C抢先执行了一次add方法，之后线程B再执行add方法，也就是if之后执行了2次add，显然与目标程序设计不符。
 
@@ -93,8 +93,29 @@ volatile变量是一种比synchronized关键字更轻量级的同步机制。
 
 volatile变量的一种经典用法：检查某个状态变量以标记是否退出循环。
 ```java
-    volatile boolean asleep;
+	volatile boolean asleep;
 	...
 	while(!asleep)
 		countSomeSheep();
+```
+为了使这个实例能正确执行，asleep必须设置为volatile类型，否则其它线程修改了asleep后，执行判断的线程缺发现不了。
+
+
+**局限性：**volatile变量通常用作某个操作完成、发生或中断的状态标志。volatile的语义不足以确保递增操作(count++)的原子性。
+
+**当且仅当**满足以下条件时，才应该使用volatile关键字：
+- 对变量的写入操作不依赖于变量的当前值，或者你能确保只有单个线程对变量进行更新。
+- 该变量不会与其它状态变量一起纳入不变性条件中。
+- 在访问变量时不需要加锁。
+
+## 发布与逸出
+**发布(Publish)**一个对象的意思是指，使对象能够在当前作用域之外的代码中使用。当某个不应该发布的对象被发布时，这种情况叫作**逸出(Escape)**。
+
+发布对象对简单的方法是将对象的引用保存到一个公有的静态变量中。
+```java
+	public static Set<secret> knowScrets;
+	
+	public void initialize(){
+		knowScrets = new HashSet<>();
+   	}
 ```

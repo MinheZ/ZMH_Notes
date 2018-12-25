@@ -153,8 +153,42 @@ Ad-hoc线程封闭是指，维护线程封闭性的职责完全由程序来实�
 ### ThreadLocal类
 ThreadLocal类能使线程中的某个值与保存值的对象关联起来。ThreadLocal提供了get和set等访问接口或方法这些方法为每个使用该变量的线程都存有一份独立的副本，因此get总是返回由当前线程执行在调用set时设置的最新值。
 
+ThreadLocal对象通常用于防止对可变的单实例变量(Singleton)或全局变量进行共享。
 
+由于JDBC连接对象不一定是线程安全的，通过将JDBC的连接保存到ThreadLocal对象中，每个线程都会有自己的连接。
+```java
+private static ThreadLocal<Connection> connectionHolder = new ThreadLocal<Connection>(){
+	public Connection initialValue(){
+		return DriverManager.getConnection(DB_URL);
+	}
+};
+public static Connection getConnection(){
+	return connectionHolder.get();
+}
+```
+当某个频繁执行的操作需要一个临时对象，例如一个缓冲区，而同时又希望避免在每次执行时都重新分配该临时对象，就可以使用该技术。
 
+## 不变性
+如果某个对象在创建后，其状态就不能被修改，那么这个对象就称为**不可变对象**，不可变对象一定是线程安全的。
+当满足以下条件时，对象才是不可变的
+- 对象创建后其状态就不能修改
+- 对象的所有域都是final类型
+- 对象是正确创建(在创建对象期间，this引用没有逸出)
 
+在不可变对象的内部，仍可以用可变对象来管理其状态。
+```java
+public final class ThreeStooges{
+	private final Set<String> stooges = new HashSet<>();
 
+	public ThreeStooges(){
+		stooges.add("Moe");
+		stooges.add("A");
+		stooges.add("B");
+	}
 
+	public boolean isStooge(String name){
+		return stooges.contains(name);
+	}
+}
+```
+尽管保存姓名的set对象可变，但是从ThreeStooges的设计中可以看到，在set对象构造完成之后无法改变。

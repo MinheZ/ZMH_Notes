@@ -4,7 +4,11 @@
     * [2 原子性](#原子性)
     * [3 加锁机制](#加锁机制)
 * [二、对象的共享](#对象的共享)
+	* [1 可见性](#可见性)
+	* [2 发布与逸出](#发布与逸出)
+	* [3 线程封闭](#线程封闭)
 
+----------
 
 
 # 线程安全性
@@ -45,7 +49,7 @@ Java的内置锁相当于一种**互斥体(或互斥锁)**，这意味着同时�
 当某个线程请求一个由其他线程持有的锁时，发出请求的线程就会阻塞。然而，由于内置锁是可以**重入**的，因此某个线程试图获得一个已由它自己持有的锁，那么这个请求就会成功。
 
 重入进一步提升了加锁行为的封装性，因此简化了面向对象并发代码的开发
-``` java
+```java
 public class Widget{
     public synchronized void doSomething(){
         ...
@@ -121,3 +125,36 @@ public void initialize(){
 	knowScrets = new HashSet<>();
 }
 ```
+当发布一个对象时，该对象的非私有域中引用的所有对象同样会被发布。
+
+发布对象或者其内部状态的机制就是发布一个内部的类实例，例如：
+```java
+public class ThisEscape{
+	public ThisEscape(EventSource source){
+		source.registerListener(new EventListener(){
+			public void onEvent(Event e){
+				doSomething(e);
+			}
+		})
+	}
+}
+```
+ThisEscape发布EventListener时，也隐含的发布了ThisEscape本身，因为在这个内部类实例中包含了对ThisEscape实例的隐含引用。但是不推荐这么做。
+
+## 线程封闭
+访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术称为**线程封闭(Thread Confinemwnt)**，它是实现线程安全性的最简单方式之一。常见的应用有JDBC(Java Database Connectivity)的Connection对象。
+
+### Ad-hoc线程封闭
+Ad-hoc线程封闭是指，维护线程封闭性的职责完全由程序来实现。由于Ad-hoc线程封闭技术的脆弱性，因此在程序中要尽量少使用。
+
+### 栈封闭
+栈封闭是线程封闭的一种特例，在栈封闭中，只能通过局部变量才能访问到对象。局部变量(在JVM虚拟机栈中，线程私有)的固有属性之一就是封闭在执行线程中。
+
+### ThreadLocal类
+ThreadLocal类能使线程中的某个值与保存值的对象关联起来。ThreadLocal提供了get和set等访问接口或方法这些方法为每个使用该变量的线程都存有一份独立的副本，因此get总是返回由当前线程执行在调用set时设置的最新值。
+
+
+
+
+
+

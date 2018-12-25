@@ -32,7 +32,7 @@ Java提供了一种内置的锁机制来支持原子性：同步代码块(Synchr
 静态的synchronize方法以Class对象作为锁。
 ``` java
 synchronized (lock){
-	// 访问或修改锁保护的共享状态
+// 访问或修改锁保护的共享状态
 }
 ```
 每一个Java对象都可以用作一个实现同步的锁，这些锁被称为**内置锁(Intrinsic Lock)**或**监视器锁(Monitor Locl)**。
@@ -46,17 +46,17 @@ Java的内置锁相当于一种**互斥体(或互斥锁)**，这意味着同时�
 
 重入进一步提升了加锁行为的封装性，因此简化了面向对象并发代码的开发
 ``` java
-    public class Widget{
-        public synchronized void doSomething(){
-            ...
-        }
+public class Widget{
+    public synchronized void doSomething(){
+        ...
     }
-    public class LoggingWidget extends Widget{
-        public synchronized void doSomething(){
-            System.out.println(toString() + ": calling doSomething");
-            super.doSomething();
-        }
+}
+public class LoggingWidget extends Widget{
+    public synchronized void doSomething(){
+        System.out.println(toString() + ": calling doSomething");
+        super.doSomething();
     }
+}
 ```
 上述程序清单中，子类重写了父类的synchronized方法，然后调用父类中的方法，由于Widget和loggingWidget中的doSomething方法在执行前都会获得Widget上的锁，此时如果没有可重入的锁，子类调用父类的doSomething方法时，将永远无法获得Widget上的锁，因此这段代码将产生死锁。
 
@@ -67,12 +67,14 @@ Java的内置锁相当于一种**互斥体(或互斥锁)**，这意味着同时�
 
 如果只是将每个方法作为同步方法，例如Vector，那么并不足以确保Vector上的复合操作都是原子的，例如：
 ```java
-	if(!vector.contains(element))
-		vector.add(element);
+if(!vector.contains(element))
+	vector.add(element);
 ```
 虽然contains和add 方法都是原子的，假设contains方法由A线程占有，add方法由B线程占有，但是在执行完if判断条件之后，被其它线程C抢先执行了一次add方法，之后线程B再执行add方法，也就是if之后执行了2次add，显然与目标程序设计不符。
 
 虽然synchronized方法可以确保单个操作的原子性，但如果要把多个操作合并为一个复合操作，还需要额外的加锁机制(了解如何在线程安全对象中添加原子操作的方法)，否则仍然会产生**竞态条件**。
+
+----------
 
 # 对象的共享
 
@@ -93,10 +95,10 @@ volatile变量是一种比synchronized关键字更轻量级的同步机制。
 
 volatile变量的一种经典用法：检查某个状态变量以标记是否退出循环。
 ```java
-	volatile boolean asleep;
-	...
-	while(!asleep)
-		countSomeSheep();
+volatile boolean asleep;
+...
+while(!asleep)
+	countSomeSheep();
 ```
 为了使这个实例能正确执行，asleep必须设置为volatile类型，否则其它线程修改了asleep后，执行判断的线程缺发现不了。
 
@@ -113,9 +115,9 @@ volatile变量的一种经典用法：检查某个状态变量以标记是否退
 
 发布对象对简单的方法是将对象的引用保存到一个公有的静态变量中。
 ```java
-	public static Set<secret> knowScrets;
+public static Set<secret> knowScrets;
 	
-	public void initialize(){
-		knowScrets = new HashSet<>();
-   	}
+public void initialize(){
+	knowScrets = new HashSet<>();
+}
 ```

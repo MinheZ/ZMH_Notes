@@ -9,6 +9,7 @@
 	* [3 线程封闭](#线程封闭)
     * [4 安全发布](#安全发布)
 * [三、对象的组合](#对象的组合)
+    * [1 设计线程安全的类](#设计线程安全的类)
 
 ----------
 
@@ -144,7 +145,7 @@ public class ThisEscape{
 ThisEscape发布EventListener时，也隐含的发布了ThisEscape本身，因为在这个内部类实例中包含了对ThisEscape实例的隐含引用。但是不推荐这么做。
 
 ## 线程封闭
-访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术称为 **线程封闭(Thread Confinemwnt)**，它是实现线程安全性的最简单方式之一。常见的应用有JDBC(Java Database Connectivity)的Connection对象。
+访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术称为 **线程封闭(Thread Confinement)**，它是实现线程安全性的最简单方式之一。常见的应用有JDBC(Java Database Connectivity)的Connection对象。
 
 ### Ad-hoc线程封闭
 Ad-hoc线程封闭是指，维护线程封闭性的职责完全由程序来实现。由于Ad-hoc线程封闭技术的脆弱性，因此在程序中要尽量少使用。
@@ -281,3 +282,30 @@ public Map<String, Date> lastLoggin = Collections.synchronizedMap(new HashMap<>(
 - 建立对象状态的并发访问管理策略；
 
 **同步策略(Synchronization Policy)** 定义了如何在不违背对象不变性条件或后验条件的情况下对其状态的访问操作进行协同。同步策略规定了如何将不可变性、线程封闭、加锁机制等结合起来以维护线程的安全性，并且还规定了哪些变量由哪些锁来保护。
+
+### 收集同步需求
+如果不了解对象的不变性条件和后验条件，那么久不能确保线程的安全性。要满足在状态变量的有效值或者状态转换上的各种约束条件，就需要借助于 **原子性** 和 **封装性** 。
+
+### 依赖状态的操作
+如果在某个状态中包含有基于状态的先验条件(Precondition)，那么这个操作就称为**依赖状态的操作**，例如：
+```java
+public MyStack{
+
+    public void pop(){
+        ...
+    }
+    public boolean isEmpty(){
+        ...
+    }
+    public static void main(String[] args) {
+        MyStack stack = new MyStack();
+        if (!stack.isEmpty()) {
+            stack.pop();
+        }
+    }
+}
+```
+删除栈中的元素前，应该先判断栈是否为空。
+
+## 实例封闭
+封装简化了线程安全类的实现过程，它提供了一种**实例封闭机制(Instance Confinement)**，通常也称为 **封闭**。

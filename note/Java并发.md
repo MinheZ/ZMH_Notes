@@ -123,7 +123,6 @@ while(!asleep)
 发布对象对简单的方法是将对象的引用保存到一个公有的静态变量中。
 ```java
 public static Set<secret> knowScrets;
-
 public void initialize(){
 	knowScrets = new HashSet<>();
 }
@@ -233,7 +232,7 @@ public class Holder{
 
 **解决办法** 将Holder中所有的域都定义为final类型。
 
-任何线程都可以在不需要额外同步的情况下安全地访问不可变对象。这种保证还将延伸到被正确创建对象中所有的final类型的域。**注意：** 如果final类型的域所指向的是可变对象，那么在访问这些域时仍然要做同步。
+任何线程都可以在不需要额外同步的情况下安全地访问不可变对象。这种保证还将延伸到被正确创建对象中所有的final类型的域。**注意：如果final类型的域所指向的是可变对象，那么在访问这些域时仍然要做同步。**
 
 ### 安全发布的常用模式
 可变对象必须通过安全的方式进行发布，意味着在发布和适用这些对象时必须进行同步。要安全地发布一个对象，对象的 **引用** 及其 **状态** 必须同时对其它线程可见，一个正确的构造对象可通过以下的方式安全发布：
@@ -308,4 +307,25 @@ public MyStack{
 删除栈中的元素前，应该先判断栈是否为空。
 
 ## 实例封闭
-封装简化了线程安全类的实现过程，它提供了一种**实例封闭机制(Instance Confinement)**，通常也称为 **封闭**。
+封装简化了线程安全类的实现过程，它提供了一种 **实例封闭机制(Instance Confinement)**，通常也称为**封闭**。将封闭机制与合适的加锁机制结合起来，可以确保以线程安全的方式去访问非线程安全的对象。
+
+将数据封装在对象内部，可以将数据的访问限制在对象的方法上，从而更容易确保线程在访问数据时能持有正确的锁。
+
+被封闭对象一定不能超出它们既定的作用域，对象可以封闭在：
+- 类的一个实例（例如作为类的一个私有成员）；
+- 某个作用域内（例如作为一个局部变量）；
+- 线程内
+
+以下说明如何通过封闭与加锁机制使一个类称为线程安全的（即使这个类的状态变量并不是线程安全的）。
+```java
+public class PersonSet{
+    private final Set<Person> mySet = new HashSet<>();
+    public synchronized void addPerson(Person p){
+        mySet.add(p);
+    }
+    public synchronized boolean containsPerson(Person p){
+        return mySet.contains(p);
+    }
+}
+```
+PersonSet的状态由HashSet来管理，而HashSet并不是线程安全的(即使mySet是final类型的，但是它所指向的是可变对象)。但由于mySet是私有的，且不会逸出，因此HashSet被封闭在了PersonSet中。唯一能访问mySet的代码路是addPerson和ContainsPerson，在执行它们时都需要获取PersonSet上面的锁。PersonSet的状态完全由它的内置锁保护，因而PersonSet是一个线程安全的类。需要注意的是，本例假设Person为线程安全的，否则在访问Person时还要做额外的同步操作。

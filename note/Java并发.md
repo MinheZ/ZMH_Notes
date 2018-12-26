@@ -10,6 +10,8 @@
     * [4 安全发布](#安全发布)
 * [三、对象的组合](#对象的组合)
     * [1 设计线程安全的类](#设计线程安全的类)
+    * [2 实例封闭](#实例封闭)
+    * [3 线程安全性的委托](#线程安全性的委托)
 
 ----------
 
@@ -329,3 +331,108 @@ public class PersonSet{
 }
 ```
 PersonSet的状态由HashSet来管理，而HashSet并不是线程安全的(即使mySet是final类型的，但是它所指向的是可变对象)。但由于mySet是私有的，且不会逸出，因此HashSet被封闭在了PersonSet中。唯一能访问mySet的代码路是addPerson和ContainsPerson，在执行它们时都需要获取PersonSet上面的锁。PersonSet的状态完全由它的内置锁保护，因而PersonSet是一个线程安全的类。需要注意的是，本例假设Person为线程安全的，否则在访问Person时还要做额外的同步操作。
+
+### Java监视器模式
+从线程封闭原则及其逻辑推论可以得出Java监视器模式(主要优势在于简单性)。遵循Java监视器模式的对象会把对象所有可变的状态都封装起来，并由自己的内置锁来保护。
+```java
+public final class Counter{
+    private long value = 0;
+    public synchronized long getValue(){
+        return value;
+    }
+    public synchronized long increment(){
+        if (value == Long.MAX_VALUE) {
+            throw new IllegalStateException("Counter overflow");
+        }
+        return ++value;
+    }
+}
+```
+在Counter中封装了变量value，对该变量的所有访问都要经过Counter的方法来执行，且方法都是同步的。
+
+**示例：车辆追踪器：**
+一个用于调度车辆的“车辆追踪器”，例如出租车、警车、货车等。首先使用监视器模式来构建车辆追踪器。每辆车都有一个String对象来标识，并且拥有一个相应的位置坐标(x,y)。在VehicleTracker类中封装了车辆的标识和位置。
+```java
+public class MonitorVehicleTracker{
+    private final Map<String,MutablePoint> locations;
+    // constructor
+    public MonitorVehicleTracker(Map<String,MutablePoint> locations){
+        this.locations = deepCopy(locations);
+    }
+    // 获得所有车的位置
+    public synchronized Map<String,MutablePoint> getLocations(){
+        return deepCopy(locations);
+    }
+    // 获得某一辆车的位置
+    public synchronized MutablePoint getLocations(String id){
+        MutablePoint loc = locations.get(id);
+        return loc == null ? null : new MutablePoint(loc);
+    }
+    // 设置一辆车的位置
+    public synchronized void setLocations(String id, int x, int y){
+        MutablePoint loc = locations.get(id);
+        if (loc == null) {
+            throw new IllegalArgumentException("No such id: " + "id" );
+        }
+        loc.x = x;
+        loc.y = y;
+    }
+    /* unmodifiableMap方法返回的Map, 它本身不允许修改, 就是说其中每一个entry引用不允许修改，但是entry中的value如果是对象，value引用的对象的属性值是可以修改的*/
+    private static Map<String,MutablePoint> deepCopy(Map<String,MutablePoint> m){
+        Map<String,MutablePoint> result = new HashMap<String,MutablePoint>();
+        for (String id : m.keySet()) {
+            result.put(id, new MutablePoint(m.get(id)));
+        }
+        return Collections.unmodifiableMap(result);
+    }
+}
+// MutablePoint不是线程安全类，因此当需要返回车辆的位置时，通过MutablePoint拷贝构造函数或者deepCopy方法来复制正确的值
+public class MutablePoint{
+    public int x,y;
+    public MutablePoint(){
+        x = 0;
+        y = 0;
+    }
+    public MutablePoint(MutablePoint p){
+        this.x = p.x;
+        this.y = p.y;
+    }
+}
+```
+这种实现方式是通过返回客户代码之前复制可变的数据来维持线程的安全性。当数据量很大的时候，性能差。
+
+## 线程安全性的委托
+**示例：基于委托的车辆追踪器：**
+```java
+public class DelegatingVechicleTracker{
+    private final ConcurrentMap<String,Point> locations;
+    private final Map<String,Point> unmodifiableMap;
+
+    public DelegatingVechicleTracker(Map<String,Point> points){
+        locations = new ConcurrentHashMap<>();
+        unmodifiableMap = new Collections.unmodifiableMap(locations);
+    }
+    // 获取所有的车辆位置
+    public Map<String,Point> getLocations(){
+        return unmodifiableMap;
+    }
+    // 获取指定的车辆位置
+    public Point getLocations(String id){
+        return unmodifiableMap.get(id);
+    }
+    // 设置车辆位置
+    public void setLocations(String id, int x, int y){
+        if (locations.replace(id, new Point(x,y)) == null) {
+            throw new IllegalArgumentException("Invalid vehicle name:" + id);
+        }
+    }
+}
+// 线程安全的类，可以自由共享和发布，因此不要在返回locations时复制
+public class Point{
+    public final int x,y;
+    public Point(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+}
+```

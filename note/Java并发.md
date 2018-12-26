@@ -193,4 +193,13 @@ public final class ThreeStooges{
 ```
 尽管保存姓名的set对象可变，但是从ThreeStooges的设计中可以看到，在set对象构造完成之后无法改变。
 
-121 e46415a86af53cc0c1b55be0815c614b8d492856
+### final域
+关键字final用于构造不可变性对象，final类型的域是不能修改的。但是如果final域引用的对象是可变的，那么这些被引用的对象是可以修改的。
+```java
+public finalTarget{
+    final String[] a;
+    finalTarget(){
+        a = {"a","b","c"};  // 或者其它的字符串
+    }
+}
+```

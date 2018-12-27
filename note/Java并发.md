@@ -13,10 +13,12 @@
     * [2 实例封闭](#实例封闭)
     * [3 线程安全性的委托](#线程安全性的委托)
     * [4 在现有的线程安全类中添加功能](#在现有的线程安全类中添加功能)
-* [四、基础构建模块][#基础构建模块]
+* [四、基础构建模块](#基础构建模块)
     * [1 同步容器类](#同步容器类)
     * [2 并发容器](#并发容器)
     * [3 阻塞队列和生产者-消费者模式](#阻塞队列和生产者-消费者模式)
+    * [4 阻塞方法与中断方法](#阻塞方法与中断方法)
+    * [5 同步工具类](#同步工具类)
 ----------
 
 
@@ -571,3 +573,69 @@ CopyOnWriteArrayList用于替代同步List，在某些情况下它提供了更�
 
 ### 串行线程封闭
 线程封闭对象只能单个线程拥有，但可以通过安全发布该对象来“转移”所有权，之后也只有另一个线程能获得这个对象的访问权限，且新的线程可以对该对象做任意修改，因为最初的线程不再会访问该对象，因此新线程对它具有独占的访问权。
+
+**双端队列与工作密取(Work Stealing)**
+在工作密取设计中，每个消费者都有自己的双端队列，如果一个消费者完成了自己双端队列中的全部工作，那么它可以从其它消费者双端队列的**队尾**秘密地获取工作(进一步降低了队列的竞争程度)。
+
+## 阻塞方法与中断方法
+线程阻塞或者暂停执行的原因：
+- 等待I/O操作结束；
+- 等待获得一个锁；
+- 等待从Thread.sleep方法中醒来
+- 等待另一个线程的计算结果
+
+阻塞操作与执行时间很长的普通程序差别在于，被阻塞的线程必须等待某个不受它控制的事件发生后才能继续执行。
+
+**中断**是一种协作机制，他不能强制其它线程停止正在执行的操作，而仅仅是要求其它线程执行到某个可以暂停的地方停止正在执行的操作。
+
+当在代码中调用了一个将抛出InterruptException异常的方法时，它本身的方法也就变成了阻塞方法，并且必须处理对中断的响应。
+- **传递InterruptException**把InterruptException传递(1.根本不捕获该异常; 2.在执行某种简单的清理操作之后再次抛出该异常)给方法调用者。
+- **恢复中断**有时候不能抛出InterruptException，必须捕获InterruptException，并通过调用当前线程上的interrupt方法恢复中断状态。
+```java
+public class TaskRunnable implments Runnable{
+    BlockingQueue<Task> queue;
+    ...
+    public void run(){
+        try {
+            processTask(queue.take());
+        } catch(InterruptedException e) {
+            // 恢复被中断的状态
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+
+## 同步工具类
+同步工具类可以是任何一个对象，只要它根据自身的状态来协调线程的控制流。常见的同步工具类有：
+- 阻塞队列
+- 信号量(Semaphore)
+- 栅栏(Barrier)
+- 闭锁(Latch)
+
+### 闭锁
+在闭锁到达结束状态之前，没有任何线程能通过，当到达结束状态时，允许所有线程通过。因此，闭锁可以用来确保某些活动直到其它活动完成后才继续执行。例如：初始化等。
+
+**CountDownLatch**是一种灵活的闭锁实现，，它可以使一个或者多个线程等待一组事件发生。闭锁状态包含一个被初始化为正数的计数器，表示需要等待的事件数量。countDown方法递减计数器，表示已经有一个事件已经发生了，而await方法等待计数器到达0，表示等待的事件已经全部发生。
+
+在计时测试中使用CountDownLatch来启动和停止线程
+```java
+public class TestHarness{
+    public long timeTask(int nThread, final Runnable task) throw InterruptedException{
+        final CountDownLatch startGate = new CountDownLatch(1);
+        final CountDownLatch endGate = new CountDownLatch(nThread);
+
+        for (int i=0;i<nThread; i++) {
+            Thread t = new Thread(){
+                public void run(){
+                    try {
+                        task.run();
+                    }finally{
+                        endGate.countDown();
+                    }
+                }catch (InterruptedException e) {}
+            }
+        }
+    };
+}
+```

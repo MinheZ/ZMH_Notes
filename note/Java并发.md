@@ -12,6 +12,7 @@
     * [1 设计线程安全的类](#设计线程安全的类)
     * [2 实例封闭](#实例封闭)
     * [3 线程安全性的委托](#线程安全性的委托)
+    * [4 在现有的线程安全类中添加功能](#在现有的线程安全类中添加功能)
 
 ----------
 
@@ -121,6 +122,16 @@ while(!asleep)
 
 ## 发布与逸出
 **发布(Publish)** 一个对象的意思是指，使对象能够在当前作用域之外的代码中使用。当某个不应该发布的对象被发布时，这种情况叫作 **逸出(Escape)**。
+```java
+class UnsafeStates{
+    /*虽然states是私有方法，但是提供了共有访问的方法，也就是说任何调用者都可以
+    修改 states的内容，因此数组states已经逸出了它的作用范围*/
+    private String[] states = new String[] {"states","will","escape"};
+    public String[] getStates(){
+        return states;
+    }
+}
+```
 
 发布对象对简单的方法是将对象的引用保存到一个公有的静态变量中。
 ```java
@@ -434,5 +445,62 @@ public class Point{
         this.x = x;
         this.y = y;
     }
+}
+```
+假设有一个无状态的类A，在其中添加了一个线程安全的对象s，由于A的状态就是s的状态，因此s不会对A施加额外的有效性约束，所以很容易知道A是线程安全的。可以说**A将它的线程安全性委托给s来保证**。
+
+上述的例子都仅仅委托给了单个线程安全的状态变量，我们还可以将线程的安全性委托给多个状态变量，前提它们彼此独立的。
+
+## 在现有的线程安全类中添加功能
+有的时候，现有的类智能支持大部分操作，此时就需要在不破坏线程安全性的条件下添加新的操作。
+要添加一个原子操作，最安全的方式就是修改原始的类，但是这个通常无法做到。另一种方法就是扩展这个类，例如添加一个“若没有则添加”的操作，如下BetterVector对Vector进行了扩展：
+```java
+public class BetterVecotr<E> extends Vector<E>{
+    public synchronized boolean putIfAbsent(E x){
+        boolean absent = !contains(x);
+        if (absent)
+            add(x);
+        return absent;
+    }
+}
+```
+"扩展"方法比直接将代码添加到类中更脆弱，因为现在的同步策略实现被分布到多个单独维护的源代码中。
+
+### 客户端加锁机制
+对于由Collections.synchronizedList封装的ArrayList，上述2种方式都行不通，因为客户代码并不知道在同步封装工厂方法中返回的List对象类型。第三种策略是扩展类的功能，但并不是扩展类本身，而是将代码放入一个“辅助类”中。例如下面的例子，通过客户端加锁来实现“若没有则添加”：
+```java
+public class ListHelper{
+    public List<E> list = Collections.synchronizedList(new ArrayList<>());
+    ...
+    public boolean putIfAbsent(E x){
+        /*必须使用与被辅助扩展类相同的锁，例如本例为list，这样才能保证putIfAbsent相对于
+        其它list操作是原子的*/
+        synchronized (list){
+            boolean absent = !contains(x);
+        if (absent)
+            add(x);
+        return absent;
+        }
+    }
+}
+```
+通过添加一个操作来**扩展类**是脆弱的，因为它将加锁的代码分布到多个类中。**客户端加锁** 更加脆弱，因为它将类C的加锁代码放到与C完全无关的其它类中。它们的共同点都是将派生类的行为与基类的实现耦合在一起，两者都会**破坏封装性**。
+
+### 组合
+为现有的类添加一个原子操作。通过组合实现“若没有则添加”：
+```java
+public class ImprovedList<T> implments List<T>{
+    private final List<T> list;
+    public ImprovedList(List<T> list){
+        this.list = list;
+    }
+    public synchronized boolean putIfAbsent(T x){
+        boolean contains = list.contains(x);
+        if (contains) {
+            list.add(x);
+        }
+        return !contains;
+    }
+    public synchronized void clear(){list.clear();}
 }
 ```

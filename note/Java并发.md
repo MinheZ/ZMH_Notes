@@ -13,7 +13,10 @@
     * [2 实例封闭](#实例封闭)
     * [3 线程安全性的委托](#线程安全性的委托)
     * [4 在现有的线程安全类中添加功能](#在现有的线程安全类中添加功能)
-
+* [四、基础构建模块][#基础构建模块]
+    * [1 同步容器类](#同步容器类)
+    * [2 并发容器](#并发容器)
+    * [3 阻塞队列和生产者-消费者模式](#阻塞队列和生产者-消费者模式)
 ----------
 
 
@@ -453,7 +456,7 @@ public class Point{
 
 ## 在现有的线程安全类中添加功能
 有的时候，现有的类智能支持大部分操作，此时就需要在不破坏线程安全性的条件下添加新的操作。
-要添加一个原子操作，最安全的方式就是修改原始的类，但是这个通常无法做到。另一种方法就是扩展这个类，例如添加一个“若没有则添加”的操作，如下BetterVector对Vector进行了扩展：
+要添加一个原子操作，最安全的方式就是修改原始的类，但是这个通常无法做到。另一种方法就是扩展这个类(extends)，例如添加一个“若没有则添加”的操作，如下BetterVector对Vector进行了扩展：
 ```java
 public class BetterVecotr<E> extends Vector<E>{
     public synchronized boolean putIfAbsent(E x){
@@ -504,3 +507,67 @@ public class ImprovedList<T> implments List<T>{
     public synchronized void clear(){list.clear();}
 }
 ```
+ImprovedList通过自身的内置锁增加了一层额外的加锁，它并不关心底层的List是否为线程安全的。只要在类中拥有指向底层List的**唯一外部引用**，就能确保线程安全。
+
+----
+
+# 基础构建模块
+
+## 同步容器类
+同步容器类包括Vector和HashTable。容器上常见的复合操作有迭代、跳转以及条件运算。
+下面给出在Vector定义的两个方法：getLast和deleteLast，它们都会执行“先检查再运行”的操作：
+```java
+public static Object getLast(Vector list){
+    int lastIndex = list.size() - 1;
+    return list.get(lastIndex);
+}
+public static Object deleteLast(Vector list){
+    int lastIndex = list.size() - 1;
+    return list.remove(lastIndex);
+}
+```
+当用户交替调用getLast和deleteLast时将可能出现问题
+<div align="center"> <img src="../pics//1545893364(1).png" width="500"/> </div><br>
+如图所示很好地说明了并发访问时可能出现的问题。由于同步容器要遵守同步策略，即支持客户端加锁。只要使用者知道应该使用哪一个锁，这些新的操作就与容器的其它操作一样都是原子操作。如下：
+
+```java
+public static Object getLast(Vector list){
+    synchronized (list){
+        int lastIndex = list.size() - 1;
+        return list.get(lastIndex);
+    }
+}
+public static Object deleteLast(Vector list){
+    synchronized (list){
+      int lastIndex = list.size() - 1;
+      return list.remove(lastIndex);
+    }
+}
+```
+### 迭代器与ConcurrentModificationException
+当发现容器在迭代的过程中被修改时，就会抛出ConcurrentModificationException异常。要想避免出现ConcurrentModificationException，就必须在迭代的过程中持有容器的锁。
+
+## 并发容器
+**同步容器**将所有的对容器访问都串行化，以实现它们的线程安全性，但是会严重降低并发性。
+在java5.0中添加了ConcurrentHashMap，用来替代同步且基于散列的Map，以及CopyOnWriteArrayList用于在遍历操作为主要操作的情况下代替同步的List。
+
+### ConcurrentHashMap
+与HashMap一样，ConcurrentHashMap也是一个基于散列的Map。ConcurrentHashMap并不是将每个方法都在同一个锁上同步使得每次只有一个线程能访问容器，而是使用一种更细粒度的 **分段锁(Lock Striping)** 加锁机制来实现更大程度上的共享。在ConcurrentHashMap中没有实现对Map加锁以提供独占访问。
+
+### CopyOnWriteArrayList
+CopyOnWriteArrayList用于替代同步List，在某些情况下它提供了更好的并发性能，并且在迭代期间不需要对容器进行加锁或复制。
+
+“写入时复制(Copy-On-Write)”容器的线程安全性在于，只要正确地发布一个事实不可变对象，那么在访问的时候就不需要进一步的同步。在每次修改的时候，都会创建并重新发布一个新的容器副本，从而实现可变性。
+
+仅当迭代操作远多于修改操作时，才应该使用“写入时复制(Copy-On-Write)”容器。例如：事件通知系统。
+
+## 阻塞队列和生产者-消费者模式
+**阻塞队列**提供了可供阻塞的put和take方法，以及支持定时的offer和poll方法。如果队列已满，则put方法阻塞直到有空间可用；如果队列为空，take方法则阻塞直到有元素可用。
+
+阻塞队列支持生产者-消费者这种设计模式。该模式将“找出需要完成的工作”与”执行工作
+这两个过程分离开来。这种模式能简化开发过程，因为它消除了生产者类和消费者类之间的代码依赖性。
+
+在基于阻塞队列构建的生产者-消费者设计中，生产者把生成的数据放入队列，而当消费者从队列中获取数据。
+
+### 串行线程封闭
+线程封闭对象只能单个线程拥有，但可以通过安全发布该对象来“转移”所有权，之后也只有另一个线程能获得这个对象的访问权限，且新的线程可以对该对象做任意修改，因为最初的线程不再会访问该对象，因此新线程对它具有独占的访问权。

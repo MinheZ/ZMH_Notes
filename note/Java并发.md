@@ -19,6 +19,9 @@
     * [3 阻塞队列和生产者-消费者模式](#阻塞队列和生产者-消费者模式)
     * [4 阻塞方法与中断方法](#阻塞方法与中断方法)
     * [5 同步工具类](#同步工具类)
+* [五、任务执行](#任务执行)
+    * [1 Executor框架](#Executor框架)
+
 ----------
 
 
@@ -664,3 +667,64 @@ FutureTask.get()的行为取决于任务的状态，当任务完成则立刻返�
 **CyclicBarrier**可以使一定数量的参与方反复地在栅栏位置汇集，它在**并行迭代算法**中非常有用。
 
 **Exchanger**它是一种两方(Two_Party)展览，各方在栅栏位置上交换数据。当两方执行不对称的操作时，Exchanger会非常有用，例如当一个线程向缓冲区写入数据，另一个线程从缓冲区读取数据。这些线程可以用Exchanger来汇合，并将满的缓冲区与空的缓冲区交换。当两个线程通过Exchanger交换对象时，就相当于把这个两个对象安全地发布给另一方。
+
+# 任务执行
+## Executor框架
+任务是一组逻辑工作单元，而线程则是使任务异步执行的机制。在java类库中，任务执行的主要抽象不是Thread，而是Executor。
+```java
+public interface Executor{
+    void execute(Runnable command);
+}
+```
+Executor为灵活且强大的异步任务执行框架提供了基础。它基于生产生-消费者模式，提交任务的操作相当于生产者，执行任务的线程相当于消费者。
+
+**基于线程池的Web服务器**
+```java
+class TaskExecutionWebServer{
+   private static final int NTHREAD = 100;  // 容纳100个线程的线程池
+   private  static final Executor exec = Executors.newFixedThreadPool(NTHREAD);
+
+   public static void main(String[] args)throw IOException {
+       ServerSocket socket = new ServerSocket(80);
+       while(true){
+           final Socket connection = socket.accept();
+           Runnable task = new Runnable(){
+               public void run(){handleRequest(connection);}
+           };
+           exec.execute(task);
+       }
+   }
+}
+```
+在TaskExecutionWebServer中，通过使用Executor，将请求处理任务的提交与实际执行解耦开来，并且只需要采用另一种不同的Executor实现就可以改变服务器的行为。
+### 执行策略
+ 在执行策略中定义了任务执行的“What, Where, When, How”等方面，包括：
+ - 在什么(What)线程中执行任务？
+ - 任务按照什么(What)顺序执行(FIFO, LIFO, 优先级)？
+ - 有多少个(How many)任务能并发执行？
+ - 如果系统由于过载而需要拒绝一个任务，应该选择哪一个(Which)任务？怎么(How)通知应用程序有任务被拒绝？
+ - 在执行一个任务之前或者之后，应该进行哪些(What)操作？
+
+各种执行策略都是一种资源管理的工具，最佳策略取决于计算机可用的资源以及对服务质量的需求。
+### 线程池
+管理一组同构工作线程的资源池。通过重用现有的线程，而不是新建一个线程，可以处理多个请求时分摊在线程创建和销毁过程中产生的巨大开销。
+
+可以通过调用Executors中的静态工厂方法来创建一个线程池：
+- **newFixedThreadPool：** 将创建一个固定长度的线程池，每当提交一个任务时创建一个线程，直到线程池的最大数量。（如果某个线程发生Exception结束，则会创建一个新的线程）
+- **newCachedThreadPool：** 创建一个可缓存的线程池，如果线程池当前规模超过了处理需求时，则会回收空闲的线程，当需求增加时，则添加新的线程。线程池规模不存在任何限制。
+- **newSingleThreadExecutor：** 创建单个线程执行任务，若这个线程异常结束，则创建另一个线程替代。能确保依照任务在队列中的顺序来串行执行。
+- **newScheduledThreadPool：** 创建了一个固定长度的线程池，而且可以延迟或者定时的方式执行任务。
+
+### Executor生命周期
+为了解决执行服务的生命周期问题，Executor扩展了ExecutorService接口，添加了一些用于生命周期管理的方法。
+```java
+public interface ExecutorService extends Executor{
+    void shutdown();  // 执行平缓的关闭过程：不再接受新任务，同时等待那些正在执行、还未执行的任务执行完成
+    List<Runnalbe> shutdownNow();  // 立即关闭，取消正在运行、还未运行的任务
+    boolean isShutdown();
+    boolean isTerninated();
+    boolean awaitTermination(long timeout, TimeUnit unit)throws InterruptedException;
+    // ....其它用于任务提交便利的方法
+}
+```
+ExecutorService的生命周期有三种状态：运行、关闭和终止。

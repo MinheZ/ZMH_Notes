@@ -613,13 +613,12 @@ public class TaskRunnable implments Runnable{
 - 栅栏(Barrier)
 - 闭锁(Latch)
 
-### 闭锁
-在闭锁到达结束状态之前，没有任何线程能通过，当到达结束状态时，允许所有线程通过。因此，闭锁可以用来确保某些活动直到其它活动完成后才继续执行。例如：初始化等。
+### 闭锁(Latch)
+在闭锁到达结束状态之前，没有任何线程能通过，当到达结束状态时，允许所有线程通过。因此，闭锁可以用来确保某些活动直到其它活动完成后才继续执行。例如：初始化等。闭锁是一次性对象，一旦进入终止状态，就不能被重置。
 
 **CountDownLatch**是一种灵活的闭锁实现，，它可以使一个或者多个线程等待一组事件发生。闭锁状态包含一个被初始化为正数的计数器，表示需要等待的事件数量。countDown方法递减计数器，表示已经有一个事件已经发生了，而await方法等待计数器到达0，表示等待的事件已经全部发生。
 
-在计时测试中使用CountDownLatch来启动和停止线程
-
+在计时测试中使用CountDownLatch来启动和停止线程：
 ```java
 public class TestHarness{
     public long timeTask(int nThread, final Runnable task) throw InterruptedException{
@@ -639,6 +638,13 @@ public class TestHarness{
                    }catch (InterruptedException e) {}
                 }
             };
+            t.start();
+        }
+    long start = System.nanaoTime();
+    startGate.countDown();
+    endGate.await();
+    long end = System.nanaoTime();
+    return end - start;
     }
 }
 ```
@@ -647,5 +653,14 @@ public class TestHarness{
 
 FutureTask.get()的行为取决于任务的状态，当任务完成则立刻返回结果，否则get将阻塞到任务进入完成状态，然后返回结果或者抛出异常。FutureTask在Executor框架中表示异步任务，此外还可以表示一些时间比较长的计算，这些计算可以在使用结果之前启动。
 
-### 信号量
-**计数信号量**用来控制同时访问某个特定资源的操作数量，还可以用来实现某种资源池，或对容器施加边界。
+### 信号量(Semaphore)
+**计数信号量(Counting Semaphore)** 用来控制同时访问某个特定资源的操作数量，还可以用来实现某种资源池，或对容器施加边界。
+
+### 栅栏(Barrier)
+类似于闭锁，它能阻塞一组**线程**直到某个事件发生。栅栏与闭锁的关键**区别**在于，所有线程必须同时到达栅栏位置，才能继续执行。可以被重置。
+
+闭锁用于等待事件，栅栏用于等待其它线程。
+
+**CyclicBarrier**可以使一定数量的参与方反复地在栅栏位置汇集，它在**并行迭代算法**中非常有用。
+
+**Exchanger**它是一种两方(Two_Party)展览，各方在栅栏位置上交换数据。当两方执行不对称的操作时，Exchanger会非常有用，例如当一个线程向缓冲区写入数据，另一个线程从缓冲区读取数据。这些线程可以用Exchanger来汇合，并将满的缓冲区与空的缓冲区交换。当两个线程通过Exchanger交换对象时，就相当于把这个两个对象安全地发布给另一方。

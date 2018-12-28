@@ -619,6 +619,7 @@ public class TaskRunnable implments Runnable{
 **CountDownLatch**是一种灵活的闭锁实现，，它可以使一个或者多个线程等待一组事件发生。闭锁状态包含一个被初始化为正数的计数器，表示需要等待的事件数量。countDown方法递减计数器，表示已经有一个事件已经发生了，而await方法等待计数器到达0，表示等待的事件已经全部发生。
 
 在计时测试中使用CountDownLatch来启动和停止线程
+
 ```java
 public class TestHarness{
     public long timeTask(int nThread, final Runnable task) throw InterruptedException{
@@ -629,13 +630,22 @@ public class TestHarness{
             Thread t = new Thread(){
                 public void run(){
                     try {
-                        task.run();
-                    }finally{
-                        endGate.countDown();
-                    }
-                }catch (InterruptedException e) {}
-            }
-        }
-    };
+                        startGate.await();
+                        try{
+                            task.run();
+                        }finally{
+                            endGate.countDown();
+                       }
+                   }catch (InterruptedException e) {}
+                }
+            };
+    }
 }
 ```
+
+**FutureTask**也可以做闭锁，并且可以处于以下三种状态：等待运行（Waiting to run），正在运行（Running），和运行完成（Completed）。
+
+FutureTask.get()的行为取决于任务的状态，当任务完成则立刻返回结果，否则get将阻塞到任务进入完成状态，然后返回结果或者抛出异常。FutureTask在Executor框架中表示异步任务，此外还可以表示一些时间比较长的计算，这些计算可以在使用结果之前启动。
+
+### 信号量
+**计数信号量**用来控制同时访问某个特定资源的操作数量，还可以用来实现某种资源池，或对容器施加边界。

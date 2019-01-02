@@ -728,3 +728,21 @@ public interface ExecutorService extends Executor{
 }
 ```
 ExecutorService的生命周期有三种状态：运行、关闭和终止。
+
+### Future
+**future：**表示一个任务的生命周期，并提供了响应的方法来判断是否已经完成或取消，以及获取任务的结果和取消任务等。在Future规范中隐含的意义是：任务的生命周期只能前进，不能后退，类似ExecutorService，当某个任务完成之后，它就永远停留在了完成阶段。
+```java
+public interface Callable<V> {
+    V call() throws Exception;
+}
+public interface Future<V>{
+    boolean cancle(boolean mayInterruptIfRunning);
+    boolean isCanclled();
+    boolean isDone();
+    V get() throws InterruptedException, ExecutionExeception, CancellationException;
+    V get(long timeout, TimeUnit unit)throws InterruptedException, ExecutionExeception, CancellationException, TimeOutException;
+}
+```
+get的行为取决于任务的状态（尚未开始，正在运行，运行结束）。如果任务已完成，则立即返回结果或抛出一个Exception，如果任务没有完成，则get将阻塞直到任务完成。如果任务抛出异常，那么get将该异常封装为ExecutorException并重新抛出。如果任务被取消，则抛出CancelledException。如果get抛出了ExecutionExeception，那么可以通过getCause来获得被封装的初始异常。
+
+# 取消与关闭

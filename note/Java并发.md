@@ -23,6 +23,7 @@
     * [1 Executor框架](#Executor框架)
 * [六、取消与关闭](#取消与关闭)
     * [1 任务取消](#任务取消)
+    * [2 停止基于线程的服务](#停止基于线程的服务)
 ----------
 
 
@@ -791,7 +792,7 @@ List<BitInteger> aSencondOfPrimes() throws InterruptedException{
     try {
         SECONDS.sleep(1);
     }finally{
-        generator.cancel();
+        generator.cancel(); // 可能需要超过1s才会停止
     }
     return generator.get();
 }
@@ -825,3 +826,59 @@ public Task getNextTask() throws InterruptedException{
     return queue.take();
 }
 ```
+
+只有实现了线程中断策略的代码才可以屏蔽中断请求。在常规的任务和代码库中都不应该屏蔽中断请求。对于一些不支持取消，但是仍可以调节可中断阻塞方法的操作，它们必须在循环中调节用这些方法，并在发现中断后重新尝试。
+
+不可取消的任务在退出前恢复中断状态：
+```java
+public Task getNextTask(BlockingQueue<Taskgt; queue){
+    boolean interrupted = false;
+    try {
+        while (true) {
+            try {
+                return queue.take();
+            }catch(InterruptedException e) {
+                 interrupted = true;
+                 // 重新尝试
+             }
+        }
+    }finally{
+        if (interrupted) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
+### 通过Future来实现取消
+Future拥有一个cancel方法，该方法带有一个Boolean类型的参数mayInterruptIfRunning，表示取消操作是否成功。这只表示任务是否能够接受中断，而不是表示任务是否就能检测并处理中断。如果mayInterruptIfRunning为true并且任务当前正在某个线程中运行，那么这个线程就能被中断。若为false，意味着“若任务还没有启动，就不要运行它”，**这种方式应该用于那些不处理中断的任务中**。
+```java
+public static void timeRun(Runnable r, long timeout, TimeUnit, unit) throws InterruptedException{
+    Future<?> task = taskExec.submit(r);
+    try {
+        task.get(timeout, unit);
+    }catch (TimeOutException e){
+        // 如果在任务重抛出了一场，那么重新抛出该异常
+        throw launderThrowable(e.getCause());
+    }finally {
+        // 如果任务已经结束，那么执行取消操作也没有任何影响
+        task.cancel(true); // 如果任务正在运行，那么将被中断
+    }
+}
+```
+当Future.get抛出InterruptedException或TimeoutException时，如果你知道不再需要结果，那么就可以调用Future.cancle来取消任务。
+### 处理不可中断的阻塞
+对于那些由于执行不可中断操作而被阻塞的线程，可以使用类似于中断的手段来停止这些线程，但要求我们必须知道线程阻塞的原因：
+- Java.io包中的Socket I/O。
+- Java.io包中的同步I/O。
+- Selector的异步I/O。
+- 获取某个锁
+### 采用newTaskFor来封装非标准的取消
+newTaskFor是一个工厂方法，它将创建Future来代表任务。newTaskFor还能返回一个RunnableFuture接口，该接口扩展了Future和Run那边了（并由FutureTask实现）。
+
+## 停止基于线程的服务
+应用程序通常会创建拥有多个线程的服务，例如线程池，并且这些服务的生命周期通常比创建它们的方法生命周期更长。如果应用程序准备退出，那么这些服务所拥有的线程也需要结束。由于无法通过抢占式的方法来停止线程，因此它们需要自行结束。
+
+线程的所有权是不可传递的。
+
+### “毒丸”对象
+一个放在队列上的对象--当得到这个对象时，立即停止。在FIFO队列中，“毒丸”对象将确保消费者在关闭之前首先完成队列中的所有工作，在提交”毒丸对象后，将不会再提交任何工作。

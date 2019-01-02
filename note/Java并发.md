@@ -21,7 +21,8 @@
     * [5 同步工具类](#同步工具类)
 * [五、任务执行](#任务执行)
     * [1 Executor框架](#Executor框架)
-
+* [六、取消与关闭](#取消与关闭)
+    * [1 任务取消](#任务取消)
 ----------
 
 
@@ -730,7 +731,7 @@ public interface ExecutorService extends Executor{
 ExecutorService的生命周期有三种状态：运行、关闭和终止。
 
 ### Future
-**future：**表示一个任务的生命周期，并提供了响应的方法来判断是否已经完成或取消，以及获取任务的结果和取消任务等。在Future规范中隐含的意义是：任务的生命周期只能前进，不能后退，类似ExecutorService，当某个任务完成之后，它就永远停留在了完成阶段。
+**future：** 表示一个任务的生命周期，并提供了响应的方法来判断是否已经完成或取消，以及获取任务的结果和取消任务等。在Future规范中隐含的意义是：任务的生命周期只能前进，不能后退，类似ExecutorService，当某个任务完成之后，它就永远停留在了完成阶段。
 ```java
 public interface Callable<V> {
     V call() throws Exception;
@@ -745,4 +746,82 @@ public interface Future<V>{
 ```
 get的行为取决于任务的状态（尚未开始，正在运行，运行结束）。如果任务已完成，则立即返回结果或抛出一个Exception，如果任务没有完成，则get将阻塞直到任务完成。如果任务抛出异常，那么get将该异常封装为ExecutorException并重新抛出。如果任务被取消，则抛出CancelledException。如果get抛出了ExecutionExeception，那么可以通过getCause来获得被封装的初始异常。
 
+### 小结
+通过围绕任务的执行来设计应用程序，可以简化开发过程，并有助于实现并发。Executor框架将任务提交与执行策略解耦开来，同时还支持多种不同类型的执行策略。
+
+-----
+
 # 取消与关闭
+## 任务取消
+如果外部代码能在某个操作正确完成之前将其置入“完成”状态，那么这个操作就可以成为 **可取消的(Cancellable)**，取消某个操作的原因有很多：
+- **用户请求取消**。用户点击取消按钮
+- **有时间限制的操作**。响应超时。
+- **应用程序事件**。 对一个任务进行分解并搜索，当其中一个任务找到了解决方案时，其它的任务取消。
+- **错误**。
+- **关闭**。
+
+**已请求取消(Cancellation Requested)** 标志，任务将定期的检查该变质，如果设置了这个标志，则任务提前结束。
+```java
+public class PrimeGenerator implments Runnable{
+    private final List<BitInteger> primes = new ArrayList<>();
+    private volatile boolean cancelled;
+
+    public void run(){
+        BitInteger p = BitInteger.ONE;
+        while(!cancelled){
+            p = p.nextProbablePrime():
+            synchronized(this){
+                primes.add(p);
+            }
+        }
+    }
+    public void cancle(){
+        return cancelled = true;
+    }
+    public synchronized List<BitInteger> get(){
+        return new ArrayList<BitInteger>(primes);
+    }
+}
+```
+让素数生成器执行1s后停止：
+```java
+List<BitInteger> aSencondOfPrimes() throws InterruptedException{
+    PrimeGenerator generator = new PrimeGenerator();
+    new Thread(generator).start();
+    try {
+        SECONDS.sleep(1);
+    }finally{
+        generator.cancel();
+    }
+    return generator.get();
+}
+```
+一个可取消的任务必须拥有**可取消策略(Cancellation Policy)**。
+### 中断
+每一个线程都有一个boolean类型的中断状态。当线程中断时，这个线程的中断状态被设置为true。在Thread中包含了中断线程以及查询线程中断状态的方法，如下：
+```java
+public class Thread{
+    public void interrupt(){...} // 中断目标线程
+    public boolean isInterrupted(){...} // 返回目标线程的中断状态
+    /*如果调用interrupted方法返回true，则必须对它进行处理，可以抛
+    出InterruptException或再次调用interrupt方法来恢复中断状态。*/
+    public static boolean interrupted(){...} // 清楚线程中断的唯一方法
+    ...
+}
+```
+**阻塞库方法**，例如Thread.sleep和Object.wait等，都会检查线程何时中断，并且在发现中断时提前返回。它们在响应中断时执行的操作包括：清除中断状态，抛出InterruptedException，表示阻塞操作由于中断而提前结束。或者屏蔽它们。
+
+调用interrupt并不意味着立即停止目标线程正在进行的工作，而只是传递了请求中断的消息，然后由线程在下一个合适的时刻（取消点）中断自己。
+
+**响应中断**
+当调用可中断的阻塞函数时，例如Thread.sleep, BlockingQueue.put等，有2种实用的策略可用于处理InterruptException：
+- 传递异常（可能在执行某个特定于任务的清楚操作之后），从而使方法也成为可中断的阻塞方法。
+- 恢复中断状态，从而使调用栈中的上层代码能够对其进行处理。
+
+```java
+BlockingQueue<Task> queue;
+...
+public Task getNextTask() throws InterruptedException{
+    return queue.take();
+}
+```

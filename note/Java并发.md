@@ -24,6 +24,10 @@
 * [六、取消与关闭](#取消与关闭)
     * [1 任务取消](#任务取消)
     * [2 停止基于线程的服务](#停止基于线程的服务)
+* [七、线程池的使用](#线程池的使用)
+    * [1 在任务与执行策略之间的隐形耦合](#在任务与执行策略之间的隐形耦合)
+    * [2 设置线程池的大小](#设置线程池的大小)
+    * [3 配置ThreadPoolExecutor](#配置ThreadPoolExecutor)
 ----------
 
 
@@ -885,3 +889,50 @@ newTaskFor是一个工厂方法，它将创建Future来代表任务。newTaskFor
 
 ## 处理非正常的线程终止
 导致线程提前死亡的最主要原因是RuntimeException。由于这些异常表示出现了某种编程错误或者其它不可修复的错误，因此它们通常不会被捕获。它们不会在调用栈中逐层传递，耳屎默认地在控制台中输出栈追踪信息，并终止线程。
+
+# 线程池的使用
+## 在任务与执行策略之间的隐形耦合
+虽然Executor框架为定制和修改执行策略都提供了相当大的灵活性，但并非所有的任务都能使用所有的执行策略。有些类型的任务需要明确地指定执行策略，包括：
+- 依赖性任务。
+- 使用现场封闭机制的任务。
+- 对响应时间敏感的任务。
+- 使用ThreadLocal的任务。
+
+### 线程饥饿死锁
+在线程池中，如果任务依赖于其它任务，则可能产生死锁。如果所有正在执行任务的线程都由于等待其它仍处于工作队列中的任务而阻塞，这种现象称为 **线程饥饿死锁（Thread Starvation DeadLock）**
+```java
+public class ThreadDeadLock {
+    ExecutorService exec = Executors.newSingleThreadExecutor();
+    public class RenderPageTask implements Callable<String> {
+        public String call()throws Exception{
+            Future<Striing> header, footer;
+            header = exec.submit(new LoadFileTask("header.html"));
+            footer = exec.submit(new LoadFileTask("footer.html"));
+            String page = renderBody();
+            // 将发生死锁——由于任务在等待子任务完成的结果
+            return header.get() + page + footer.get();
+        }
+    }
+}
+```
+每当提交了一个有依赖性的Executor任务时，要清楚地知道可能会出现线程“饥饿”死锁，因此需要在代码或者Executor的配置文件中记录线程池的大小限制或配置限制。
+
+## 设置线程池的大小
+线程池的理想大小取决于被提交任务的类型以及所部署系统的特性，在代码中通常不会固定线程池的大小，而应该通过某种配置机制来提供，或者根据Runtime.availableProcessors来动态计算。
+
+## 配置ThreadPoolExecutor
+### 线程的创建于销毁
+线程池的基本大小（Core Pool Size）、最大大小（Maximum Pool Size）以及存活时间等因素共同负责线程的创建于销毁。
+
+### 管理队列任务
+在有限的线程池中会限制可并发执行任务的数量。
+
+ThreadPoolExecutor允许提供一个BlockingQueue来保存等待执行的任务。基本的任务排队方法有：
+- 无界队列(LinkedBlockingQueue)
+- 有界队列(ArrayBlockingQueue, 有界的LinkedBlockingQueue, PriorityBolckingQueue)
+- 同步移交(Synchronous Handoff)(SynchronousQueue)
+
+对非常大或者无界的线程池，可以使用**SynchronousQueue**来避免任务排队。SynchronousQueue是一种在线程之间进行移交的机制。要将一个元素放入SynchronousQueue中，必须有另一个线程等待接收这个元素。如果没有，且线程池当前大小小于最大值，那么ThreadPoolExecutor将创建一个新的线程，否则根据**饱和策略**将拒绝这个任务。
+
+### 饱和策略
+JDK提供了几种不同的RejectedExecutorHandler实现：AbortPolicy, CallerRunsPolicy, DiscardPolicy和DiscardOldestPolicy（抛弃下一个将被执行的任务，最好不要与优先级队列一起使用）。

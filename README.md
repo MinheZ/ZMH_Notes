@@ -4,7 +4,7 @@
 | 算法[:pencil2:](#pencil2-算法) | 操作系统[:computer:](#computer-操作系统)|网络[:cloud:](#cloud-网络) | Java 并发[:lock:](#lock-Java并发)|
 
 <div align="center">
-    <img src="../pics//java.jpg" width="500"/>
+    <img src="pics//java.jpg" width="500"/>
     <br>
     <a href="https://github.com/MinheZ"> <img src="https://img.shields.io/badge/_-MinheZ-4ab8a1.svg"></a>
 </div><br>

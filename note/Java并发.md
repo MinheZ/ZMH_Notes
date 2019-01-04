@@ -107,7 +107,7 @@ if(!vector.contains(element))
 
 ### 加锁与可见性
 内置锁可以用于确保某个线程以一种可预测的方式来查看另一个线程的执行结果。
-<div align="center"> <img src="../pics//1545703873(1).png" width=""/> </div><br>
+<div align="center"> <img src="../pics//1545703873(1).png" width="500"/> </div><br>
 访问某个共享且可变的变量时，要求所有的线程都在同一个锁上同步，就是为了确保某个线程写入该变量的值对于其它线程来说是可见的。否则，如果一个线程在未持有正确的锁的情况下读取某个变量，则读取到的值可能是实效值。
 
 加锁的含义不仅仅局限于互斥行为，还包括内存可见性。为了确保所有的线程都能看到共享变量的最新值，所有执行读操作或者写操作的线程都必须在同一个锁上同步。
@@ -936,3 +936,18 @@ ThreadPoolExecutor允许提供一个BlockingQueue来保存等待执行的任务�
 
 ### 饱和策略
 JDK提供了几种不同的RejectedExecutorHandler实现：AbortPolicy, CallerRunsPolicy, DiscardPolicy和DiscardOldestPolicy（抛弃下一个将被执行的任务，最好不要与优先级队列一起使用）。
+
+“调用者运行(Caller-Runs)”既不会抛弃任务，也不会抛出异常。当线程池所有的线程都被占用，并且工作队列也被填满时，下一个任务会在调用executor时在主线程中执行。由于执行任务需要一定时间，因此在主线程至少一定时间内不能提交任务，从而使得工作者线程有时间来处理完成正在执行的任务。
+```java
+ThreadPoolExecutor executor = new ThreadPoolExecutor(N_THREADS, N_THREADS, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(CAPACITY));
+executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+```
+
+# 避免活跃性危险
+## 死锁
+在线程A持有L锁并想获得M锁的同时，线程B持有M锁并想获得L锁。这就是死锁。其中多线程由于存在环路的锁依赖关系而永远地等待下去。
+
+### 锁顺序死锁
+leftRight和rightLeft这两个方法分别获得left锁和right锁。如果其中一个线程调用了leftRight，另一个调用了rightLeft，并且2个线程的操作是交错执行，则容易发生死锁。
+<div align="center"> <img src="../pics//1546565550(1).png" width="500"/> </div><br>
+**如果所有的线程以固定的顺序来获取锁，那么在程序中就不会出现锁顺序死锁的问题。**

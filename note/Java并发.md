@@ -28,6 +28,8 @@
     * [1 在任务与执行策略之间的隐形耦合](#在任务与执行策略之间的隐形耦合)
     * [2 设置线程池的大小](#设置线程池的大小)
     * [3 配置ThreadPoolExecutor](#配置ThreadPoolExecutor)
+* [八、避免活跃性危险](#避免活跃性危险)
+    * [1 死锁](#死锁)
 ----------
 
 
@@ -950,4 +952,24 @@ executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 ### 锁顺序死锁
 leftRight和rightLeft这两个方法分别获得left锁和right锁。如果其中一个线程调用了leftRight，另一个调用了rightLeft，并且2个线程的操作是交错执行，则容易发生死锁。
 <div align="center"> <img src="../pics//1546565550(1).png" width="500"/> </div><br>
+
 **如果所有的线程以固定的顺序来获取锁，那么在程序中就不会出现锁顺序死锁的问题。**
+
+### 动态的锁顺序死锁
+有时候并不能清楚地知道在锁顺序上有足够的控制权来避免死锁的发生。例如转账：
+```java
+synchronized (fromAccount){
+    synchronized (toAccount){
+        ...
+    }
+}
+```
+当线程X给Y转账，另一个线程用Y给X转账，则会发生死锁。用System.identityHashCode来定义锁的顺序，可以消除死锁的可能性。
+
+在极少数情况下，2个对象可能拥有相同的散列值，可以使用“加时赛（Tie-Breaking）”锁从而保证每次只有一个线程以位置的顺序获得这2个锁。
+
+### 在协作对象之间发生的死锁
+如果在持有锁时调用某个外部方法，那么可能出现活跃性的问题。因为这个外部方法可能会获取其它锁（这可能产生死锁），或者阻塞时间过长，导致其它线程无法及时获得当前被持有的锁。
+
+### 开放调用
+如果在调用某个方法的时候不需要持有锁，则称为**开放调用(Open Call)**。

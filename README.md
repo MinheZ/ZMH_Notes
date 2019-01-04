@@ -14,7 +14,13 @@
 - [剑指Offer](https://github.com/MinheZ/Notes/blob/master/note/剑指Offer.md)
 - [LeetCode](https://github.com/MinheZ/Notes/blob/master/note/LeetCode.md)
 
-### :lock: Java 并发
-[Java并发](https://github.com/MinheZ/Notes/blob/master/note/Java并发.md)
+### :computer: 操作系统
+- [计算机操作系统](https://github.com/MinheZ/Notes/blob/master/note/计算机操作系统.md)
+
+### :cloud: 操作系统
+- [计算机网络](https://github.com/MinheZ/Notes/blob/master/note/计算机网络.md)
+
+### :lock: Java并发
+- [Java并发](https://github.com/MinheZ/Notes/blob/master/note/Java并发.md)
 
 内容主要参考Java并发编程实战，作为自己的阅读笔记。

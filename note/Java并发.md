@@ -35,6 +35,8 @@
 * [九、性能与可伸缩性](#性能与可伸缩性)
     * [1 对性能的思考](#对性能的思考)
     * [2 Amdahl定律](#Amdahl定律)
+    * [3 线程引入的开销](#线程引入的开销)
+    * [4 减少锁的竞争](#减少锁的竞争)
 ----------
 
 
@@ -1016,3 +1018,66 @@ JVM通过线程转储(Thread Dump)来帮助识别死锁的发生。线程转储�
 ## Amdahl定律
 Amdahl定律描述的是：在增加计算资源的情况下，程序在理论上能够实现的最大加速比，这个值取决于程序中可并行组件与串行组件所占的比重。假定F是必须串行执行的部分，那么根据Amdahl定律，在包含N个处理器的机器中，最高的加速比为：
 <div align="center"> <img src="../pics//1546588716(1).png" width="150"/> </div><br>
+
+## 线程引入的开销
+对于为了提升性能而引入的线程，并行带来的性能提升必须大于并发所带来的开销。
+
+### 上下文切换
+如果可运行的线程数量大于CPU的数量，那么操作系统最终会将某个正在运行的线程调度出来，从而使其它线程能够使用CPU。这将会导致一次上下文切换，这个过程中将保存当前线程的执行上下文，并把新调度进来的线程的执行上下文设置为当前上下文。
+
+当线程由于等待某个发生竞争的锁而被阻塞时，JVM通常会把这个线程挂起，并允许它被交换出去。
+
+### 内存同步
+同步操作的性能开销包括多个方面。在synchronized和volatile提供的可见性保证中会使用一些特殊的指令——内存栅栏(Memory Barrier)，在内存栅栏中，大多数的操作都是不可重排序的。
+
+### 阻塞
+非竞争同步完全可以在JVM中进行处理，而竞争同步可能需要操作系统介入，从而增加开销。在锁上发生竞争时，竞争失败的线程肯定会被阻塞。JVM在实现阻塞行为时，可以采用 **自旋等待(Sprin-Waitting，指通过循环不断地尝试获得锁，直到成功，适合等待时间短)** 或者通过操作系统挂起被阻塞的线程（适合等待事件长）。
+
+## 减少锁的竞争
+在并发程序中，对可伸缩性的主要威胁就是独占方式的资源锁。
+
+有2个因素将影响锁上发生竞争的可能性：
+- 锁请求的频率
+- 每次持有该锁占用的时间
+
+如果二者的乘积很小，那么大多数获取锁的操作都不会发生竞争。有3种方式可以降低锁的竞争程度：
+- 减少锁持有的时间
+- 降低锁的请求频率
+- 使用带有协调机制的独占锁
+
+### 缩小锁的范围("快进快出")
+把一些不需要的同步放到锁外面，缩小同步代码块，但是要确保必要的原子操作。
+
+### 减小锁的粒度
+可以通过**锁分解**和**锁分段**来减小锁的粒度。如果一个锁需要保护多个相互独立的状态变量，那么可以将这个锁分解为多个锁，每一个锁只保护一个状态变量。
+```java
+public class ServerStatus{
+    public final Set<String> users;
+    public final Set<String> queries;
+    ...
+    public synchronized void addUser(String u){users.add(u);}
+    public synchronized void addQuery(String q){queries.add(u);}
+    public synchronized void removeUser(String u){users.remove(u)}
+    public synchronized void removeQuery(String q){queries.remove(q)}
+}
+```
+使用锁分解技术
+```java
+public class ServerStatus{
+    public final Set<String> users;
+    public final Set<String> queries;
+    ...
+    public void addUser(String u){
+        synchronized (users){
+            users.add(u);
+        }
+    }
+    public void addQuery(String q){
+        synchronized (queries){
+            queries.add(u);
+        }
+    }
+}
+```
+### 锁分段
+锁分段：在某些情况下，可以将所分解技术进一步扩展为对一组独立对象上的锁进行分解。劣势在于，与采用单个锁来实现独占访问相比。要获取多个锁来实现独占访问将更加困难，并且开销更高。

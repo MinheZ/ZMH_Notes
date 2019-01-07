@@ -37,6 +37,11 @@
     * [2 Amdahl定律](#Amdahl定律)
     * [3 线程引入的开销](#线程引入的开销)
     * [4 减少锁的竞争](#减少锁的竞争)
+* [十、显示锁](#显示锁)
+    * [1 Lock与ReentrantLock](#Lock与ReentrantLock)
+    * [2 公平性](#公平性)
+    * [3 在synchronized和ReentrantLock之间进行选择](#在synchronized和ReentrantLock之间进行选择)
+    * [4 读-写锁](#读-写锁)
 ----------
 
 
@@ -70,6 +75,11 @@ synchronized (lock){
 ```
 每一个Java对象都可以用作一个实现同步的锁，这些锁被称为**内置锁(Intrinsic Lock)**或**监视器锁(Monitor Locl)**。
 线程在进入同步代码块之前会自动获得锁，并且在退出同步代码块时会自动释放锁，而无论是通过正常的路径退出，还是通过从代码块中抛出异常退出。
+
+**内置锁的局限性：**
+- 无法中断一个正在等待获取锁的线程；
+- 无法在请求一个锁的时候无限制等下去；
+- 无法实现非阻塞结构的加锁规则；
 
 **获得内置锁的唯一途径** 就是进入由这个锁保护的同步代码块或者方法。
 Java的内置锁相当于一种**互斥体(或互斥锁)** ，这意味着同时最多只有一个线程能持有这种锁。当线程A尝试获得由线程B持有的锁时，线程A必须等待或者阻塞，等到B释放锁之后才有可能获得这个锁，如果B永远不释放锁，则A永远等待下去。
@@ -683,6 +693,8 @@ FutureTask.get()的行为取决于任务的状态，当任务完成则立刻返�
 
 **Exchanger**它是一种两方(Two_Party)展览，各方在栅栏位置上交换数据。当两方执行不对称的操作时，Exchanger会非常有用，例如当一个线程向缓冲区写入数据，另一个线程从缓冲区读取数据。这些线程可以用Exchanger来汇合，并将满的缓冲区与空的缓冲区交换。当两个线程通过Exchanger交换对象时，就相当于把这个两个对象安全地发布给另一方。
 
+------------------
+
 # 任务执行
 ## Executor框架
 任务是一组逻辑工作单元，而线程则是使任务异步执行的机制。在java类库中，任务执行的主要抽象不是Thread，而是Executor。
@@ -899,6 +911,8 @@ newTaskFor是一个工厂方法，它将创建Future来代表任务。newTaskFor
 ## 处理非正常的线程终止
 导致线程提前死亡的最主要原因是RuntimeException。由于这些异常表示出现了某种编程错误或者其它不可修复的错误，因此它们通常不会被捕获。它们不会在调用栈中逐层传递，耳屎默认地在控制台中输出栈追踪信息，并终止线程。
 
+----------------
+
 # 线程池的使用
 ## 在任务与执行策略之间的隐形耦合
 虽然Executor框架为定制和修改执行策略都提供了相当大的灵活性，但并非所有的任务都能使用所有的执行策略。有些类型的任务需要明确地指定执行策略，包括：
@@ -952,6 +966,8 @@ ThreadPoolExecutor executor = new ThreadPoolExecutor(N_THREADS, N_THREADS, 0L, T
 executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 ```
 
+--------------------
+
 # 避免活跃性危险
 ## 死锁
 在线程A持有L锁并想获得M锁的同时，线程B持有M锁并想获得L锁。这就是死锁。其中多线程由于存在环路的锁依赖关系而永远地等待下去。
@@ -1002,6 +1018,8 @@ JVM通过线程转储(Thread Dump)来帮助识别死锁的发生。线程转储�
 活锁通常发生在处理事务消息的应用程序中：如果不能成功地处理某个消息，那么消息处理机制将回滚整个事务，并将它重新放到队列的开头。如果每一次都发生失败，则每一次都回滚。这种形式的活锁通常是过度的错误恢复代码造成的，因为它将不可修复的错误误认为是可修复的错误。
 
 **解决方法：** 在重试机制中引入随机性。在并发程序中，通过等待随机长度的时间和回退可以有效避免活锁的发生。
+
+-------------
 
 # 性能与可伸缩性
 ## 对性能的思考
@@ -1074,10 +1092,153 @@ public class ServerStatus{
     }
     public void addQuery(String q){
         synchronized (queries){
-            queries.add(u);
+            queries.add(q);
         }
     }
 }
 ```
 ### 锁分段
 锁分段：在某些情况下，可以将所分解技术进一步扩展为对一组独立对象上的锁进行分解。劣势在于，与采用单个锁来实现独占访问相比。要获取多个锁来实现独占访问将更加困难，并且开销更高。
+
+---------
+
+# 显示锁
+Java 5.0增加的一种新的机制，当内置加锁机制不适用的时候，作为一种可选的高级功能。
+
+## Lock与ReentrantLock
+与内置加锁机制不同的是，Lock提供了一种无条件的、可轮询的、定时的以及可中断的锁获取操作，所有加锁和解锁的方法都是显示的。在Lock的实现中必须提供与内部锁相同的**内存**和**可见性**语义，但是在加锁语义、调度算法、顺序保证以及性能特性等方面可以有所不同。
+```java
+public interface Lock{
+    void lock();
+    void lockInterruptibly()throws InterruptedException;
+    boolean tryLock();
+    boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException;
+    void unlock();
+    Condition newCondition();
+}
+```
+ReentrantLock实现了Lock接口，并提供了与synchronized相同的互斥性和内存可见性。使用ReentrantLock来保护对象状态：
+```java
+Lock lock = new ReentrantLock();
+...
+lock.lock();
+try{
+    // 更新对象状态
+    // 捕获异常，并在必要时恢复不变性条件
+}finally{
+    lock.unlock();  // 必须在finally块中释放锁
+}
+```
+如果没有使用finally来释放Lock，将很难追踪到最初发生错误的位置，因为没有记录应该释放锁的位置和时间。**因此ReentrantLock并不能取代synchronized**。
+
+ReentrantLock实现了一种标准的互斥锁，每次最多只有一个线程能够持有ReentrantLock。
+
+### 轮询锁与定时锁
+可定时的与可轮询的锁(避免死锁的发生)获取模式是由tryLock实现的，与无条件的锁获取模式相比，它具有更完善的错误恢复机制。
+
+在实现具有时间限制的操作中调用了一个阻塞方法，定时锁能根据剩余时间来提供一个时限，如果操作不能在指定的时间内结束，那么程序就会提前结束：
+```java
+public boolean trySendOnShareLine(String massage, long timeout, TimeUnit unit) throws InterruptedException{
+    long nanosToLock = unit.toNanos(timeout) - estimatedNanosToSend(message);
+    if (!lock.tryLock(nanosToLock, NANOSECOND)) {
+        return false;
+    }
+    try{
+        return sendOnShareLine(message);
+    }finally{
+        lock.unlock();
+    }
+}
+```
+### 可中断的锁获取操作
+可中断的锁获取操作能在可取消的操作中使用加锁。但是比普通的锁获取操作要复杂一些，需要2个try块（如果在可中断的锁获取操作中抛出了InterruptedException，那么可以使用标准的try-finally加锁模式）。
+```java
+public boolean sendOnShareLine(String massage) throws InterruptedException{
+    lock.lockInterruptibly();
+    try{
+        return cancellableSendOnShareLine(message);
+    }finally{
+        lock.unlock();
+    }
+}
+private boolean cancellableSendOnShareLine(String message) throws InterruptedException{
+    ...
+}
+```
+## 公平性
+在ReentrantLock的构造函数中提供了2种公平性选择：
+- 非公平锁（默认）
+- 公平锁
+
+**公平锁**上，线程将按照它们发出的请求顺序来获得锁；公平性将由于挂起和恢复线程产生的开销而降低系统的性能。
+
+**非公平锁** 则允许“插队”：当一个线程请求非公平锁时，如果发出请求的同时，该锁的状态变为可用，那么这个线程将跳过队列中所有等待的线程并获得这个锁。
+
+大多数情况下，非公平锁的性能要高于公平锁。当持有锁的时间较长，或者请求锁的平均间隔时间较长，则应该使用公平锁。
+
+## 在synchronized和ReentrantLock之间进行选择
+**ReentrantLock** 在加锁和内存可见性上提供的语义与**内置锁**相同，此外它还提供了一些其它功能：
+
+- 定时的锁等待
+- 可中断的锁等待
+- 公平性
+- 非块结构的加锁
+
+但是，ReentrantLock的危险性比同步机制高。推荐仅当内置锁不能满足要求的时候才用ReentrantLock。在java 5.0中，内置锁相对于ReentrantLock还有另一个优点：在线程转储中能给出在哪些调用帧上面获取了哪些锁，并能够检测和识别发生死锁的线程。（ReentrantLock不是可以避免死锁吗？这个也能算内置锁的优点？）但是在java 6中改进了。
+
+## 读-写锁
+针对某种情况，数据结构上的操作大多数都是“读取”，即使它们是可变的，并且在某些情况下会被修改，但是大多数访问操作都是“读操作”。
+
+**读-写锁：** 一个资源可以被多个读操作同时访问，或者被一个写操作单独访问，但是这两者不能同时进行。
+```java
+public interface ReadWriteLock {
+    Lock readLock();
+    Lock writeLock();
+}
+```
+读-写锁是一种优化措施，在多处理器系统上被频繁读取的数据结构，读-写锁的确能提高性能。但是其它情况下，由于读-写锁复杂度更高，所以性能低于独占锁。
+
+ReadWriteLock使用Lock来实现锁的读-写部分，因此如果分析出读-写锁性能没有独占锁高的时候，很容易将读-写锁转换为独占锁。
+
+在读取锁和写入锁之间的交互可以采用多种实现方式。ReadWriteLock中的一些可选实现方式包括：
+- 释放优先
+- 读线程插队
+- 重入性
+- 降级
+- 升级
+
+在公平锁中，等待时间最长的线程将优先获得锁。如果这个锁由读线程持有，而另一个程序请求写入锁，那么其它线程都不能获取读取锁，必须等写线程释放写入锁之后。
+
+在非公平锁中，线程获得访问许可的顺序不是固定的。写线程降级为读线程是可以的，但从读线程升级为写线程是不可以的（这样做会导致死锁）。
+
+用读-写锁来包装Map
+```java
+public class ReadWriteMap<K,V>{
+    private final Map<K,V> map;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Lock r = lock.readLock();
+    private final Lock w = lock.writeLock();
+
+    public ReadWriteMap(Map<K,V> map){
+        this.map = map;
+    }
+    public V put(K key, V value){
+        w.lock();
+        try{
+            return map.put(key,value);
+        }finally{
+            w.unlock();
+        }
+    }
+    // 对remove，putAll, clear等方法执行同样的操作
+    public V get(Object key){
+        r.lock();
+        try {
+            return map.get(key);
+        }finally{
+            r.unlock();
+        }
+    }
+    // 对其它只读的操作采取同样的方法
+}
+```

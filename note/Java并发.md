@@ -45,6 +45,9 @@
 * [十一、构建自定义的同步工具](#构建自定义的同步工具)
     * [1 条件队列](#条件队列)
     * [2 显示的Condition对象](#显示的Condition对象)
+    * [3 Synchronizer剖析](#Synchronizer剖析)
+    * [4 AbstractQueuedSynchronizer](#AbstractQueuedSynchronizer)
+    * [5 java.util.concurrent同步类中的AQS](#java.util.concurrent同步类中的AQS)
 ----------
 
 
@@ -1309,6 +1312,126 @@ public synchronized void put (V v) throws InterruptedException{
 Condition是一种广义的内置条件队列。
 ```java
 public interface Condition{
-    
+    void await() throws InterruptedException;
+    boolean await(long time, TimeUnit unit) throws InterruptedException;
+    long awaitNanos(long nanosTimeout) throws InterruptedException;
+    void awaitUninterruptibly();
+    boolean awaitUtil(Date deadline) throws InterruptedException;
+
+    void signal();
+    void siganleAll();
+}
+```
+COndition比内置队列提供了更丰富的功能：
+- 每个锁上面可以存在多个等待；
+- 等待条件可以是可中断或者不可中断的；
+- 基于时限的等待；
+- 公平的或非公平的队列操作。
+
+与内置条件队列不同的是，对于每个Lock可以有任意数量的Condition对象。Condition对象继承了相关的Lock对象的公平性，对于公平的锁，线程会依照FIFO顺序从Condition.await中释放。
+
+使用2个Condition实现一个有界缓存队列，分别用notFull和notEmpty表示“非满”和“非空”2个条件谓词。当缓存为空时，take将阻塞并等待notEmpty，此时put向notEmpty发送信号，可以解除任何在take中阻塞的线程。
+```java
+public class ConditionBoundedBuffer<T>{
+    protected final Lock lock = new ReentrantLock();
+    // 条件谓词：notFull(count < items.length)
+    private final Condition notFull = lock.newCondition();
+    // 条件谓词: notEmpty(count > 0)
+    private final Condition notEmpty = lock.newCondition();
+
+    private final T[] items = (T[]) new Object[BUFFER_SIZE];
+    private int tail, head, count;
+
+    // 阻塞直到：notFull
+    public void put(T x) throws InterruptedException{
+        lock.lock();
+        try {
+            while(count == items.length)
+                notFull.await();
+            items[tail] = x;
+            if (++tail == items.length)
+                tail = 0;
+            ++count;
+            notEmpty.signal();
+        }finally{
+            lock.unlock();
+        }
+    }
+    // 阻塞直到：notEmpty
+    public T take() throws InterruptedException{
+        lock.lock();
+        try {
+            while(count == 0)
+                notEmpty.await();
+            T x = items[head];
+            items[head] = null;
+            if (++head == items.length)
+                head = 0;
+            --count;
+            notFull.signal();
+            return x;
+        }finally{
+            lock.unlock();
+        }
+    }
+}
+```
+将2个条件谓词分开并放到2个等待线程集中，Condition使其更容易满足单次通知的需求。当使用显示的Lock和Condition时，也必须满足锁、条件谓词和条件变量之间的三元关系。
+
+**如何在Condition与内置条件队列之间进行选择？**
+
+可以类比在ReentrantLock和synchronized之间的选择。如果需要一些高级功能，例如使用公平队列操作或者在每个锁对应多个等待线程集，那么应该优先使用Condition。
+
+## Synchronizer剖析
+ReentrantLock和Semaphore在实现的时候都用了一个共同的基类，即 **AbstractQueuedSynchronizer(AQS)**，这个类也是其它许多同步类的基类。AQS是一个用于构建锁和同步器的框架。在基于AQS构建的同步器中，只可能在一个时刻发生阻塞，从而降低了上下文切换的开销，提高吞吐量。
+
+ReentrantLock、Semaphore、CountDownLatch、ReentrantReadWriteLock、SynchronousQueue和FutureTask都是基于AQS构建的。
+
+## AbstractQueuedSynchronizer
+在基于AQS构建的同步器类中，最近本的操作包括各种形式的获取操作和释放操作。如果一个类想成为状态依赖的类，那么它必须拥有一些状态。AQS负责管理同步器类中的状态，它管理了一个整数状态的信息，可以通过getState，setState以及compareAndState等protected类型方法来进行操作。
+
+**一个简单的闭锁**
+OneSlotLatch是一个使用AQS实现的二元闭锁。它包含两个公有方法await和signal，分别对应获取操作和释放操作。
+```java
+public class OneSlotLatch{
+    private final Sync sync = new Sync();
+
+    public void signal(){sync.releaseShared(0);}
+
+    public void await() throws InterruptedException{
+        sync.acquireSharedInterruptibly(0);
+    }
+
+    public class Sync extends AbstractQueuedSynchronizer{
+        protected int tryAcquireShared(int ignore){
+            // 如果闭锁是开的（state== 1），那么这个操作将成功，否则失败
+            return (getState() == 1) ? 1:-1;
+        }
+        protected boolean tryReleaseShared(int ignore){
+            setState(1); // 现在打开闭锁
+            return true; // 现在其它线程可以获得该闭锁
+        }
+    }
+}
+```
+期初闭锁是关闭的，任何调用await的线程都将阻塞直到闭锁被打开；当通过signal打开闭锁时，所有等待的线程都将被释放，并且随后到达闭锁的线程也允许被执行。
+
+## java.util.concurrent同步类中的AQS
+### ReentrantLock
+ReentrantLock只支持独占式的获取操作，因此它实现了tryAcquire、tryRelease和isHeldExclusivcly，下面给出了非公平版本的tryAcquire。ReentrantLock将同步状态用于保存锁获取操作的次数，并且还维护一个owner变量来保存当前所有者线程的标识符，只有在当前线程刚获取到锁，或者正要释放锁才会修改这个变量。在tryRelease中检查owner域，从而确保当前线程在执行unlock操作之前已经获取了锁：在tryAcquire中将使用这个域来区分锁获取的操作是重入还是竞争。
+```java
+protected boolean tryAcquire(int ignore){
+    final Thread current = Thread.currentThread();
+    int c = getState();
+    if (c == 0) { // 第一次获取锁
+        if (compareAndState(0,1)) {  // 原子地更新状态
+            owner = current;
+            return true;
+        }
+    }else if (current == owner) {  // 重入
+        setState(c + 1);
+        return true;
+    }
+    return false;
 }
 ```

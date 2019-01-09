@@ -50,6 +50,8 @@
     * [5 java.util.concurrent同步类中的AQS](#java.util.concurrent同步类中的AQS)
 * [十二、原子变量与非阻塞同步机制](#原子变量与非阻塞同步机制)
     * [1 硬件对并发的支持](#硬件对并发的支持)
+    * [2 原子变量类](#原子变量类)
+    * [3 非阻塞算法](#非阻塞算法)
 ----------
 
 
@@ -1513,3 +1515,93 @@ public class CasCounter{
 CasCounter不会阻塞，如果其他线程同时更新计数器，那么会多次执行重试操作。
 
 ## 原子变量类
+原子变量比锁的粒度更细，量级更轻。共有12个原子变量类，可分为4组：
+- 标量类(Scalar)
+- 更新器类
+- 数组类
+- 复合变量类
+
+最常用的源自变量就是标量类：AtomicInteger, AtomicLong, AtomicBoolean, AtomicReferance，这些变量都支持CAS。
+
+## 非阻塞算法
+如果在某种算法中，一个线程的失败或挂机不会导致其它线程也失败或者挂起，那么这种算法被称为**非阻塞算法**。非阻塞算法通常不会出现死锁和优先级反转的问题，但可能出现饥饿和活锁问题。
+构建非阻塞算法的技巧在于：将执行原子修改的范围缩小到单个变量上。
+
+如下为使用Treiber算法构造的非阻塞栈：
+```java
+public class ConcurrentStack <E>{
+    private static Node <E> {
+        public final E item;
+        public Node<E> next;
+
+        public Node(E item){
+            this.item = item;
+        }
+    }
+
+    AtomicReferance<Node<E>> top = new AtomicReferance<Node<E>>();
+    public void push(E item){
+        Node<E> newHead = new Node<>(item);
+        Node<E> oldHead;
+        do {
+            oldHead = top.get();
+            newHead.next = oldHead;
+        } while (!top.compareAndSet(oldHead,newHead));
+    }
+    public E pop(){
+        Node<E> newHead;
+        Node<E> oldHead;
+        do {
+            oldHead = top.get();
+            if (oldHead == null) {
+                return null;
+            }
+            newHead = oldHead.next;
+        } while (!top.compareAndSet(oldHead.newHead));
+        return oldHead.item;
+    }
+}
+```
+### 非阻塞的链表
+链表队列比栈更为复杂，因为它必须支持对头结点和尾结点的快速访问，因此需要单独维护头结点和尾结点。
+
+非阻塞链接队列算法中，空队列通常都包含一个“哨兵(Sentinel节点)”或者“哑(Dummy)节点”，并且头结点和尾结点在初始化的时候都指向该哨兵节点。
+
+非阻塞算法中插入算法
+```java
+public class LinkedQueue<E>{
+    private static class Node<E>{
+        final E item;
+        final AtomicReferance<Node<E>> next;
+        public Node(E item, Node<E> next){
+            this.item = item;
+            next = new AtomicReferance<Node<E>>(next);
+        }
+    }
+
+    private final Node<E> dummy = new Node<E>(null,null);
+    private final AtomicReferance<Node<E>> head = new AtomicReferance<Node<E>>(dummy);
+    private final AtomicReferance<Node<E>> tail = new AtomicReferance<Node<E>>(dummy);
+
+    public boolean put(E item){
+        Node<E> newNode = new Node<E>(item,null);
+        while (true) {
+            Node<E> curTail = tail.get();
+            Node<E> tailNext = curTail.next.get();
+            if (curTail == tail.get()) {
+                if (tailNext != null) {
+                    // 队列处于中间状态，继续向后移动
+                    tail.compareAndSet(curTail,tail.next);
+                }else {
+                    // 处于稳定状态，尝试插入新的节点
+                    if (curTail.next.compareAndSet(null,newNode)) {
+                        // 插入操作成功，尝试推进尾结点
+                        tail.compareAndSet(curTail,newNode);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+}
+```

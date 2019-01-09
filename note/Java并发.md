@@ -48,6 +48,8 @@
     * [3 Synchronizer剖析](#Synchronizer剖析)
     * [4 AbstractQueuedSynchronizer](#AbstractQueuedSynchronizer)
     * [5 java.util.concurrent同步类中的AQS](#java.util.concurrent同步类中的AQS)
+* [十二、原子变量与非阻塞同步机制](#原子变量与非阻塞同步机制)
+    * [1 硬件对并发的支持](#硬件对并发的支持)
 ----------
 
 
@@ -1435,3 +1437,79 @@ protected boolean tryAcquire(int ignore){
     return false;
 }
 ```
+
+### Semaphore与CountDownLatch
+Semaphore将AQS的同步状态用于保存当前可用许可的数量。tryAcquireShared方法首先计算剩余许可的数量，如果没有足够的许可，那么会返回一个值表示获取操作失败。如果还有剩余的许可，那么tryAcquireShared会通过compareAndSetState以原子的方式来降低许可的计数。如果这个操作成功（意味着许可的计数自从上一次读取后就没有被修改过），那么将返回一个值表示获取操作成功。在返回值中还包含了表示其它共享获取操作能否成功的信息，如果成功，则其它等待的线程都解除阻塞。
+```java
+protected int tryAcquireShared(int acquires){
+    while (true) {
+        int available = getState();
+        int remaining = available - acquires;
+        if (remaining < 0 || compareAndState(available,remaining)) {
+            return remaining;
+        }
+    }
+}
+protected boolean tryReleaseShared(int releases){
+    while (true) {
+        int p = getState();
+        if (compareAndState(p,p+releases)) {  // 增加许可计数
+            return true;
+        }
+    }
+}
+```
+
+-------------------
+
+# 原子变量与非阻塞同步机制
+## 硬件对并发的支持
+独占锁是一种**悲观技术**——它假设最坏的情况，并且只有在确保其它线程不会造成干扰（通过获取正确的锁）的情况下才能执行下去。
+
+### 比较并交换(Compare-and-Swap, CAS)
+CAS包含了3个操作数——需要读写的内存位置V，A表示预期的值，B表示拟写入的新值。**当且仅当** V里面的值等于预期值A时，CAS才会通过原子的方式用新值B来更新V的值，否则不会执行任何操作。无论V的值是否等于A，都将返回V的原有值。CAS是一项**乐观技术**它希望能成功地执行更新操作，并且如果有另一个线程最近一次检查后更新了该变量，那么CAS能检查到这个错误。
+
+CAS算法需要额外给出一个期望值，也就是说你认为现在变量应该是什么样子，如果变量不是你想象的那样，说明已经被别人修改过了。
+```java
+public class SimulatedCAS{
+    private int value;
+
+    public synchronized int get(){return value;}
+
+    public synchronized int compareAndSwap(int expectedValue, int newValue){
+        int oldValue = value;
+        if (oldValue == expectedValue) {
+            value = newValue;
+        }
+        return oldValue;
+    }
+
+    public synchronized boolean compareAndSet(int expectedValue, int newValue){
+        return (expectedValue == compareAndSwap(expectedValue, newValue));
+    }
+}
+```
+当多个线程尝试使用CAS同时更新一个变量时，只有其中一个线程能更新变量的值，而其它线程都将失败。但是失败的线程并不会被挂起，而是被告知在竞争中失败，并且可以再次尝试。
+
+### 非阻塞的计数器
+CasCounter实现了一个线程安全的计数器：
+```java
+public class CasCounter{
+    private SimulatedCAS value;
+
+    public int getValue(){
+        return value.get();
+    }
+
+    public int increment(){
+        int v;
+        do {
+            v = value.get();
+        } while (v != compareAndSwap(v,v+1));
+        return v + 1;
+    }
+}
+```
+CasCounter不会阻塞，如果其他线程同时更新计数器，那么会多次执行重试操作。
+
+## 原子变量类

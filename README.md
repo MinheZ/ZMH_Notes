@@ -11,16 +11,18 @@
 
 ### :pencil2: 算法
 - [数据结构](https://github.com/MinheZ/Notes/blob/master/note/数据结构.md)
+
+  主要内容参考《Java数据结构和算法》第二版内容。尽量比原文更简洁。
 - [剑指Offer](https://github.com/MinheZ/Notes/blob/master/note/剑指Offer.md)
 - [LeetCode](https://github.com/MinheZ/Notes/blob/master/note/LeetCode.md)
 
 ### :coffee: Java
 - [Java基础](https://github.com/MinheZ/Notes/blob/master/note/Java基础.md)
 
-
+  主要涉及Java的一些高级特性。
 - [Java容器](https://github.com/MinheZ/Notes/blob/master/note/Java容器.md)
 
-
+  容器分类以及源码分析。
 - [Java并发](https://github.com/MinheZ/Notes/blob/master/note/Java并发.md)
 
   内容主要参考Java并发编程实战，作为自己的阅读笔记。

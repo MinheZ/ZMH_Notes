@@ -1605,3 +1605,28 @@ public class LinkedQueue<E>{
     }
 }
 ```
+其实就是一个链表插入新元素的过程。
+
+### 原子的域更新
+在ConcurrentLinkedQueue中，没有使用原子引用来表示每一个Node，而是使用普通的volatile类型引用，并通过基于反射的AtomicReferanceFieldUpdater来进行更新：
+```java
+private class Node<E>{
+    private final E item;
+    private volatile Node<E> next;
+
+    public Node(E item){this.item = item;}
+}
+
+// 节省下每个Node的AtomicReferance创建过程的开销
+private static AtomicReferanceFieldUpdater<Node, Node> nextUpdater =
+    AtomicReferanceFieldUpdater.nextUpdater(Node.class, Node.class, "next");
+```
+在更新器类中没有构造函数，要创建一个更新器对象，可以调用newUpdater工厂方法，并定制类和域的名字。域更新器类没哟与某个特定的实例关联在一起，因为可以更新目标类的任意实例中的域。更新器类提供的原子性要比普通原子类更弱一些，因此无法保证底层的域不被直接修改。
+
+### ABA问题
+ABA问题是一种异常现象：如果在算法中的节点可以被循环使用，那么在使用“比较并交换”指令时就可能出现这种问题（主要在没有垃圾回收机制的环境中）。
+
+在CAS操作中将判断“V地址上面的值，是否仍然为A”，如果是的话则继续操作。但有时候还需要知道“自从上次看到V的值为A以来，这个值发生变化了吗？”，例如V的值先由A变为B，再有B变为A，那么仍然认为是发生变化的，并需要重新执行算法中的某些步骤。
+
+**解决方案：**
+同时更新一个引用和一个版本号。即使这个值由A变为B，再有B变为A，版本号也将是不同的。AtomicStampedReferance（以及AtomicMarkableReferance）支持在两个变量上执行原子的条件更新。AtomicStampedReferance将更新一个“对象——引用”二元组，通过在引用上加上“版本号”，从而避免ABA问题。

@@ -31,5 +31,5 @@
 - [计算机操作系统](https://github.com/MinheZ/Notes/blob/master/note/计算机操作系统.md)
 
 
-### :cloud: 计算机网络
+### :cloud: 网络
 - [计算机网络](https://github.com/MinheZ/Notes/blob/master/note/计算机网络.md)

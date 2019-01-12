@@ -1,3 +1,4 @@
+# 题目分类 :fireworks:
 * [栈和队列](#栈和队列)
 * [查找和排序](#查找和排序)
 * [递归和循环](#递归和循环)
@@ -25,7 +26,7 @@ NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
 
 # 递归和循环
 ## [斐波那契数列](https://www.nowcoder.com/practice/c6c7742f5ba7442aada113136ddea0c3?tpId=13&tqId=11160&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
-**题目描述** :fireworks:
+**题目描述**
 
 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）。 n<=39
 

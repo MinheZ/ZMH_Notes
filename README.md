@@ -14,8 +14,11 @@
 
   主要内容参考《Java数据结构和算法》第二版内容。尽量比原文更简洁。
 - [剑指Offer](https://github.com/MinheZ/Notes/blob/master/note/剑指Offer.md)
+
+  牛客网剑指Offer习题分类及解题思路。
 - [LeetCode](https://github.com/MinheZ/Notes/blob/master/note/LeetCode.md)
 
+  LeetCode习题分类及解题思路。
 ### :coffee: Java
 - [Java基础](https://github.com/MinheZ/Notes/blob/master/note/Java基础.md)
 

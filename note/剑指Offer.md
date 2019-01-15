@@ -243,7 +243,30 @@ public int solution2(int n){
 
 ### 解题思路
 
+```java
+public class Power {
 
+    public double solution(double base, int exponent) {
+        if (exponent == 0)
+            return 1.0;
+        if (base == 0.0)
+            if (exponent < 0)
+                throw new RuntimeException("error");
+            else
+                return 0.0;
+        int e = exponent > 0 ? exponent : -exponent;
+        double result = 1;
+
+        while (e != 0){
+            //根据当前位是1还是0决定累乘还是不累乘
+            result = (e & 1) == 0 ? result : result * base;
+            base *= base;
+            e = e >> 1;
+        }
+        return exponent > 0 ? result : 1/result;
+    }
+}
+```
 
 
 

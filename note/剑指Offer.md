@@ -2,6 +2,8 @@
 * [栈和队列](#栈和队列)
 * [查找和排序](#查找和排序)
 * [递归和循环](#递归和循环)
+* [位运算](#位运算)
+* [代码的完整性](#代码的完整性)
 ----------------------
 
 * [1 用两个栈实现队列](#用两个栈实现队列)
@@ -9,7 +11,9 @@
 * [3 斐波那契数列](#斐波那契数列)
 * [4 跳台阶](#跳台阶)
 * [5 变态跳台阶](#变态跳台阶)
-* [矩形覆盖](#矩形覆盖)
+* [6 矩形覆盖](#矩形覆盖)
+* [7 二进制中1的个数](#二进制中1的个数)
+* [8 数值的整数次方](#数值的整数次方)
 
 
 ------------------------
@@ -150,11 +154,11 @@ f(n) =    | 2, (n=2)
           | f(n-1)+f(n-2) ,(n>2,n为整数)
 ```
 
-
 -----------------------
 
 # 栈和队列
 ## [用两个栈实现队列](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
 **题目描述**
 
 用两个栈来实现一个队列，完成队列的Push和Pop操作。队列中的元素为int类型。
@@ -187,3 +191,60 @@ public class Solution {
 ```
 
 -----------------------------
+
+# 位运算
+## [二进制中1的个数](https://www.nowcoder.com/practice/8ee967e43c2c4ec193b040ea7fbb10b8?tpId=13&tqId=11164&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**题目描述**
+
+输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
+
+### 解题思路
+**思路1：**
+
+调用API函数，可以直接将整数类型的数转化为二进制字符串，然后再判断字符串中“1”的个数：
+```java
+public class NumberOf1 {
+
+    public int solution(int n){
+        int count = 0;
+        String s = Integer.toBinaryString(n);
+        char[] ch = s.toCharArray();
+        for (char c:ch){
+            if (c == '1')
+                count++;
+        }
+        return count;
+    }
+}
+```
+**思路2：**
+
+把整数减1与原来的数做与运算，每次运算能将原整数二进制数的最后一位变为0，原整数二进制中有多少个1，便能进行多少次与运算：
+```java
+public int solution2(int n){
+        int count = 0;
+        while (n != 0){
+            count++;
+            n = n & (n - 1);
+        }
+        return count;
+    }
+```
+
+----------------------------
+
+# 代码的完整性
+## [数值的整数次方](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&tqId=11165&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**题目描述**
+
+给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+
+### 解题思路
+
+
+
+
+
+----------------------------------

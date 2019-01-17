@@ -4,6 +4,7 @@
 * [递归和循环](#递归和循环)
 * [位运算](#位运算)
 * [代码的完整性](#代码的完整性)
+* [代码的鲁棒性](#代码的鲁棒性)
 ----------------------
 
 * [1 用两个栈实现队列](#用两个栈实现队列)
@@ -14,6 +15,7 @@
 * [6 矩形覆盖](#矩形覆盖)
 * [7 二进制中1的个数](#二进制中1的个数)
 * [8 数值的整数次方](#数值的整数次方)
+* [9 调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
 
 
 ------------------------
@@ -242,7 +244,7 @@ public int solution2(int n){
 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
 
 ### 解题思路
-
+这里考察的是分多种情况计算，指数为0的时候，结果恒为1。当底数为0，指数为负数时，会抛出除0错误。
 ```java
 public class Power {
 
@@ -267,7 +269,68 @@ public class Power {
     }
 }
 ```
+## [调整数组顺序使奇数位于偶数前面](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&tqId=11166&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
+**题目描述**
 
+输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
 
+### 解题思路
+注意需要保持原数组的相对位置不变，这里只新建一个数组用来保存偶数，奇数仍然保存在原数组当中，用`lastOdd`来标记上重新放入奇数的原数组索引。
+```java
+package reOrderArray;
+
+public class ReOrderArray {
+  public void solution2(int[] array){
+        List<Integer> even = new ArrayList<>();
+        int lastOdd = 0;
+        for (int i=0; i<array.length; i++){
+            if (array[i] % 2 == 0) {
+                even.add(array[i]);
+
+            }else {
+                array[lastOdd++] = array[i];
+            }
+        }
+        for (Integer e:even)
+            array[lastOdd++] = e;
+    }
+}
+```
 ----------------------------------
+# 代码的鲁棒性
+## [链表中倒数第k个结点](https://www.nowcoder.com/practice/529d3ae5a407492994ad2a246518148a?tpId=13&tqId=11167&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**题目描述**
+
+输入一个链表，输出该链表中倒数第k个结点。
+
+### 解题思路
+为了实现只遍历一遍就能找到倒数第K个节点，我们可以定义两个指针，第一个指针从链表的头指针开始遍历向前走k-1步，第二个指针保持不动。从第k步开始，第二个指针也开始从链表的头指针开始遍历。由于2个指针的距离保持在k-1，当第一个指针到达链表的尾节点时，第二个指针刚好走到倒数第k个节点。
+```java
+package findKthToTail;
+
+public class FindKthToTail {
+    public ListNode solution(ListNode head, int k){
+        if(head == null || k <= 0){
+            return null;
+        }
+        ListNode ANode = head;
+        ListNode BNode = null;
+        for(int i = 0;i<k-1;i++){
+            if(ANode.next != null)
+                ANode = ANode.next;
+            else
+                return null;
+        }
+        BNode = head;
+        while(ANode.next != null){
+            ANode = ANode.next;
+            BNode = BNode.next;
+        }
+        return BNode;
+    }
+}
+```
+
+------------------------

@@ -16,6 +16,8 @@
 * [7 二进制中1的个数](#二进制中1的个数)
 * [8 数值的整数次方](#数值的整数次方)
 * [9 调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
+* [10 链表中倒数第k个结点](#链表中倒数第k个结点)
+* [11 反转链表](#反转链表)
 
 
 ------------------------
@@ -332,5 +334,13 @@ public class FindKthToTail {
     }
 }
 ```
+
+## [反转链表](https://www.nowcoder.com/practice/75e878df47f24fdc9dc3e400ec6058ca?tpId=13&tqId=11168&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+输入一个链表，反转链表后，输出新链表的表头。
+
+### 解题思路
 
 ------------------------

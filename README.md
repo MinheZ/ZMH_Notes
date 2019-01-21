@@ -29,6 +29,9 @@
 - [Java并发](https://github.com/MinheZ/Notes/blob/master/note/Java并发.md)
 
   内容主要参考Java并发编程实战，作为自己的阅读笔记。
+- [并发问题汇总](https://github.com/MinheZ/Notes/blob/master/note/并发问题汇总.md)
+
+  锁的分类。
 
 ### :computer: 操作系统
 - [计算机操作系统](https://github.com/MinheZ/Notes/blob/master/note/计算机操作系统.md)

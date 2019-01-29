@@ -9,6 +9,7 @@
 * [3 斐波那契数列](#斐波那契数列)
 * [4 跳台阶](#跳台阶)
 * [5 变态跳台阶](#变态跳台阶)
+* [6 矩形覆盖](#矩形覆盖)
 
 
 ------------------------
@@ -126,7 +127,13 @@ public class JumpFloorII {
 }
 ```
 
+## [矩形覆盖](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&tqId=11163&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
+**题目描述**
+
+我们可以用 2x1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2x1的小矩形无重叠地覆盖一个2xn的大矩形，总共有多少种方法？
+
+### 解题思路
 
 
 

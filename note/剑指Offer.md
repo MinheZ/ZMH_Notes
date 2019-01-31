@@ -382,9 +382,11 @@ public class ReverseList {
 ### 解题思路
 首先有2个递增的链表
 <div align="center"><img src="../pics//1548826816(1).png" width="600px"></div>
+
 合成的新链表要满足单调不减的排序，则可以理解为，遍历完两条链表，每次都比较出当前2链表头结点的大小，取小的那个为新链表的尾节点，如下所示：
 
 <div align="center"><img src="../pics//1548827024(1).png" width="600px"></div>
+
 很显然，可以看做为一个递归操作。除此之外，还要考虑一些特殊的情况。比如当链表为空时，因此额外增加一些判断条件就可以，代码如下：
 ```java
 package merge;
@@ -411,5 +413,52 @@ public class Merge {
         }
         return result;
     }
+}
+```
+
+## [树的子结构](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&tqId=11170&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+### 解题思路
+下图所示，树A有一部分结构跟树B是一样的，称树B是树A的子树。
+<div align="center"><img src="../pics//1548904889(1).jpg" width="600px"></div>
+
+分两步，首先在A树中找到B树的根节点，然后继续判断基于A树中找到的节点下的子树是否跟B树一致，如果是则返回true，否则继续找。
+<div align="center"><img src="../pics//1548908996(1).png" width="600px"></div>
+
+此思想用递归实现最为方便：
+```java
+package hasSubtree;
+
+public class HasSubtree {
+    public boolean solution(TreeNode root1, TreeNode root2){
+
+        boolean result = false;
+        if (root1 != null && root2 != null){
+            if (root1.val == root2.val)
+                result = doesTree1HasTree2(root1,root2);
+            if (!result){
+                result = solution(root1.left,root2);
+            }
+            if (!result){
+                result = solution(root1.right,root2);
+            }
+        }
+        return result;
+    }
+
+    public boolean doesTree1HasTree2(TreeNode root1, TreeNode root2){
+        if (root2 == null)
+            return true;
+        if (root1 == null)
+            return false;
+        if (root1.val != root2.val)
+            return false;
+        return doesTree1HasTree2(root1.left,root2.left) && doesTree1HasTree2(root1.right,root2.right);
+    }
+}
 ```
 ------------------------

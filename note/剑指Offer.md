@@ -1,27 +1,26 @@
 # 题目分类 :fireworks:
 * [栈和队列](#栈和队列)
+    * [用两个栈实现队列](#用两个栈实现队列)
 * [查找和排序](#查找和排序)
+    * [旋转数组的最小数字](#旋转数组的最小数字)
 * [递归和循环](#递归和循环)
+    * [斐波那契数列](#斐波那契数列)
+    * [跳台阶](#跳台阶)
+    * [变态跳台阶](#变态跳台阶)
+    * [矩形覆盖](#矩形覆盖)
 * [位运算](#位运算)
+    * [二进制中1的个数](#二进制中1的个数)
 * [代码的完整性](#代码的完整性)
+    * [数值的整数次方](#数值的整数次方)
+    * [调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
 * [代码的鲁棒性](#代码的鲁棒性)
+    * [链表中倒数第k个结点](#链表中倒数第k个结点)
+    * [反转链表](#反转链表)
+    * [合并两个排序的链表](#合并两个排序的链表)
+    * [树的子结构](#树的子结构)
+* [面试思路](#面试思路)
+    * [二叉树的镜像](#二叉树的镜像)
 ----------------------
-
-* [1 用两个栈实现队列](#用两个栈实现队列)
-* [2 旋转数组的最小数字](#旋转数组的最小数字)
-* [3 斐波那契数列](#斐波那契数列)
-* [4 跳台阶](#跳台阶)
-* [5 变态跳台阶](#变态跳台阶)
-* [6 矩形覆盖](#矩形覆盖)
-* [7 二进制中1的个数](#二进制中1的个数)
-* [8 数值的整数次方](#数值的整数次方)
-* [9 调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
-* [10 链表中倒数第k个结点](#链表中倒数第k个结点)
-* [11 反转链表](#反转链表)
-* [12 合并两个排序的链表](#合并两个排序的链表)
-
-
-------------------------
 
 # 查找和排序
 ## [旋转数组的最小数字](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -462,3 +461,42 @@ public class HasSubtree {
 }
 ```
 ------------------------
+
+# 面试思路
+## [二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**题目描述**
+
+操作给定的二叉树，将其变换为源二叉树的镜像。
+
+**输入描述:**
+
+二叉树的镜像定义：源二叉树
+<div align="center"><img src="../pics//1548913541(1).png" width="100px"></div>
+
+### 解题思路
+先前序遍历这棵树的每个节点，如果遍历到的节点有子节点，就交换2个子节点的位置，当交换完所有的非叶节点的左、右子节点后，就得到了树的镜像。这里要注意当输入一个`root == null`的情况。
+<div align="center"><img src="../pics//1548925945(1).png" width="600px"></div>
+
+代码如下：
+```java
+package mirror;
+
+public class Mirror {
+    public void solution(TreeNode root){
+        if (root == null)
+            return;
+        if (root.left == null && root.right == null)
+            return;
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+        if (root.left != null)
+            solution(root.left);
+        if (root.right != null)
+            solution(root.right);
+    }
+}
+```
+
+-----------------------

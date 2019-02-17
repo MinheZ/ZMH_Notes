@@ -20,6 +20,8 @@
     * [树的子结构](#树的子结构)
 * [面试思路](#面试思路)
     * [二叉树的镜像](#二叉树的镜像)
+* [ 画图让抽象形象化](#画图让抽象形象化)
+    *
 ----------------------
 
 # 查找和排序
@@ -500,3 +502,77 @@ public class Mirror {
 ```
 
 -----------------------
+<<<<<<< HEAD
+=======
+
+#  画图让抽象形象化
+## [顺时针打印矩阵](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&tqId=11172&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵
+<div align="center"><img src="../pics//1550368452(1).png" width="250px"></div>
+
+则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+
+### 解题思路
+可以把矩阵想象成若干个圈，如图所示
+<div align="center"><img src="../pics//1550372904(1).png" width="250px"></div>
+
+接下来分析循环的结束条件，假设这个矩阵的行数是row，列数是col。每一圈中左上角的坐标为`(start,start)`，且可以得出让循环继续的条件是`col>startX*2`并且`row>startY*2`。所以我们可以用如下循环来打印矩阵：
+
+```java
+public ArrayList<Integer> solution(int[][] matrix) {
+    int row = matrix.length;
+    int col = matrix[0].length;
+    ArrayList<Integer> result = new ArrayList<>();
+    if (matrix == null || row < 0 || col < 0)
+        return null;
+    int start = 0;
+    while (col > start * 2 && row > start * 2) {
+        result.addAll(printInCycle(matrix, row, col, start));
+        ++start;
+    }
+    return result;
+}
+```
+接下来考虑如何实现`printInCycle`，可以把打印一圈分为4步：
+- 从左到右打印一行（必须的）
+- 从上到下打印一列（终止行号大于起始行号）
+- 从右到做打印一行（终止行号大于起始行号，终止列号大于起始列号）
+- 从下到上打印一列（至少要有3行2列）
+
+每一步根据起始坐标和终止坐标用循环就能打印。需要注意如下几种退化成一行或者一列甚至一个点的情况，因此打印这样的一圈就不再需要4步，如下图：
+<div align="center"><img src="../pics//1550373788(1).png" width="450px"></div>
+
+代码如下：
+```java
+public ArrayList<Integer> printInCycle(int[][] matrix, int row, int col, int start) {
+    ArrayList<Integer> result = new ArrayList<>();
+    int endX = col - start - 1;
+    int endY = row - start - 1;
+    // 从左到右打印一行
+    for (int i = start; i <= endX; ++i) {
+        result.add(matrix[start][i]);
+    }
+    // 从上到下打印一列
+    if (start < endY) {
+        for (int i = start + 1; i <= endY; ++i) {
+            result.add(matrix[i][endX]);
+        }
+    }
+    // 从右到左打印一行
+    if (start < endX && start < endY) {
+        for (int i = endX - 1; i >= start; --i) {
+            result.add(matrix[endY][i]);
+        }
+    }
+    // 从下到上打印一列
+    if (start < endX && start < endY - 1) {
+        for (int i = endY - 1; i >= start + 1; --i) {
+            result.add(matrix[i][start]);
+        }
+    }
+    return result;
+}
+```

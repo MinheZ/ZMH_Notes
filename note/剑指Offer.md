@@ -20,8 +20,8 @@
     * [树的子结构](#树的子结构)
 * [面试思路](#面试思路)
     * [二叉树的镜像](#二叉树的镜像)
-* [ 画图让抽象形象化](#画图让抽象形象化)
-    *
+* [画图让抽象形象化](#画图让抽象形象化)
+    * [顺时针打印矩阵](#顺时针打印矩阵)
 ----------------------
 
 # 查找和排序
@@ -502,8 +502,6 @@ public class Mirror {
 ```
 
 -----------------------
-<<<<<<< HEAD
-=======
 
 #  画图让抽象形象化
 ## [顺时针打印矩阵](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&tqId=11172&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)

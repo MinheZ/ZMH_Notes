@@ -1,26 +1,26 @@
 # 题目分类 :fireworks:
 * [栈和队列](#栈和队列)
+    * [用两个栈实现队列](#用两个栈实现队列)
 * [查找和排序](#查找和排序)
+    * [旋转数组的最小数字](#旋转数组的最小数字)
 * [递归和循环](#递归和循环)
+    * [斐波那契数列](#斐波那契数列)
+    * [跳台阶](#跳台阶)
+    * [变态跳台阶](#变态跳台阶)
+    * [矩形覆盖](#矩形覆盖)
 * [位运算](#位运算)
+    * [二进制中1的个数](#二进制中1的个数)
 * [代码的完整性](#代码的完整性)
+    * [数值的整数次方](#数值的整数次方)
+    * [调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
 * [代码的鲁棒性](#代码的鲁棒性)
+    * [链表中倒数第k个结点](#链表中倒数第k个结点)
+    * [反转链表](#反转链表)
+    * [合并两个排序的链表](#合并两个排序的链表)
+    * [树的子结构](#树的子结构)
+* [面试思路](#面试思路)
+    * [二叉树的镜像](#二叉树的镜像)
 ----------------------
-
-* [1 用两个栈实现队列](#用两个栈实现队列)
-* [2 旋转数组的最小数字](#旋转数组的最小数字)
-* [3 斐波那契数列](#斐波那契数列)
-* [4 跳台阶](#跳台阶)
-* [5 变态跳台阶](#变态跳台阶)
-* [6 矩形覆盖](#矩形覆盖)
-* [7 二进制中1的个数](#二进制中1的个数)
-* [8 数值的整数次方](#数值的整数次方)
-* [9 调整数组顺序使奇数位于偶数前面](#调整数组顺序使奇数位于偶数前面)
-* [10 链表中倒数第k个结点](#链表中倒数第k个结点)
-* [11 反转链表](#反转链表)
-
-
-------------------------
 
 # 查找和排序
 ## [旋转数组的最小数字](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
@@ -342,5 +342,161 @@ public class FindKthToTail {
 输入一个链表，反转链表后，输出新链表的表头。
 
 ### 解题思路
+在下图中，假设在h之前的节点全部都反转完成，现在将`i.next`指向h，这将导致i指向j的链接断开，因此需要先将j节点单独保存。然后遍历到链表的尾部，返回当前尾节点即为反转链表的头结点。
+<div align="center"><img src="../pics//1548826351.png" width="600px"></div>
 
+```java
+package reverseList;
+public class ReverseList {
+    public ListNode solution(ListNode head) {
+        if (head == null)
+            return null;
+        if (head.next == null)
+            return head;
+
+        ListNode resHead = null;
+        ListNode preNode = null;
+        ListNode curNode = head;
+        ListNode nextNode;
+
+        while (curNode != null){
+            nextNode = curNode.next;
+            if (nextNode == null)
+                resHead = curNode;
+            curNode.next = preNode;  // 把当前节点的next指向前一个节点
+            preNode = curNode;
+            curNode = nextNode;
+        }
+        return resHead;
+    }
+}
+```
+
+## [合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+
+### 解题思路
+首先有2个递增的链表
+<div align="center"><img src="../pics//1548826816(1).png" width="600px"></div>
+
+合成的新链表要满足单调不减的排序，则可以理解为，遍历完两条链表，每次都比较出当前2链表头结点的大小，取小的那个为新链表的尾节点，如下所示：
+
+<div align="center"><img src="../pics//1548827024(1).png" width="600px"></div>
+
+很显然，可以看做为一个递归操作。除此之外，还要考虑一些特殊的情况。比如当链表为空时，因此额外增加一些判断条件就可以，代码如下：
+```java
+package merge;
+
+import org.junit.Test;
+
+public class Merge {
+    public ListNode solution(ListNode list1, ListNode list2) {
+
+        ListNode result;
+        if (list1 == null && list2 == null)
+            return null;
+        if (list1 != null && list2 == null)
+            return list1;
+        if (list1 == null && list2 != null)
+            return list2;
+
+        if (list1.val > list2.val){
+            result = list2;
+            result.next = solution(list1,list2.next);
+        }else {
+            result = list1;
+            result.next = solution(list1.next,list2);
+        }
+        return result;
+    }
+}
+```
+
+## [树的子结构](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&tqId=11170&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+**题目描述**
+
+输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+### 解题思路
+下图所示，树A有一部分结构跟树B是一样的，称树B是树A的子树。
+<div align="center"><img src="../pics//1548904889(1).jpg" width="600px"></div>
+
+分两步，首先在A树中找到B树的根节点，然后继续判断基于A树中找到的节点下的子树是否跟B树一致，如果是则返回true，否则继续找。
+<div align="center"><img src="../pics//1548908996(1).png" width="600px"></div>
+
+此思想用递归实现最为方便：
+```java
+package hasSubtree;
+
+public class HasSubtree {
+    public boolean solution(TreeNode root1, TreeNode root2){
+
+        boolean result = false;
+        if (root1 != null && root2 != null){
+            if (root1.val == root2.val)
+                result = doesTree1HasTree2(root1,root2);
+            if (!result){
+                result = solution(root1.left,root2);
+            }
+            if (!result){
+                result = solution(root1.right,root2);
+            }
+        }
+        return result;
+    }
+
+    public boolean doesTree1HasTree2(TreeNode root1, TreeNode root2){
+        if (root2 == null)
+            return true;
+        if (root1 == null)
+            return false;
+        if (root1.val != root2.val)
+            return false;
+        return doesTree1HasTree2(root1.left,root2.left) && doesTree1HasTree2(root1.right,root2.right);
+    }
+}
+```
 ------------------------
+
+# 面试思路
+## [二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+**题目描述**
+
+操作给定的二叉树，将其变换为源二叉树的镜像。
+
+**输入描述:**
+
+二叉树的镜像定义：源二叉树
+<div align="center"><img src="../pics//1548913541(1).png" width="100px"></div>
+
+### 解题思路
+先前序遍历这棵树的每个节点，如果遍历到的节点有子节点，就交换2个子节点的位置，当交换完所有的非叶节点的左、右子节点后，就得到了树的镜像。这里要注意当输入一个`root == null`的情况。
+<div align="center"><img src="../pics//1548925945(1).png" width="600px"></div>
+
+代码如下：
+```java
+package mirror;
+
+public class Mirror {
+    public void solution(TreeNode root){
+        if (root == null)
+            return;
+        if (root.left == null && root.right == null)
+            return;
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+        if (root.left != null)
+            solution(root.left);
+        if (root.right != null)
+            solution(root.right);
+    }
+}
+```
+
+-----------------------

@@ -22,11 +22,15 @@
     * [二叉树的镜像](#二叉树的镜像)
 * [画图让抽象形象化](#画图让抽象形象化)
     * [顺时针打印矩阵](#顺时针打印矩阵)
+* [举例让抽象具体化](#举例让抽象具体化)
+    * [包含min函数的栈](#包含min函数的栈)
+    * [栈的压入、弹出序列](#栈的压入、弹出序列)
+    * [从上往下打印二叉树](#从上往下打印二叉树)
 ----------------------
 
 # 查找和排序
 ## [旋转数组的最小数字](https://www.nowcoder.com/practice/9f3231a991af4f55b95579b44b7a01ba?tpId=13&tqId=11159&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
-**题目描述**
+## 题目描述
 
 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。 输入一个非减排序的数组的一个旋转，输出旋转数组的最小元素。 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
 
@@ -37,7 +41,7 @@ NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
 
 # 递归和循环
 ## [斐波那契数列](https://www.nowcoder.com/practice/c6c7742f5ba7442aada113136ddea0c3?tpId=13&tqId=11160&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
-**题目描述**
+## 题目描述
 
 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）。 n<=39
 
@@ -91,7 +95,7 @@ public int solution2(int n){
 ```
 
 ## [跳台阶](https://www.nowcoder.com/practice/8c82a5b80378478f9484d87d1c5f12a4?tpId=13&tqId=11161&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
-**题目描述**
+## 题目描述
 
 一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法（先后次序不同算不同的结果）。
 
@@ -106,7 +110,7 @@ public int solution2(int n){
 容易看出，总的跳法是一个[斐波那契数列](#斐波那契数列)。
 
 ## [变态跳台阶](https://www.nowcoder.com/practice/22243d016f6b47f2a6928b4313c85387?tpId=13&tqId=11162&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
-**题目描述**
+## 题目描述
 
 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
 
@@ -144,7 +148,7 @@ public class JumpFloorII {
 
 ## [矩形覆盖](https://www.nowcoder.com/practice/72a5a919508a4251859fb2cfb987a0e6?tpId=13&tqId=11163&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 我们可以用2*1的小矩形横着或者竖着去覆盖更大的矩形。请问用n个2*1的小矩形无重叠地覆盖一个2*n的大矩形，总共有多少种方法？
 
@@ -165,7 +169,7 @@ f(n) =    | 2, (n=2)
 # 栈和队列
 ## [用两个栈实现队列](https://www.nowcoder.com/practice/54275ddae22f475981afa2244dd448c6?tpId=13&tqId=11158&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-**题目描述**
+## 题目描述
 
 用两个栈来实现一个队列，完成队列的Push和Pop操作。队列中的元素为int类型。
 
@@ -201,7 +205,7 @@ public class Solution {
 # 位运算
 ## [二进制中1的个数](https://www.nowcoder.com/practice/8ee967e43c2c4ec193b040ea7fbb10b8?tpId=13&tqId=11164&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
 
@@ -243,7 +247,7 @@ public int solution2(int n){
 # 代码的完整性
 ## [数值的整数次方](https://www.nowcoder.com/practice/1a834e5e3e1a4b7ba251417554e07c00?tpId=13&tqId=11165&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
 
@@ -275,7 +279,7 @@ public class Power {
 ```
 ## [调整数组顺序使奇数位于偶数前面](https://www.nowcoder.com/practice/beb5aa231adc45b2a5dcc5b62c93f593?tpId=13&tqId=11166&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
 
@@ -305,7 +309,7 @@ public class ReOrderArray {
 # 代码的鲁棒性
 ## [链表中倒数第k个结点](https://www.nowcoder.com/practice/529d3ae5a407492994ad2a246518148a?tpId=13&tqId=11167&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 输入一个链表，输出该链表中倒数第k个结点。
 
@@ -339,7 +343,7 @@ public class FindKthToTail {
 
 ## [反转链表](https://www.nowcoder.com/practice/75e878df47f24fdc9dc3e400ec6058ca?tpId=13&tqId=11168&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-**题目描述**
+## 题目描述
 
 输入一个链表，反转链表后，输出新链表的表头。
 
@@ -376,7 +380,7 @@ public class ReverseList {
 
 ## [合并两个排序的链表](https://www.nowcoder.com/practice/d8b6b4358f774294a89de2a6ac4d9337?tpId=13&tqId=11169&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-**题目描述**
+## 题目描述
 
 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
 
@@ -419,7 +423,7 @@ public class Merge {
 
 ## [树的子结构](https://www.nowcoder.com/practice/6e196c44c7004d15b1610b9afca8bd88?tpId=13&tqId=11170&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-**题目描述**
+## 题目描述
 
 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
 
@@ -467,7 +471,7 @@ public class HasSubtree {
 # 面试思路
 ## [二叉树的镜像](https://www.nowcoder.com/practice/564f4c26aa584921bc75623e48ca3011?tpId=13&tqId=11171&tPage=1&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
-**题目描述**
+## 题目描述
 
 操作给定的二叉树，将其变换为源二叉树的镜像。
 
@@ -506,7 +510,7 @@ public class Mirror {
 #  画图让抽象形象化
 ## [顺时针打印矩阵](https://www.nowcoder.com/practice/9b4c81a02cd34f76be2659fa0d54342a?tpId=13&tqId=11172&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
 
-**题目描述**
+## 题目描述
 
 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵
 <div align="center"><img src="../pics//1550368452(1).png" width="250px"></div>
@@ -574,3 +578,110 @@ public ArrayList<Integer> printInCycle(int[][] matrix, int row, int col, int sta
     return result;
 }
 ```
+--------------------------
+
+# 举例让抽象具体化
+## [包含min函数的栈](https://www.nowcoder.com/practice/4c776177d2c04c2494f2555c9fcc1e49?tpId=13&tqId=11173&tPage=1&rp=1&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O(1)。
+
+### 解题思路
+将每次的最小元素都保存在另外一个辅助栈中。如下图
+<div align="center"><img src="../pics//1550407579(1).png" width="650px"></div>
+
+当压入栈的元素小于辅助栈定元素时，添加当前元素到辅助栈定。否则添加原来辅助栈定元素至栈顶。
+```java
+package minElementFunction;
+
+/*  定义栈的数据结构，请在该类型中实现一个能够得到栈中
+    所含最小元素的min函数（时间复杂度应为O（1））。
+*/
+
+import java.util.Stack;
+
+public class Solution {
+
+    Stack<Integer> stack1 = new Stack<>(); // 数据栈
+    Stack<Integer> stack2 = new Stack<>(); // 辅助栈 用于返回min值
+
+    public void push(int node) {
+        stack1.push(node);
+        if (stack2.empty()) {
+            stack2.push(node);
+        } else {
+            if (node < stack2.peek().intValue())
+                stack2.push(node);
+            else stack2.push(stack2.peek());
+        }
+    }
+
+    public void pop() {
+        if (!stack1.empty())
+            stack1.pop();
+        if (!stack2.empty())
+            stack2.pop();
+    }
+
+    public int top() {
+        if (!stack1.empty())
+            return stack1.peek().intValue();
+        else return 0;
+    }
+
+    public int min() {
+        if (!stack2.empty())
+            return stack2.peek().intValue();
+        else return 0;
+    }
+}
+```
+
+## [栈的压入、弹出序列](https://www.nowcoder.com/practice/d77d11405cc7470d82554cb392585106?tpId=13&tqId=11174&tPage=2&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。（注意：这两个序列的长度是相等的）
+### 解题思路
+建立一个辅助栈，将`pushA`中的元素压入栈，直到等于`popA[j]`，此时将栈顶元素弹出，再比较栈顶元素是否与`popA[++j]`相等，如相等，则直接弹出，如不相等，则继续将`pushA`中的元素压入栈，直到与上述`popA[++j]`相等。详细过程如下图：
+<div align="center"><img src="../pics//1550410313(1).png" width="650px"></div>
+
+最后判定，若栈最后为空，则返回`true`。
+```java
+package isPopOrder;
+
+import java.util.Stack;
+
+public class Solution {
+    public boolean isPopOrder(int[] pushA, int[] popA){
+        if (pushA.length == 0 || popA.length == 0)
+            return false;
+        if (pushA.length != popA.length)
+            return false;
+
+        Stack<Integer> stack = new Stack<>();
+        int j = 0;
+        for (int i=0; i<pushA.length; i++){
+            stack.push(pushA[i]);
+            while (!stack.empty() && stack.peek() == popA[j]){
+                stack.pop();
+                j++;
+            }
+        }
+        if (stack.empty())
+            return true;
+        else
+            return false;
+    }
+}
+```
+
+## [从上往下打印二叉树](https://www.nowcoder.com/practice/7fe2212963db4790b57431d9ed259701?tpId=13&tqId=11175&tPage=2&rp=1&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+### 解题思路
+
+------------------------
+<!-- ## 题目描述
+
+### 解题思路 -->

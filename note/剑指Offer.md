@@ -26,6 +26,7 @@
     * [包含min函数的栈](#包含min函数的栈)
     * [栈的压入、弹出序列](#栈的压入、弹出序列)
     * [从上往下打印二叉树](#从上往下打印二叉树)
+    * [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
 ----------------------
 
 # 查找和排序
@@ -680,6 +681,93 @@ public class Solution {
 ## 题目描述
 从上往下打印出二叉树的每个节点，同层节点从左至右打印。
 ### 解题思路
+使用队列来进行层次遍历。假设需要遍历的树如下：
+<div align="center"><img src="../pics//1550456905(1).png" width="250px"></div>
+
+按层次进行遍历，首先将根节点入队，为了能够遍历到下一层的节点，因此需要将根节点的左右子节点保存到队列当中。不需要使用两个队列分别存储当前层的节点和下一层的节点，因为在开始遍历一层的节点时，当前队列中的节点数就是当前层的节点数，只要控制遍历这么多节点数，就能保证这次遍历的都是当前层的节点。
+<div align="center"><img src="../pics//1550457126(1).png" width="650px"></div>
+
+```java
+public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
+    Queue<TreeNode> queue = new LinkedList<>();
+    ArrayList<Integer> ret = new ArrayList<>();
+    queue.add(root);
+    while (!queue.isEmpty()){
+        int cnt = queue.size();
+        while (cnt-- > 0){
+            TreeNode t = queue.poll();
+            if (t == null)
+                continue;
+            ret.add(t.val);
+            queue.add(t.left);
+            queue.add(t.right);
+        }
+    }
+    return ret;
+}
+```
+
+## [二叉搜索树的后序遍历序列](https://www.nowcoder.com/practice/a861533d45854474ac791d90e447bafd?tpId=13&tqId=11176&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+### 解题思路
+在后序遍历中，最后一个数字是根节点。数组中前面的数字可以分为2部分，小于根节点的为左子树，大于根节点的为右子树。如果在右子树序列中，有小于根节点的值，则返回`false`。例如数组`{5,7,6,9,11,10,8}`，根节点为8，左子树为5,7,6；右子树为9,11,10。
+```java
+public boolean verifySequenceOfBST(int[] sequence) {
+    if (sequence == null || sequence.length == 0)
+        return false;
+    return verify(sequence, 0, sequence.length - 1);
+}
+
+public boolean verify(int[] sequence, int first, int last) {
+    if (last - first <= 1)
+        return true;
+    int rootVal = sequence[last];
+    int curIndex = first;
+    while (sequence[curIndex] < rootVal && curIndex < last)
+        curIndex++;
+    // 判断右子树节点有没有比根节点小的
+    for (int i = curIndex; i < last; i++)
+        if (sequence[i] < rootVal)
+            return false;
+    return verify(sequence, first, curIndex - 1) && verify(sequence, curIndex, last - 1);
+}
+```
+
+## [二叉树中和为某一值的路径](https://www.nowcoder.com/practice/b736e784e3e34731af99065031301bca?tpId=13&tqId=11177&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
+### 解题思路
+首先注意的是，题目对路径的定义为根节点到叶节点。对于树的遍历，先访问根节点的为先序遍历。每访问一个节点，遍把当前节点添加到路径中去，如果访问到的叶节点是不满足要求的路径，则把最后添加进去的叶节点删除，然后继续遍历其它节点。对于如下二叉树：
+<div align="center"><img src="../pics//1550462730(1).png" width="200px"></div>
+
+设`target = 22`，则有如下遍历次序：
+<div align="center"><img src="../pics//1550462796(1).png" width="650px"></div>
+
+```java
+private ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
+
+public ArrayList<ArrayList<Integer>> findPath(TreeNode root, int target) {
+    backtracking(root, target, new ArrayList<>());
+    return ret;
+}
+
+public void backtracking(TreeNode node, int target, ArrayList<Integer> path) {
+    if (node == null || target < node.val)
+        return;
+    path.add(node.val);
+    target -= node.val;
+    if (target == 0 && node.left == null && node.right == null)  // 题目要求到叶节点的路径
+        ret.add(new ArrayList<>(path));
+    else {
+        backtracking(node.left, target, path);
+        backtracking(node.right, target, path);
+    }
+    path.remove(path.size() - 1);
+}
+```
 
 ------------------------
 <!-- ## 题目描述

@@ -27,6 +27,9 @@
     * [栈的压入、弹出序列](#栈的压入、弹出序列)
     * [从上往下打印二叉树](#从上往下打印二叉树)
     * [二叉树中和为某一值的路径](#二叉树中和为某一值的路径)
+* [分解让复杂问题简单](#分解让复杂问题简单)
+    * [复杂链表的复制](#复杂链表的复制)
+    * [二叉搜索树与双向链表](#二叉搜索树与双向链表)
 ----------------------
 
 # 查找和排序
@@ -770,6 +773,108 @@ public void backtracking(TreeNode node, int target, ArrayList<Integer> path) {
 ```
 
 ------------------------
+
+# 分解让复杂问题简单
+## [复杂链表的复制](https://www.nowcoder.com/practice/f836b2c43afc4b35ad6adc41ec941dba?tpId=13&tqId=11178&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+### 解题思路
+第一步，在每个节点的后面插入复制的节点。
+<div align="center"><img src="../pics//1550467526(1).png" width="500px"></div>
+
+第二步，对复制节点的random连接进行复制。
+<div align="center"><img src="../pics//1550467608(1).png" width="500px"></div>
+
+第三步，拆分。
+<div align="center"><img src="../pics//1550467648(1).png" width="500px"></div>
+
+```java
+public class RandomListNode {
+    int label;
+    RandomListNode next = null;
+    RandomListNode random = null;
+
+    RandomListNode(int label) {
+        this.label = label;
+    }
+}
+
+public RandomListNode clone(RandomListNode pHead) {
+    if (pHead == null)
+        return null;
+    // 插入新节点
+    RandomListNode cur = pHead;
+    while (cur != null){
+        RandomListNode clone = new RandomListNode(cur.label);
+        clone.next = cur.next;
+        cur.next = clone;
+        cur = clone.next;
+    }
+    // 建立random连接
+    cur = pHead;
+    while (cur != null){
+        RandomListNode clone = cur.next;
+        if (cur.random != null)
+            clone.random = cur.random.next;
+        cur = clone.next;
+    }
+    // 分离连接
+    cur = pHead;
+    RandomListNode pCloneHead = cur.next;
+    while (cur.next != null){
+        RandomListNode next = cur.next;
+        cur.next = next.next;
+        cur = next;
+    }
+    return pCloneHead;
+}
+```
+## [二叉搜索树与双向链表](https://www.nowcoder.com/practice/947f6eb80d944a84850b0538bf0ec3a5?tpId=13&tqId=11179&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+### 解题思路
+因为搜索二叉树和双向排序链表都是有序的。
+<div align="center"><img src="../pics//1550472027(1).png" width="500px"></div>
+
+```java
+public class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
+
+    public TreeNode(int val) {
+        this.val = val;
+    }
+}
+private TreeNode pre = null;
+private TreeNode head = null;
+public TreeNode convert(TreeNode pRootOfTree) {
+    inOrder(pRootOfTree);
+    return head;
+}
+private void inOrder(TreeNode node){
+    if (node == null)
+        return;
+    inOrder(node.left);
+    node.left = pre;   // 没理解
+    if (pre != null)
+        pre.right = node;
+    pre = node;
+    if (head == null)
+        head = node;
+    inOrder(node.right);
+}
+```
+## [字符串的排列](https://www.nowcoder.com/practice/fe6b651b66ae47d7acce78ffdd9a96c7?tpId=13&tqId=11180&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+### 解题思路
+
+-----------------------------
+
 <!-- ## 题目描述
 
 ### 解题思路 -->

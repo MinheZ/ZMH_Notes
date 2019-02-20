@@ -30,6 +30,10 @@
 * [分解让复杂问题简单](#分解让复杂问题简单)
     * [复杂链表的复制](#复杂链表的复制)
     * [二叉搜索树与双向链表](#二叉搜索树与双向链表)
+    * [字符串的排列](#字符串的排列)
+* [时间效率](#时间效率)
+    * [数组中出现次数超过一半的数字](#数组中出现次数超过一半的数字)
+    * [最小的K个数](#最小的K个数)
 ----------------------
 
 # 查找和排序
@@ -872,8 +876,135 @@ private void inOrder(TreeNode node){
 ## 题目描述
 输入一个字符串,按字典序打印出该字符串中字符的所有排列。例如输入字符串abc,则打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
 ### 解题思路
+```java
+private ArrayList<String> ret = new ArrayList<>();
+
+public ArrayList<String> Permutation(String str) {
+    if (str.length() == 0)
+        return ret;
+    char[] chars = str.toCharArray();
+    Arrays.sort(chars);
+    backtracking(chars, new boolean[chars.length], new StringBuilder());
+    return ret;
+}
+
+private void backtracking(char[] chars, boolean[] hasUsed, StringBuilder s) {
+    if (s.length() == chars.length) {
+        ret.add(s.toString());
+        return;
+    }
+    for (int i = 0; i < chars.length; i++) {
+        if (hasUsed[i])
+            continue;
+        if (i != 0 && chars[i] == chars[i - 1] && !hasUsed[i - 1]) /* 保证不重复 */
+            continue;
+        hasUsed[i] = true;
+        s.append(chars[i]);
+        backtracking(chars, hasUsed, s);
+        s.deleteCharAt(s.length() - 1);
+        hasUsed[i] = false;
+    }
+}
+```
 
 -----------------------------
+
+# 时间效率
+## [数组中出现次数超过一半的数字](https://www.nowcoder.com/practice/e8a1b01a2df14cb2b228b30ee6a92163?tpId=13&tqId=11181&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+### 解题思路
+利用hash的思想，直接统计出数组中所有元素的频次，当发现有次数大于数组长度一半的时候，直接返回当前数字。**这个想法是错误的，不同数字的hash值可能是一样的，例如{2, 2, 2, 2, 11, 2, 11, 2, 2}，下面算法得出的答案是11，错误。此方法受限于hash冲突，如果能避免hash冲突，则能正确得出答案。**
+```java
+public int moreThanHalfNum_Solution(int[] array){
+    public int moreThanHalfNum_Solution(int[] array) {
+    if (array == null)
+        return 0;
+    int arrayLength = array.length;
+    int[] ret = new int[arrayLength];
+    for (int i = 0; i < arrayLength; i++) {
+        if (++ret[array[i] % arrayLength] > arrayLength / 2)
+            return array[i];
+    }
+    return 0;
+    }
+}
+```
+**正确算法**
+多数投票问题，可以利用 Boyer-Moore Majority Vote Algorithm 来解决这个问题，使得时间复杂度为 O(N)。
+
+使用 cnt 来统计一个元素出现的次数，当遍历到的元素和统计元素相等时，令 cnt++，否则令 cnt--。如果前面查找了 i 个元素，且 cnt == 0，说明前 i 个元素没有 majority，或者有 majority，但是出现的次数少于 i / 2 ，因为如果多于 i / 2 的话 cnt 就一定不会为 0 。此时剩下的 n - i 个元素中，majority 的数目依然多于 (n - i) / 2，因此继续查找就能找出 majority。
+```java
+public int MoreThanHalfNum_Solution(int[] nums) {
+    int majority = nums[0];
+    for (int i = 1, cnt = 1; i < nums.length; i++) {
+        cnt = nums[i] == majority ? cnt + 1 : cnt - 1;
+        if (cnt == 0) {
+            majority = nums[i];
+            cnt = 1;
+        }
+    }
+    int cnt = 0;
+    for (int val : nums)
+        if (val == majority)
+            cnt++;
+    return cnt > nums.length / 2 ? majority : 0;
+}
+```
+## [最小的K个数](https://www.nowcoder.com/practice/6a296eb82cf844ca8539b57c23e6e9bf?tpId=13&tqId=11182&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+### 解题思路
+快速排序的 `partition()` 方法，会返回一个整数 j 使得 `a[l..j-1]` 小于等于 `a[j]`，且 `a[j+1..h]` 大于等于 `a[j]`，此时 `a[j]` 就是数组的第 j 大元素。可以利用这个特性找出数组的第 K 个元素，这种找第 K 个元素的算法称为快速选择算法。
+```java
+public ArrayList<Integer> GetLeastNumbers_Solution(int[] nums, int k) {
+    ArrayList<Integer> ret = new ArrayList<>();
+    if (k > nums.length || k <= 0)
+        return ret;
+    findKthSmallest(nums, k - 1);
+    /* findKthSmallest 会改变数组，使得前 k 个数都是最小的 k 个数 */
+    for (int i = 0; i < k; i++)
+        ret.add(nums[i]);
+    return ret;
+}
+
+public void findKthSmallest(int[] nums, int k) {
+    int l = 0, h = nums.length - 1;
+    while (l < h) {
+        int j = partition(nums, l, h);
+        if (j == k)
+            break;
+        if (j > k)
+            h = j - 1;
+        else
+            l = j + 1;
+    }
+}
+
+private int partition(int[] nums, int l, int h) {
+    int p = nums[l];     /* 切分元素 */
+    int i = l, j = h + 1;
+    while (true) {
+        while (i != h && nums[++i] < p) ;
+        while (j != l && nums[--j] > p) ;
+        if (i >= j)
+            break;
+        swap(nums, i, j);
+    }
+    swap(nums, l, j);
+    return j;
+}
+
+private void swap(int[] nums, int i, int j) {
+    int t = nums[i];
+    nums[i] = nums[j];
+    nums[j] = t;
+}
+```
+
+------------------------------
 
 <!-- ## 题目描述
 

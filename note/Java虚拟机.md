@@ -15,6 +15,8 @@
 * [类加载机制](#类加载机制)
     * [类的生命周期](#类的生命周期)
     * [类加载的过程](#类加载的过程)
+    * [类与类加载器](#类与类加载器)
+    * [双亲委派模型](#双亲委派模型)
 
 # 运行时数据区域
 ![](https://i.imgur.com/pg9bmMY.jpg)
@@ -252,3 +254,80 @@ public static void main(String[] args) {
      System.out.println(Sub.B);  // 2
 }
 ```
+**什么时候初始化？**
+1. 遇到 new、getstatic、putstatic、invokestatic 这四条字节码指令时，如果类没有进行过初始化，则必须先触发其初始化。最常见的生成这 4 条指令的场景是：使用 new 关键字实例化对象的时候；读取或设置一个类的静态字段（被 final 修饰、已在编译期把结果放入常量池的静态字段除外）的时候；以及调用一个类的静态方法的时候。
+2. 使用 java.lang.reflect 包的方法对类进行反射调用的时候，如果类没有进行初始化，则需要先触发其初始化。
+3. 当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。
+4. 当虚拟机启动时，用户需要指定一个要执行的主类（包含 main() 方法的那个类），虚拟机会先初始化这个主类；
+5. 当使用 JDK 1.7 的动态语言支持时，如果一个 java.lang.invoke.MethodHandle 实例最后的解析结果为 REF_getStatic, REF_putStatic, REF_invokeStatic 的方法句柄，并且这个方法句柄所对应的类没有进行过初始化，则需要先触发其初始化；
+
+以上几种方式称为**主动引用**。
+
+**被动引用：**
+- 通过子类引用父类的静态字段，不会导致子类初始化。
+```java
+System.out.println(SubClass.value);  // value 字段在 SuperClass 中定义
+```
+- 通过数组定义来引用类，不会触发此类的初始化。该过程会对数组类进行初始化，数组类是一个由虚拟机自动生成的、直接继承自 Object 的子类，其中包含了数组的属性和方法。
+```java
+SuperClass[] sca = new SuperClass[10];
+```
+- 常量在编译阶段会存入调用类的常量池中，本质上并没有直接引用到定义常量的类，因此不会触发定义常量的类的初始化。
+```java
+System.out.println(ConstClass.HELLOWORLD);
+```
+
+## 类与类加载器
+两个类相等，需要类本身相等，并且使用同一个类加载器进行加载。这是因为每一个类加载器都拥有一个独立的类名称空间。
+
+这里的相等，包括类的 Class 对象的 equals() 方法、isAssignableFrom() 方法、isInstance() 方法的返回结果为 true，也包括使用 instanceof 关键字做对象所属关系判定结果为 true。
+
+## 双亲委派模型
+### 类加载器的分类
+从Java虚拟机的角度来看：
+- 启动类加载器（Bootstrap ClassLoader），使用 C++ 实现，是虚拟机自身的一部分；
+- 所有其它类的加载器，使用 Java 实现，独立于虚拟机，继承自抽象类 java.lang.ClassLoader。
+
+从Java开发人员角度来看：
+- 启动类加载器
+- 扩展类加载器
+- 应用程序类加载器
+
+<div align="center"><img src="../pics//1550750194(1).png" width="400px"></div>
+
+所谓双亲委派是指每次收到类加载请求时，先将请求委派给父类加载器完成（所有加载请求最终会委派到顶层的Bootstrap ClassLoader加载器中），如果父类加载器无法完成这个加载（该加载器的搜索范围中没有找到对应的类），子类尝试自己加载。
+
+**实现：**
+```java
+protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+    synchronized (getClassLoadingLock(name)) {
+        // First, check if the class has already been loaded
+        Class<?> c = findLoadedClass(name);
+        if (c == null) {
+            try {
+                if (parent != null) {
+                    c = parent.loadClass(name, false);
+                } else {
+                    c = findBootstrapClassOrNull(name);
+                }
+            } catch (ClassNotFoundException e) {
+                // ClassNotFoundException thrown if class not found
+                // from the non-null parent class loader
+            }
+
+            if (c == null) {
+                // If still not found, then invoke findClass in order
+                // to find the class.
+                c = findClass(name);
+            }
+        }
+        if (resolve) {
+            resolveClass(c);
+        }
+        return c;
+    }
+}
+```
+**双亲委派的好处：**
+- 避免同一个类被多次加载
+- 每个加载器只能加载自己范围内的类

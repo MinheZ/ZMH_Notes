@@ -1,10 +1,10 @@
 
 | Ⅰ | Ⅱ | Ⅲ | Ⅳ |
 | :--------: | :---------: | :---------: | :---------: |
-| 算法[:pencil2:](#pencil2-算法) | Java [:coffee:](#coffee-Java) | 网络[:cloud:](#cloud-网络) | 面经总结[:book:](#面经总结) |
+| 算法[:pencil2:](#pencil2-算法) | Java [:coffee:](#coffee-Java) | 网络[:cloud:](#cloud-网络) | 面经总结[:book:](#book-面经总结) |
 
 <div align="center">
-    <img src="pics//java.gif" width="450px"/>
+    <img src="pics//java.gif" width="350px"/>
     <br>
     <a href="https://github.com/MinheZ"> <img src="https://img.shields.io/badge/_-MinheZ-4ab8a1.svg"></a>
 </div><br>

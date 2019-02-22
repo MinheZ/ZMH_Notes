@@ -1003,6 +1003,37 @@ private void swap(int[] nums, int i, int j) {
     nums[j] = t;
 }
 ```
+## [连续子数组的最大和](https://www.nowcoder.com/practice/459bd355da1549fa8a49e350bf3df484?tpId=13&tqId=11183&tPage=2&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+HZ偶尔会拿些专业问题来忽悠那些非计算机专业的同学。今天测试组开完会后,他又发话了:在古老的一维模式识别中,常常需要计算连续子向量的最大和,当向量全为正数的时候,问题很好解决。但是,如果向量中包含负数,是否应该包含某个负数,并期望旁边的正数会弥补它呢？例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
+### 解题思路
+遍历整个数组，只要前`i`项的和小于数组中第`i`个元素的值，则证明前面序列和小于k<sub>i</sub>因此我们不用考虑之前的子数组，之前的累加也被抛弃。然后从第`i`个数字继续累加，当发现累加之后的和比原来的和还要小，则要把之前得到的和保存下来，记为`ret`，然后继续累加，当发现`sum > ret`时，即替换最大值。
+```java
+public int FindGreatestSumOfSubArray(int[] array) {
+    if (array == null)
+        return 0;
+    int sum = 0;
+    int ret = array[0];
+    for (int i=0; i<array.length; i++){
+        sum += array[i];
+        if (sum <= array[i]){
+            sum = array[i];
+            //ret = sum;
+        }
+        if (ret < sum){
+            ret = sum;
+        }
+    }
+    return ret;
+}
+```
+## [整数中1出现的次数(从1到n整数中1出现的次数)](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+### 解题思路
+
 
 ------------------------------
 

@@ -2,6 +2,7 @@
     * [SpringMVC处理请求的流程](#SpringMVC处理请求的流程)
 * [Spring](#Spring)
     * [Spring AOP](#SpringAOP)
+* [dubbo](#dubbo)
 
 ----------------------
 
@@ -58,3 +59,18 @@ Spring AOP底层用到2种代理机制：
 - **Weaving(织入):** 是指把增强应用到目标对象来创建新的代理对象的过程。Spring采用动态代理织入，而AspectJ采用编译期织入和类装在期织入。
 - **Proxy（代理）:** 一个类被AOP织入增强后，就产生一个结果代理类
 - **Aspect(切面):** 是切入点和通知（引介）的结合
+
+----------------------------------
+
+# dubbo
+Apache Dubbo 是一款高性能、轻量级的开源 Java RPC 框架。
+
+## 什么是RPC
+远程过程调用(Remote Procedure Call, RPC)是一个计算机通信协议。该协议允许运行于一台计算机上的程序调用另外一台计算机的子程序，而程序员无需额外为这个交互作用编程。如果涉及的软件采用面向对象编程(Java)，也叫做远程调用或远程方法调用。
+
+<div align="center"><img src="../pics//1550992361(1).jpg" width="450px"></div>
+
+只要支持网络传输的协议就是RPC协议。
+
+## dubbo结构
+<div align="center"><img src="../pics//1550992476(1).png" width="450px"></div>

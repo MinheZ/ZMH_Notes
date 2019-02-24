@@ -1,7 +1,35 @@
+* [SpringMVC](#SpringMVC)
+    * [SpringMVC处理请求的流程](#SpringMVC处理请求的流程)
 * [Spring](#Spring)
     * [Spring AOP](#SpringAOP)
 
 ----------------------
+
+# SpringMVC
+MVC是Model-View-Controller的简称，即模型-视图-控制器。MVC是一种设计模式，它强行把应用程序的输入、处理和输出分开。
+
+MVC中模型、视图和控制器都承担着不同的任务：
+- **视图：** 用户看到并与之交互的界面，向用户展示数据，并接收用户的输入。它不参与任何业务逻辑处理。
+- **模型：** 表示业务处理，相当于JavaBean。一个模型能为多个视图提供数据，提高了代码的复用性。
+- **控制器：** 当用户单击Web上的提交按钮，控制器接收请求并调用相应的模型去处理请求。
+
+## SpringMVC处理请求的流程
+SpringMVC提供了前端控制器(Dispatcher Servlet)；处理器映射器(Handler Mapping)和处理适配器（Handler Adapter），视图解析器(View Resolver)进行视图管理；动作处理器Controller接口（包含ModelAndView，以及处理请求响应对象request和response），配置灵活，支持文件上传，数据简单转化等强大功能。
+<div align="center"><img src="../pics//1550804996(1).png" width="650px"></div>
+
+工作流程如下：
+- 客户通过url发送请求
+- 前端控制器(Dispatcher Servlet)接收到请求，通过系统或自定义的处理器映射器找到对应的Handler，生成处理器执行链HandlerExecutionChain(包括处理器对象和处理器拦截器)一并返回给DispatcherServlet。
+- DispatcherServlet根据处理器Handler获取处理器适配器HandlerAdapter执行HandlerAdapter处理一系列的操作，如：参数封装，数据格式转换，数据验证等操作
+- 执行处理器Handler(Controller，也叫页面控制器)。
+- Handler执行完成返回ModelAndView
+- HandlerAdapter将Handler执行结果ModelAndView返回到DispatcherServlet
+- DispatcherServlet将ModelAndView传给ViewReslover视图解析器
+- ViewReslover解析后返回具体View
+- DispatcherServlet对View进行渲染视图（即将模型数据model填充至视图中）。
+- DispatcherServlet响应用户。
+
+---------------------
 
 # Spring
 Spring的两大核心技术：

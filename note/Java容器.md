@@ -1,7 +1,243 @@
+* [ArrayList](#ArrayList)
+    * [ArrayList源码分析](#ArrayList源码分析)
+* [LinkedList](#LinkedList)
+    * [LinkedList源码分析](#LinkedList源码分析)
 * [HashMap](#HashMap)
     * [1 HashMap的数据结构](#HashMap的数据结构)
     * [2 HashMap源码分析](#HashMap源码分析)
     * [3 疑问和进阶](#疑问和进阶)
+
+-------------------------------------------
+
+# ArrayList
+ArrayList底层基于数组实现，并对数组进行了封装。
+
+## ArrayList源码分析
+
+### 类定义
+```java
+public class ArrayList<E> extends AbstractList<E>
+        implements List<E>, RandomAccess, Cloneable, java.io.Serializable {}
+```
+### 变量
+```java
+//默认初始化容量
+private static final int DEFAULT_CAPACITY = 10;
+
+//空对象数组
+private static final Object[] EMPTY_ELEMENTDATA = {};
+
+//对象数组
+private transient Object[] elementData;
+
+//集合元素个数
+private int size;
+```
+
+### 构造器
+```java
+//传入初始容量的构造方法
+public ArrayList(int initialCapacity) {
+   super();
+   if (initialCapacity < 0) {
+       throw new IllegalArgumentException("Illegal Capacity: "+ initialCapacity);
+   }
+   //新建指定容量的Object类型数组
+   this.elementData = new Object[initialCapacity];
+}
+
+//不带参数的构造方法
+public ArrayList() {
+   super();
+   //将空的数组实例传给elementData
+   this.elementData = EMPTY_ELEMENTDATA;
+}
+
+//传入外部集合的构造方法
+public ArrayList(Collection<? extends E> c) {
+   //持有传入集合的内部数组的引用
+   elementData = c.toArray();
+   //更新集合元素个数大小
+   size = elementData.length;
+   //判断引用的数组类型, 并将引用转换成Object数组引用
+   if (elementData.getClass() != Object[].class) {
+       elementData = Arrays.copyOf(elementData, size, Object[].class);
+   }
+}
+```
+如果没有设置初始大小，它将不会分配内存空间。
+
+### 增删改查
+```java
+/增(添加)
+public boolean add(E e) {
+   //添加前先检查是否需要拓展数组, 此时数组长度最小为size+1
+   ensureCapacityInternal(size + 1);
+   //将元素添加到数组末尾
+   elementData[size++] = e;
+   return true;
+}
+
+
+//增(插入)
+public void add(int index, E element) {
+   //插入位置范围检查
+   rangeCheckForAdd(index);
+   //检查是否需要扩容
+   ensureCapacityInternal(size + 1);
+   //挪动插入位置后面的元素
+   System.arraycopy(elementData, index, elementData, index + 1, size - index);
+   //在要插入的位置赋上新值
+   elementData[index] = element;
+   size++;
+}
+
+//删
+public E remove(int index) {
+   //index不能大于size
+   rangeCheck(index);
+   modCount++;
+   E oldValue = elementData(index);
+   int numMoved = size - index - 1;
+   if (numMoved > 0) {
+       //将index后面的元素向前挪动一位
+       System.arraycopy(elementData, index+1, elementData, index, numMoved);
+   }
+   //置空引用
+   elementData[--size] = null;
+   return oldValue;
+}
+
+//改
+public E set(int index, E element) {
+   //index不能大于size
+   rangeCheck(index);
+   E oldValue = elementData(index);
+   //替换成新元素
+   elementData[index] = element;
+   return oldValue;
+}
+
+//查
+public E get(int index) {
+   //index不能大于size
+   rangeCheck(index);
+   //返回指定位置元素
+   return elementData(index);
+}
+```
+每次添加一个元素到集合中都会先检查容量是否足够，否则就进行扩容。下面是增删改查需要注意的地方：
+- **增(添加)：** 仅仅将元素添加到末尾。操作快。
+- **增(插入)：** 需要移动到插入位置，复制后面的数组，操作慢。
+- **删：** 同样涉及数组复制，操作慢。
+- **改：** 直接对指定位置元素进行修改，不涉及元素挪动和数组复制，操作快速。
+- **查：** 直接返回指定下标的数组元素，操作快速。
+
+### 扩容机制
+```java
+private void ensureCapacityInternal(int minCapacity) {
+   //如果此时还是空数组
+   if (elementData == EMPTY_ELEMENTDATA) {
+       //和默认容量比较, 取较大值
+       minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
+   }
+   //数组已经初始化过就执行这一步
+   ensureExplicitCapacity(minCapacity);
+}
+
+private void ensureExplicitCapacity(int minCapacity) {
+   modCount++;
+   //如果最小容量大于数组长度就扩增数组
+   if (minCapacity - elementData.length > 0) {
+       grow(minCapacity);
+   }
+}
+
+//集合最大容量
+private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
+//增加数组长度
+private void grow(int minCapacity) {
+   //获取数组原先的容量
+   int oldCapacity = elementData.length;
+   //新数组的容量, 在原来的基础上增加一半
+   int newCapacity = oldCapacity + (oldCapacity >> 1);
+   //检验新的容量是否小于最小容量
+   if (newCapacity - minCapacity < 0) {
+       newCapacity = minCapacity;
+   }
+   //检验新的容量是否超过最大数组容量
+   if (newCapacity - MAX_ARRAY_SIZE > 0) {
+       newCapacity = hugeCapacity(minCapacity);
+   }
+   //拷贝原来的数组到新数组
+   elementData = Arrays.copyOf(elementData, newCapacity);
+}
+```
+每次添加元素前会调用ensureCapacityInternal这个方法进行集合容量检查。在这个方法内部会检查当前集合的内部数组是否还是个空数组，如果是就新建默认大小为10的Object数组。如果不是则证明当前集合已经被初始化过，那么就调用ensureExplicitCapacity方法检查当前数组的容量是否满足这个最小所需容量，不满足的话就调用grow方法进行扩容。
+
+在grow方法内部可以看到，每次扩容都是增加原来数组长度的一半，扩容实际上是新建一个容量更大的数组，将原先数组的元素全部复制到新的数组上，然后再抛弃原先的数组转而使用新的数组。
+
+--------------------------------------------
+
+# LinkedList
+LinkedList是List接口的另一种实现，它的底层是基于**双向链**表实现的，因此它具有插入删除快而查找修改慢的特点，此外，通过对双向链表的操作还可以实现队列和栈的功能。
+<div align="center"><img src="../pics//1551159850(1).png" width="450px"></div>
+
+F表示头结点，L表示尾结点。链表的每个结点都有三个元素，分别是前继结点引用(P)，结点元素的值(E)，后继结点的引用(N)。结点由内部类Node表示。
+
+## LinkedList源码分析
+### 类定义
+```java
+public class LinkedList<E>
+    extends AbstractSequentialList<E>
+    implements List<E>, Deque<E>, Cloneable, java.io.Serializable {}
+```
+
+### 变量
+```java
+//集合元素个数
+transient int size = 0;
+
+//头结点引用
+transient Node<E> first;
+
+//尾节点引用
+transient Node<E> last;
+```
+
+### 构造器
+与[ArrayList]不同的是LinkedList没有指定初始大小的构造器。
+```java
+//无参构造器
+public LinkedList() {}
+
+//传入外部集合的构造器
+public LinkedList(Collection<? extends E> c) {
+   this();
+   addAll(c);
+}
+```
+
+节点内部类：
+```java
+private static class Node<E> {
+    E item; // 元素
+    Node<E> next;   // 下一个节点
+    Node<E> prev;   // 上一个节点
+
+    Node(Node<E> prev, E element, Node<E> next) {
+        this.item = element;
+        this.next = next;
+        this.prev = prev;
+    }
+}
+```
+
+### 增删改查方法
+
+
+---------------------------------
 
 # HashMap
 `HashMap`基于哈希表的`Map`接口的实现。此实现提供所有可选的映射操作，并允许使用 `null`值和`null`键。除了不同步和允许使用`null`之外，`HashMap`类与`Hashtable`大致相同。此类不保证映射的顺序，特别是它不保证该顺序恒久不变。

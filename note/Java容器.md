@@ -6,6 +6,8 @@
     * [1 HashMap的数据结构](#HashMap的数据结构)
     * [2 HashMap源码分析](#HashMap源码分析)
     * [3 疑问和进阶](#疑问和进阶)
+* [LinkedHashMap](#LinkedHashMap)
+    * [LinkedHashMap源码分析](#LinkedHashMap源码分析)
 
 -------------------------------------------
 
@@ -207,7 +209,7 @@ transient Node<E> last;
 ```
 
 ### 构造器
-与[ArrayList]不同的是LinkedList没有指定初始大小的构造器。
+与[ArrayList](https://github.com/MinheZ/Notes/blob/master/note/Java%E5%AE%B9%E5%99%A8.md#%E6%9E%84%E9%80%A0%E5%99%A8)不同的是LinkedList没有指定初始大小的构造器。
 ```java
 //无参构造器
 public LinkedList() {}
@@ -235,7 +237,165 @@ private static class Node<E> {
 ```
 
 ### 增删改查方法
+```java
+//增(添加)
+public boolean add(E e) {
+   //在链表尾部添加
+   linkLast(e);
+   return true;
+}
 
+//增(插入)
+public void add(int index, E element) {
+   checkPositionIndex(index);
+   if (index == size) {
+       //在链表尾部添加
+       linkLast(element);
+   } else {
+       //在链表中部插入
+       linkBefore(element, node(index));
+   }
+}
+
+//删(给定下标)
+public E remove(int index) {
+   //检查下标是否合法
+   checkElementIndex(index);
+   return unlink(node(index));
+}
+
+//删(给定元素)
+public boolean remove(Object o) {
+   if (o == null) {
+       for (Node<E> x = first; x != null; x = x.next) {
+           if (x.item == null) {
+               unlink(x);
+               return true;
+           }
+       }
+   } else {
+       //遍历链表
+       for (Node<E> x = first; x != null; x = x.next) {
+           if (o.equals(x.item)) {
+               //找到了就删除
+               unlink(x);
+               return true;
+           }
+       }
+   }
+   return false;
+}
+
+//改
+public E set(int index, E element) {
+   //检查下标是否合法
+   checkElementIndex(index);
+   //获取指定下标的结点引用
+   Node<E> x = node(index);
+   //获取指定下标结点的值
+   E oldVal = x.item;
+   //将结点元素设置为新的值
+   x.item = element;
+   //返回之前的值
+   return oldVal;
+}
+
+//查
+public E get(int index) {
+   //检查下标是否合法
+   checkElementIndex(index);
+   //返回指定下标的结点的值
+   return node(index).item;
+}
+```
+LinkedList的添加元素的方法主要是调用linkLast和linkBefore两个方法，linkLast方法是在链表后面链接一个元素，linkBefore方法是在链表中间插入一个元素。LinkedList的删除方法通过调用unlink方法将某个元素从链表中移除。下面我们看看链表的插入和删除操作的核心代码。
+```java
+//链接到指定结点之前
+void linkBefore(E e, Node<E> succ) {
+   //获取给定结点的上一个结点引用
+   final Node<E> pred = succ.prev;
+   //创建新结点, 新结点的上一个结点引用指向给定结点的上一个结点
+   //新结点的下一个结点的引用指向给定的结点
+   final Node<E> newNode = new Node<>(pred, e, succ);
+   //将给定结点的上一个结点引用指向新结点
+   succ.prev = newNode;
+   //如果给定结点的上一个结点为空, 表明给定结点为头结点
+   if (pred == null) {
+       //将头结点引用指向新结点
+       first = newNode;
+   } else {
+       //否则, 将给定结点的上一个结点的下一个结点引用指向新结点
+       pred.next = newNode;
+   }
+   //集合元素个数加一
+   size++;
+   //修改次数加一
+   modCount++;
+}
+
+//卸载指定结点
+E unlink(Node<E> x) {
+   //获取给定结点的元素
+   final E element = x.item;
+   //获取给定结点的下一个结点的引用
+   final Node<E> next = x.next;
+   //获取给定结点的上一个结点的引用
+   final Node<E> prev = x.prev;
+
+   //如果给定结点的上一个结点为空, 说明给定结点为头结点
+   if (prev == null) {
+       //将头结点引用指向给定结点的下一个结点
+       first = next;
+   } else {
+       //将上一个结点的后继结点引用指向给定结点的后继结点
+       prev.next = next;
+       //将给定结点的上一个结点置空
+       x.prev = null;
+   }
+
+   //如果给定结点的下一个结点为空, 说明给定结点为尾结点
+   if (next == null) {
+       //将尾结点引用指向给定结点的上一个结点
+       last = prev;
+   } else {
+       //将下一个结点的前继结点引用指向给定结点的前继结点
+       next.prev = prev;
+       x.next = null;
+   }
+
+   //将给定结点的元素置空
+   x.item = null;
+   //集合元素个数减一
+   size--;
+   //修改次数加一
+   modCount++;
+   return element;
+}
+```
+通过上面图示看到对链表的插入和删除操作的时间复杂度都是`O(1)`，而对链表的查找和修改操作都需要遍历链表进行元素的定位，这两个操作都是调用的`node(int index)`方法定位元素：
+```java
+Node<E> node(int index) {
+    // assert isElementIndex(index);
+    // 如果下标在链表的前半部分，则从头开始查
+    if (index < (size >> 1)) {
+        Node<E> x = first;
+        for (int i = 0; i < index; i++)
+            x = x.next;
+        return x;
+    } else {    // 如果下标在链表的后半部分，则从尾开始查
+        Node<E> x = last;
+        for (int i = size - 1; i > index; i--)
+            x = x.prev;
+        return x;
+    }
+}
+```
+
+### 总结
+- LinkedList是基于双向链表实现的，不论是增删改查方法还是队列和栈的实现，都可通过操作结点实现
+- LinkedList无需提前指定容量，因为基于链表操作，集合的容量随着元素的加入自动增加
+- LinkedList删除元素后集合占用的内存自动缩小，无需像ArrayList一样调用trimToSize()方法
+- LinkedList的所有方法没有进行同步，因此它也不是线程安全的，应该避免在多线程环境下使用
 
 ---------------------------------
 
@@ -711,7 +871,7 @@ final Node<K,V>[] resize() {
     - 如果两个对象相同（即用equals比较返回true），那么它们的hashCode值一定要相同；
     - 如果两个对象的hashCode相同，它们并不一定相同(即用equals比较返回false)
 
-    因为在 HashMap 的链表结构中遍历判断的时候，特定情况下重写的 equals 方法比较对象是否相等的业务逻辑比较复杂，循环下来更是影响查找效率。所以这里把 hashcode 的判断放在前面，只要 hashcode 不相等就玩儿完，不用再去调用复杂的 equals 了。很多程度地提升 HashMap 的使用效率。
+    因为在 HashMap 的链表结构中遍历判断的时候，特定情况下重写的 equals 方法比较对象是否相等的业务逻辑比较复杂，循环下来更是影响查找效率。所以这里把 hashcode 的判断放在前面，只要 hashcode 不相等就跳过，不用再去调用复杂的 equals 了。很多程度地提升 HashMap 的使用效率。
 
     所以重写 hashcode 方法是为了让我们能够正常使用 HashMap 等集合类，因为 HashMap 判断对象是否相等既要比较 hashcode 又要使用 equals 比较。而这样的实现是为了提高 HashMap 的效率。
 
@@ -737,3 +897,79 @@ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 本块转载于[面试必会之HashMap源码分析](https://mp.weixin.qq.com/s/vRvMvNktoDSQKMMlnj5T0g)
 
 ---------------------------
+
+# LinkedHashMap
+
+## LinkedHashMap源码分析
+### 类定义
+```java
+public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {}
+```
+没有实现`Serializable`接口，无法网络传输。
+
+### 变量
+LinkedHashMap的节点`Entry<K,V>`继承自`HashMap.Node<K,V>`，在其基础上扩展了一下。在原来`HashMap`的`Entry`上添加了2个成员变量，分别是前继节点引用和后继节点引用。改成了一个双向链表。
+```java
+static class Entry<K,V> extends HashMap.Node<K,V> {
+    Entry<K,V> before, after;
+    Entry(int hash, K key, V value, Node<K,V> next) {
+        // 直接使用HashMap的构造函数
+        super(hash, key, value, next);
+    }
+}
+```
+```java
+// 双向链表的头结点
+transient LinkedHashMap.Entry<K,V> head;
+// 双向链表的尾结点
+transient LinkedHashMap.Entry<K,V> tail;
+// 控制LinkedHashMap的迭代顺序。true为访问顺序；false为插入顺序
+final boolean accessOrder;
+```
+
+### 构造函数
+```java
+//默认是false，则迭代时输出的顺序是插入节点的顺序。若为true，则输出的顺序是按照访问节点的顺序。
+//为true时，可以在这基础之上构建一个LruCach
+final boolean accessOrder;
+
+public LinkedHashMap() {
+    super();
+    accessOrder = false;
+}
+//指定初始化时的容量，
+public LinkedHashMap(int initialCapacity) {
+    super(initialCapacity);
+    accessOrder = false;
+}
+//指定初始化时的容量，和扩容的加载因子
+public LinkedHashMap(int initialCapacity, float loadFactor) {
+    super(initialCapacity, loadFactor);
+    accessOrder = false;
+}
+//指定初始化时的容量，和扩容的加载因子，以及迭代输出节点的顺序
+public LinkedHashMap(int initialCapacity,
+                     float loadFactor,
+                     boolean accessOrder) {
+    super(initialCapacity, loadFactor);
+    this.accessOrder = accessOrder;
+}
+//利用另一个Map 来构建，
+public LinkedHashMap(Map<? extends K, ? extends V> m) {
+    super();
+    accessOrder = false;
+    //该方法上文分析过，批量插入一个map中的所有数据到 本集合中。
+    putMapEntries(m, false);
+}
+```
+构造函数和`HashMap`相比，就是增加了一个`accessOrder`参数。用于控制迭代时的节点顺序。
+
+### 数据操作
+#### 增
+`LinkedHashMap`没有重写`put`方法。但是重写了构建新节点的`newNode()`方法.
+
+`newNode()`会在`HashMap`的`putVal()`方法里被调用，`putVal()`方法会在批量插入数据`putMapEntries(Map<? extends K, ? extends V> m, boolean evict)`或者插入单个数据`public V put(K key, V value)`时被调用。
+
+`LinkedHashMap`重写了`newNode()`,在每次构建新节点时，通过`linkNodeLast(p);`将新节点链接在内部双向链表的尾部。
+
+------------------------

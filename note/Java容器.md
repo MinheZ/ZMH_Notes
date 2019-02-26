@@ -896,11 +896,17 @@ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 
 本块转载于[面试必会之HashMap源码分析](https://mp.weixin.qq.com/s/vRvMvNktoDSQKMMlnj5T0g)
 
+另见参考文章[HashMap 源码详细分析(JDK1.8)](http://www.tianxiaobo.com/2018/01/18/HashMap-%E6%BA%90%E7%A0%81%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90-JDK1-8/)
+
 ---------------------------
 
 # LinkedHashMap
 
 ## LinkedHashMap源码分析
+LinkedHashMap继承自HashMap，他们也有着类似的数据结构：
+<div align="center"><img src="../pics//15166338955699.jpg" width="650px"></div>
+
+[图片引用于](https://www.imooc.com/article/22931#)
 ### 类定义
 ```java
 public class LinkedHashMap<K,V> extends HashMap<K,V> implements Map<K,V> {}

@@ -856,6 +856,8 @@ final Node<K,V>[] resize() {
 2. 指定初始容量的构造方法初始化HashMap。那么从下面源码可以看到初始容量会等于threshold，接着threshold = 当前的容量（threshold） * DEFAULT_LOAD_FACTOR。
 3. HashMap不是第一次扩容。如果HashMap已经扩容过的话，那么每次table的容量以及threshold量为原有的两倍。
 
+[HashMap-源码详细分析](http://www.tianxiaobo.com/2018/01/18/HashMap-%E6%BA%90%E7%A0%81%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90-JDK1-8/#1-%E6%A6%82%E8%BF%B0)这里讲得更好。
+
 ## 疑问和进阶
 1. JDK1.7是基于数组+单链表实现（为什么不用双链表）
 

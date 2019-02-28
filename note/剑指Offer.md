@@ -34,6 +34,11 @@
 * [时间效率](#时间效率)
     * [数组中出现次数超过一半的数字](#数组中出现次数超过一半的数字)
     * [最小的K个数](#最小的K个数)
+    * [整数中1出现的次数](#整数中1出现的次数)
+* [时间空间效率的平衡](#时间空间效率的平衡)
+    * [丑数](#丑数)
+    * [第一个只出现一次的字符](#第一个只出现一次的字符)
+    * [数组中的逆序对](#数组中的逆序对)
 ----------------------
 
 # 查找和排序
@@ -1028,7 +1033,7 @@ public int FindGreatestSumOfSubArray(int[] array) {
     return ret;
 }
 ```
-## [整数中1出现的次数(从1到n整数中1出现的次数)](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+## [整数中1出现的次数](https://www.nowcoder.com/practice/bd7f978302044eee894445e244c7eee6?tpId=13&tqId=11184&tPage=2&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
 
 ## 题目描述
 求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
@@ -1044,6 +1049,70 @@ public int numberOf1Between1AndN_Solution(int n){
 }
 ```
 [LeetCode: 233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/discuss/64381/4+-lines-O(log-n)-C++JavaPython)
+
+
+------------------------
+
+# 时间空间效率的平衡
+## [丑数](https://www.nowcoder.com/practice/6aa9e04fc3794f68acf8778237ba065b?tpId=13&tqId=11186&tPage=2&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+### 解题思路
+```java
+public int getUglyNumber_Solution(int index) {
+    if (index <= 0)
+        return 0;
+    if (index <= 6)
+        return index;
+    int i2 = 0, i3 = 0, i5 = 0;
+    int[] dq = new int[index];
+    dq[0] = 1;
+    for (int i = 1; i < index; i++) {
+        int next2 = dq[i2] * 2, next3 = dq[i3] * 3, next5 = dq[i5] * 5;
+        dq[i] = Math.min(next2, Math.min(next3, next5));
+        if (dq[i] == next2)
+            i2++;
+        if (dq[i] == next3)
+            i3++;
+        if (dq[i] == next5)
+            i5++;
+    }
+    return dq[index - 1];
+}
+```
+## [第一个只出现一次的字符](https://www.nowcoder.com/practice/1c82e8cf713b4bbeb2a5b31cf5b0417c?tpId=13&tqId=11187&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）.
+### 解题思路
+```java
+public int firstNotRepeatingChar(String str) {
+    if (str == null && str.length() == 0)
+        return -1;
+    int[] counts = new int[256];
+    for (int i=0; i<str.length(); i++)
+        counts[str.charAt(i)]++;
+    for (int i=0; i<str.length(); i++)
+        if (counts[str.charAt(i)] == 1)
+            return i;
+    return -1;
+}
+```
+## [数组中的逆序对](https://www.nowcoder.com/practice/96bd6684e04a44eb80e6a68efc0ec6c5?tpId=13&tqId=11188&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
+
+输入描述:
+题目保证输入的数组中没有的相同的数字
+
+数据范围：
+
+	对于%50的数据,size<=10^4
+	对于%75的数据,size<=10^5
+	对于%100的数据,size<=2*10^5
+### 解题思路
 
 ------------------------------
 

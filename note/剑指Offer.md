@@ -39,6 +39,13 @@
     * [丑数](#丑数)
     * [第一个只出现一次的字符](#第一个只出现一次的字符)
     * [数组中的逆序对](#数组中的逆序对)
+    * [两个链表的第一个公共结点](#两个链表的第一个公共结点)
+* [知识迁移能力](#知识迁移能力)
+    * [数字在排序数组中出现的次数](#数字在排序数组中出现的次数)
+    * [二叉树的深度](#二叉树的深度)
+    * [平衡二叉树](#平衡二叉树)
+    * [数组中只出现一次的数字](#数组中只出现一次的数字)
+    * [和为S的连续正数序列](#和为S的连续正数序列)
 ----------------------
 
 # 查找和排序
@@ -1112,8 +1119,179 @@ public int firstNotRepeatingChar(String str) {
 	对于%50的数据,size<=10^4
 	对于%75的数据,size<=10^5
 	对于%100的数据,size<=2*10^5
+
 ### 解题思路
 
+## [两个链表的第一个公共结点](https://www.nowcoder.com/practice/6ab1d9a29e88450685099d45c9e31e46?tpId=13&tqId=11189&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+输入两个链表，找出它们的第一个公共结点。
+### 解题思路
+<div align="center"><img src="../pics//1551336437(1).png" width="400px"></div>
+
+设 A 的长度为 a + c，B 的长度为 b + c，其中 c 为尾部公共部分长度，可知 a + c + b = b + c + a。
+
+当访问链表 A 的指针访问到链表尾部时，令它从链表 B 的头部重新开始访问链表 B；同样地，当访问链表 B 的指针访问到链表尾部时，令它从链表 A 的头部重新开始访问链表 A。这样就能控制访问 A 和 B 两个链表的指针能同时访问到交点。
+```java
+public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+    ListNode l1 = pHead1, l2 = pHead2;
+    while (l1 != l2) {
+        l1 = (l1 == null) ? pHead2 : l1.next;
+        l2 = (l2 == null) ? pHead1 : l2.next;
+    }
+    return l1;
+}
+```
+
+------------------------------
+
+# 知识迁移能力
+
+## [数字在排序数组中出现的次数](https://www.nowcoder.com/practice/70610bf967994b22bb1c26f9ae901fa2?tpId=13&tqId=11190&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+统计一个数字在排序数组中出现的次数。
+### 解题思路
+```java
+public int getNumberOfK(int[] array, int k) {
+    int first = binarySearch(array, k);
+    int last = binarySearch(array, k + 1);
+    return (first == array.length || array[first] != k) ? 0 : last - first;
+}
+
+private int binarySearch(int[] array, int k) {
+    int left = 0;
+    int right = array.length - 1;
+    while (left < right) {
+        int middle = (left + right) / 2;
+        if (array[middle] >= k)
+            right = middle;
+        else
+            left = middle + 1;
+    }
+    return left;
+}
+```
+## [二叉树的深度](https://www.nowcoder.com/practice/435fb86331474282a3499955f0a41e8b?tpId=13&tqId=11191&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+### 解题思路
+```java
+public int treeDepth(TreeNode root) {
+    return (root == null) ? 0 : 1 + Math.max(treeDepth(root.left), treeDepth(root.right));
+}
+```
+## [平衡二叉树](https://www.nowcoder.com/practice/8b3b95850edb4115918ecebdf1b4d222?tpId=13&tqId=11192&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+### 解题思路
+使用树的后序遍历，只需要一次就能判断出是否平衡。
+```java
+private boolean isBalance = true;
+
+public boolean jsBalanced_Solution(TreeNode root) {
+    height(root);
+    return isBalance;
+}
+
+public int height(TreeNode root) {
+    if (root == null || !isBalance)
+        return 0;
+    int left = height(root.left);
+    int right = height(root.right);
+    if (Math.abs(left - right) > 1)
+        isBalance = false;
+    return 1 + Math.max(left, right);
+}
+```
+## [数组中只出现一次的数字](https://www.nowcoder.com/practice/e02fdb54d7524710a7d664d082bb7811?tpId=13&tqId=11193&rp=2&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+一个整型数组里除了两个数字之外，其他的数字都出现了偶数次。请写程序找出这两个只出现一次的数字。
+### 解题思路
+异或运算的性质：任何一个数字跟自己异或都是0。这样我们可以找出只出现过1次的1个数字。利用此规律则有：
+```java
+public void findNumsAppearOnce(int[] array) {
+    int ret = array[0];
+    int num1[] = {0};
+    int num2[] = {0};
+    ArrayList<Integer> list1 = new ArrayList<>();
+    ArrayList<Integer> list2 = new ArrayList<>();
+    for (int i = 1; i < array.length; i++) {
+        ret ^= array[i];
+    }
+    int flag = 1;
+    while ((ret & 1) != 1) {
+        ret >>>= 1;
+        flag = flag << 1;
+    }
+    for (int num : array) {
+        if ((num & flag) == flag)
+            list1.add(num);
+        else
+            list2.add(num);
+    }
+    for (Integer num : list1) {
+        num1[0] ^= num;
+    }
+    for (Integer num : list2) {
+        num2[0] ^= num;
+    }
+    System.out.println(num1[0] + " " + num2[0]);
+}
+```
+另：
+```java
+public void FindNumsAppearOnce(int[] nums, int num1[], int num2[]) {
+    int diff = 0;
+    for (int num : nums)
+        diff ^= num;
+    diff &= -diff;
+    for (int num : nums) {
+        if ((num & diff) == 0)
+            num1[0] ^= num;
+        else
+            num2[0] ^= num;
+    }
+}
+```
+## [和为S的连续正数序列](https://www.nowcoder.com/practice/c451a3fd84b64cb19485dad758a55ebe?tpId=13&tqId=11194&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列? Good Luck!
+
+输出描述:
+输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+### 解题思路
+```java
+public ArrayList<ArrayList<Integer> > FindContinuousSequence(int sum) {
+   ArrayList<ArrayList<Integer>> ret = new ArrayList<>();
+    int small = 1, big = 2;
+    int curSum = 3;
+    while (big < sum){
+        if (curSum > sum){
+            curSum -= small;
+            small++;
+        }else if (curSum < sum){
+            big++;
+            curSum += big;
+        }else {
+            ArrayList<Integer> list = new ArrayList<>();
+            for (int i=small; i<=big; i++){
+                list.add(i);
+            }
+            ret.add(list);
+            curSum -= small;
+            small++;
+            big++;
+            curSum += big;
+        }
+    }
+    return ret;
+}
+```
 ------------------------------
 
 <!-- ## 题目描述

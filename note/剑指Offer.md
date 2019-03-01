@@ -46,6 +46,8 @@
     * [平衡二叉树](#平衡二叉树)
     * [数组中只出现一次的数字](#数组中只出现一次的数字)
     * [和为S的连续正数序列](#和为S的连续正数序列)
+    * [和为S的两个数字](#和为S的两个数字)
+    * [左旋转字符串](#左旋转字符串
 ----------------------
 
 # 查找和排序
@@ -1292,6 +1294,36 @@ public ArrayList<ArrayList<Integer> > FindContinuousSequence(int sum) {
     return ret;
 }
 ```
+## [和为S的两个数字](https://www.nowcoder.com/practice/390da4f7a00f44bea7c2f3d19491311b?tpId=13&tqId=11195&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
+
+输出描述:
+对应每个测试案例，输出两个数，小的先输出。
+### 解题思路
+```java
+public ArrayList<Integer> findNumbersWithSum(int[] array, int sum) {
+    if (array == null || sum < 0)
+        return null;
+    int i = 0, j = array.length - 1;
+    while (i < j) {
+        int cur = array[i] + array[j];
+        if (cur == sum)
+            return new ArrayList<>(Arrays.asList(array[i], array[j]));
+        if (cur < sum)
+            i++;
+        else
+            j--;
+    }
+    return new ArrayList<>();
+}
+```
+## [左旋转字符串](https://www.nowcoder.com/practice/12d959b108cb42b1ab72cef4d36af5ec?tpId=13&tqId=11196&rp=2&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。
+### 解题思路
 ------------------------------
 
 <!-- ## 题目描述

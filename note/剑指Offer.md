@@ -47,7 +47,11 @@
     * [数组中只出现一次的数字](#数组中只出现一次的数字)
     * [和为S的连续正数序列](#和为S的连续正数序列)
     * [和为S的两个数字](#和为S的两个数字)
-    * [左旋转字符串](#左旋转字符串
+    * [左旋转字符串](#左旋转字符串)
+    * [翻转单词顺序列](#翻转单词顺序列)
+* [抽象建模能力](#抽象建模能力)
+    * [扑克牌顺子](#扑克牌顺子)
+    * [圆圈中最后剩下的数字](#圆圈中最后剩下的数字)
 ----------------------
 
 # 查找和排序
@@ -1324,8 +1328,116 @@ public ArrayList<Integer> findNumbersWithSum(int[] array, int sum) {
 ## 题目描述
 汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。
 ### 解题思路
+**方法一**
+
+先将 "abc" 和 "XYZdef" 分别翻转，得到 "cbafedZYX"，然后再把整个字符串翻转得到 "XYZdefabc"。
+```java
+public String LeftRotateString(String str, int n) {
+    if (n >= str.length())
+        return str;
+    char[] chars = str.toCharArray();
+    reverse(chars, 0, n - 1);
+    reverse(chars, n, chars.length - 1);
+    reverse(chars, 0, chars.length - 1);
+    return new String(chars);
+}
+
+private void reverse(char[] chars, int i, int j) {
+    while (i < j)
+        swap(chars, i++, j--);
+}
+
+private void swap(char[] chars, int i, int j) {
+    char t = chars[i];
+    chars[i] = chars[j];
+    chars[j] = t;
+}
+```
+
+**方法二**
+
+字符串拼接思路
+```java
+public String leftRotateString(String str, int n) {
+    if (n >= str.length())
+        return str;
+    return str.substring(n) + str.substring(0,n);
+}
+```
+
+## [翻转单词顺序列](https://www.nowcoder.com/practice/3194a4f4cf814f63919d0790578d51f3?tpId=13&tqId=11197&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+牛客最近来了一个新员工Fish，每天早晨总是会拿着一本英文杂志，写些句子在本子上。同事Cat对Fish写的内容颇感兴趣，有一天他向Fish借来翻看，但却读不懂它的意思。例如，“student. a am I”。后来才意识到，这家伙原来把句子单词的顺序翻转了，正确的句子应该是“I am a student.”。Cat对一一的翻转这些单词顺序可不在行，你能帮助他么？
+### 解题思路
+题目应该有一个隐含条件，就是不能用额外的空间。虽然 Java 的题目输入参数为 String 类型，需要先创建一个字符数组使得空间复杂度为 O(N)，但是正确的参数类型应该和原书一样，为字符数组，并且只能使用该字符数组的空间。任何使用了额外空间的解法在面试时都会大打折扣，包括递归解法。
+
+正确的解法应该是和书上一样，先旋转每个单词，再旋转整个字符串。
+```java
+public String reverseSentence(String str) {
+    int length = str.length();
+    char[] chars = str.toCharArray();
+    int i = 0, j = 0;
+
+    while (j <= length) {
+        if (j == length || chars[j] == ' ') {
+            reverse(chars, i, j-1);
+            i = j + 1;
+        }
+        j++;
+    }
+    reverse(chars, 0, length - 1);
+    return new String(chars);
+}
+
+private void reverse(char[] chars, int left, int right) {
+    while (left < right) {
+        swap(chars, left++, right--);
+    }
+}
+
+private void swap(char[] chars, int i, int j) {
+    char temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
+}
+```
 ------------------------------
 
+# 抽象建模能力
+## [扑克牌顺子](https://www.nowcoder.com/practice/762836f4d43d43ca9deb273b3de8e1f4?tpId=13&tqId=11198&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+从扑克中抽5张牌，判断是不是一个顺子。2~10可以看做为数字本身，A为1，J为11，Q为12，K为13，大小王可以看做为任意数字。
+### 解题思路
+统计出数组中0元素的个数，将数组排序。
+```java
+public boolean isContinuous(int[] numbers) {
+    if (numbers == null || numbers.length < 5)
+        return false;
+
+    int count = 0;  // 统计数组中0的个数
+    Arrays.sort(numbers);
+    for (int num : numbers) {
+        if (num == 0)
+            count++;
+    }
+    for (int i = count; i < numbers.length - 1; i++) {
+        if (numbers[i + 1] == numbers[i])
+            return false;
+        count -= numbers[i + 1] - numbers[i] - 1;
+    }
+    return count >= 0;
+}
+```
+## [圆圈中最后剩下的数字](https://www.nowcoder.com/practice/f78a359491e64a50bce2d89cff857eb6?tpId=13&tqId=11199&rp=3&ru=%2Fta%2Fcoding-interviews&qru=%2Fta%2Fcoding-interviews%2Fquestion-ranking)
+
+## 题目描述
+0, 1, ..., n-1 这 n 个数字排成一个圈，从数字 0 开始，每次删除第 3 个数字。求圆圈中剩下的最后一个数字。
+### 解题思路
+
+-------------------------------------------
 <!-- ## 题目描述
 
 ### 解题思路 -->
+本文中一些解法参考于[CyC2018](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/%E5%89%91%E6%8C%87%20offer%20%E9%A2%98%E8%A7%A3.md)

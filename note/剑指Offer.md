@@ -52,6 +52,8 @@
 * [抽象建模能力](#抽象建模能力)
     * [扑克牌顺子](#扑克牌顺子)
     * [圆圈中最后剩下的数字](#圆圈中最后剩下的数字)
+* [发散思维能力](#发散思维能力)
+    * [求1+2+3+...+n](#求1+2+3+...+n)
 ----------------------
 
 # 查找和排序
@@ -1435,7 +1437,32 @@ public boolean isContinuous(int[] numbers) {
 ## 题目描述
 0, 1, ..., n-1 这 n 个数字排成一个圈，从数字 0 开始，每次删除第 3 个数字。求圆圈中剩下的最后一个数字。
 ### 解题思路
+约瑟夫环，圆圈长度为 n 的解可以看成长度为 n-1 的解再加上报数的长度 m。因为是圆圈，所以最后需要对 n 取余。
+```java
+public int LastRemaining_Solution(int n, int m) {
+    if (n == 0)     /* 特殊输入的处理 */
+        return -1;
+    if (n == 1)     /* 递归返回条件 */
+        return 0;
+    return (LastRemaining_Solution(n - 1, m) + m) % n;
+}
+```
 
+-------------------------------------------
+
+# 发散思维能力
+## [求1+2+3+...+n](https://www.nowcoder.com/practice/7a0da8fc483247ff8800059e12d7caf1?tpId=13&tqId=11200&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+## 题目描述
+求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+### 解题思路
+当 n=0 时，递归终止。
+```java
+public int sum_Solution(int n) {
+    int sum = n;
+    boolean b = (n >0) && ((sum += sum_Solution(n-1)) > 0);
+    return sum;
+}
+```
 -------------------------------------------
 <!-- ## 题目描述
 

@@ -117,6 +117,8 @@ UserService us = (UserService)factory.getBean("userService");
 		* 想查看destroy-method的效果，有如下条件
 			* scope= singleton有效
 			* web容器中会自动调用，但是main函数或测试用例需要手动调用（需要使用ClassPathXmlApplicationContext的close()方法）
+
+
 ## Spring AOP
 与OOP相比，面向切面，传统的OOP开发中的代码逻辑是自上而下的，在这些过程中会产生一切横切性的问题，这些问题与主业务逻辑关系不大，会散落在代码的各个地方，难以维护。AOP的思想就是把业务逻辑和横切问题进行分离，从而达到解耦的目的，使代码的重用性和开发效率变高。
 ### AOP的应用场景

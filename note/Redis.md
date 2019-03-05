@@ -1,6 +1,7 @@
 * [概述](#概述)
 * [数据类型](#数据类型)
 * [数据结构](#数据结构)
+    * [SDS](#SDS)
     * [字典](#字典)
     * [跳跃表](#跳跃表)
 * [数据持久化](#数据持久化)
@@ -27,9 +28,35 @@ Redis是一种速度非常快的非关系型(NoSQL)高性能键值对(key-value)
 -------------------------------
 
 # 数据类型
+
 关于Redis的数据类型，此文章有详细讲述：[what redis data structure look like?](https://redislabs.com/ebook/part-1-getting-started/chapter-1-getting-to-know-redis/1-2-what-redis-data-structures-look-like/)
 
 # 数据结构
+## SDS
+Redis自己构建了一种名为简单动态字符串(Simple Dynamic string, SDS)的抽象类型，并将 SDS 用作 Redis 的默认字符串表示。
+
+### SDS的定义
+每个`sds.h/sdshdr`结构表示一个SDS值：
+```c
+struct sdshdr {
+    // 记录 buf 数组中已使用字节的数量
+    // 等于 SDS 所保存字符串的长度
+    int len;
+
+    // 记录 buf 数组中未使用字节的数量
+    int free;
+
+    // 字节数组，用于保存字符串
+    char buf[];
+};
+```
+无剩余空间的情况，其中空字符`'\0'`，不占用数组 len 的长度。
+<div align="center"><img src="../pics//1551757262(1).png" width="350px"></div>
+
+有剩余空间的情况：
+<div align="center"><img src="../pics//1551757637(1).png" width="350px"></div>
+
+
 ## 字典
 dictht是一个散列表的结构，使用的是链地址法处理哈希冲突。
 ```c

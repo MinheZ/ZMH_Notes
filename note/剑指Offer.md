@@ -54,6 +54,10 @@
     * [圆圈中最后剩下的数字](#圆圈中最后剩下的数字)
 * [发散思维能力](#发散思维能力)
     * [求1+2+3+...+n](#求1+2+3+...+n)
+    * [不用加减乘除做加法](#不用加减乘除做加法)
+* [综合](#综合)
+    * [把字符串转换成整数](#把字符串转换成整数)
+    * [数组中重复的数字](#数组中重复的数字)
 ----------------------
 
 # 查找和排序
@@ -1463,7 +1467,77 @@ public int sum_Solution(int n) {
     return sum;
 }
 ```
+## [不用加减乘除做加法](https://www.nowcoder.com/practice/59ac416b4b944300b617d4f7f111b215?tpId=13&tqId=11201&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+### 解题思路
+`a ^ b` 表示没有考虑进位的情况下两数的和，`(a & b) << 1` 就是进位。
+
+递归会终止的原因是 `(a & b) << 1` 最右边会多一个 0，那么继续递归，进位最右边的 0 会慢慢增多，最后进位会变为 0，递归终止。
+```java
+public int Add(int num1,int num2) {
+    return num2 == 0 ? num1 : Add(num1 ^ num2, (num1 & num2) << 1);
+}
+```
 -------------------------------------------
+
+# 综合
+## [把字符串转换成整数](https://www.nowcoder.com/practice/1277c681251b4372bdef344468e4f26e?tpId=13&tqId=11202&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+将一个字符串转换成一个整数(实现Integer.valueOf(string)的功能，但是string不符合数字要求时返回0)，要求不能使用字符串转换整数的库函数。 数值为0或者字符串不是一个合法的数值则返回0。
+### 解题思路
+```java
+public int strToInt(String str) {
+    if (str == null || str.length() == 0)
+        return 0;
+
+    int ret = 0;
+    boolean isNegative = str.charAt(0) == '-';
+
+    char[] chars = str.toCharArray();
+    int length = chars.length;
+    for (int i=0; i<length; i++) {
+        if (i == 0 && (chars[i] == '+' || chars[i] == '-'))
+            continue;
+        if (chars[i] < '0' || chars[i] > '9')
+            return 0;
+        ret = ret * 10 + chars[i] - '0';
+    }
+    return isNegative ? -ret : ret;
+}
+```
+## [数组中重复的数字](#https://www.nowcoder.com/practice/623a5ac0ea5b4e5f95552655361ae0a8?tpId=13&tqId=11203&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+
+## 题目描述
+在一个长度为n的数组里的所有数字都在0到n-1的范围内。 数组中某些数字是重复的，但不知道有几个数字是重复的。也不知道每个数字重复几次。请找出数组中任意一个重复的数字。 例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
+### 解题思路
+要求是时间复杂度 O(N)，空间复杂度 O(1)。因此不能使用排序的方法，也不能使用额外的标记数组。
+对于这种数组元素在 [0, n-1] 范围内的问题，可以将值为 i 的元素调整到第 i 个位置上进行求解。
+以` (2, 3, 1, 0, 2, 5) `为例，遍历到位置 4 时，该位置上的数为 2，但是第 2 个位置上已经有一个 2 的值了，因此可以知道 2 重复：
+```java
+public boolean duplicate(int numbers[],int length,int [] duplication) {
+    if (numbers == null || length == 0)
+        return false;
+    for (int i=0; i<length; i++) {
+        while (numbers[i] != i) {
+            if (numbers[i] == numbers[numbers[i]]) {
+            duplication[0] = numbers[i];
+            return true;
+            }
+            swap(numbers, i, numbers[i]);
+        }
+    }
+    return false;
+}
+private void swap (int[] numbers, int i, int j) {
+    int temp = numbers[i];
+    numbers[i] = numbers[j];
+    numbers[j] = temp;
+}
+```
+----------------------------------
 <!-- ## 题目描述
 
 ### 解题思路 -->

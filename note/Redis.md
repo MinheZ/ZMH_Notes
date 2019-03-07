@@ -56,6 +56,12 @@ struct sdshdr {
 有剩余空间的情况：
 <div align="center"><img src="../pics//1551757637(1).png" width="350px"></div>
 
+比起C字符串，SDS具有以下优点：
+- 常数复杂度获取字符串长度。
+- 杜绝缓冲区溢出。
+- 减少修改字符串长度时所需要内充重分配次数。
+- 二进制安全。
+- 兼容部分C字符串函数。
 
 ## 字典
 dictht是一个散列表的结构，使用的是链地址法处理哈希冲突。
@@ -95,16 +101,39 @@ rehash操作是采用渐进方式，这是为了避免一次性执行过多的re
 
 渐进式rehash通过记录dict的rehashidx完成。它从0开始，然后每一次rehash都会递增。
 
-例如把`dict[0]`上的`table[rehashidx]`键值对rehash到`dict[1]`上，`dict[0]`的`table[rehashidx]`变为`null`，然后执行`rehashidx++`。
+例如把`dict[0]`上的`table[rehashidx]`键值对rehash到`dict[1]`上，`dict[0]`的`table[rehashidx]`变为`null`，然后执行`rehashidx++`。在执行完渐进式 rehash 之后，将 rehashidx 重新设置为 -1 。
 
-在rehash期间，每进行一次增删改查操作，都会执行一次渐进式的rehash操作。采用渐进式的rehash会导致字典中的数据分散在2个dictht上，因此对字典的查找操作也要到对应的dictht上去执行。
+在rehash期间，每进行一次增删改查操作，都会执行一次渐进式的rehash操作。采用渐进式的rehash会导致字典中的数据分散在2个dictht上，因此对字典的删除、查找和更新操作会先在`ht[0]`里面进行查找，没找到则继续在`ht[1]`中查找。新增操作则是一律保存到`ht[1]`里面。
 
 ## 跳跃表
 是有序集合底层实现之一。它是基于多指针有序链表实现的，可以看成多个有序链表。
+
+```c
+typedef struct zskiplistNode {
+    // 层
+    struct zskiplistLevel {
+        // 前进指针
+        struct zskiplistNode *forward;
+        // 跨度
+        unsigned int span;
+    } level[];
+    // 后退指针
+    struct zskiplistNode *backward;
+    // 分值
+    double score;
+    // 成员对象
+    robj * obj;
+} zskiplistNode;
+```
+
+跳跃表支持平均`O(logN)`、最坏`O(N)`复杂度的节点查找，还可以通过顺序性操作来批量处理节点。
+
 <div align="center"><img src="../pics//1550972641(1).png" width="550px"></div>
 
 在查找时，从上层指针开始查找，找到对应区间之后再到下一层进行查找。
 <div align="center"><img src="../pics//1550972728(1).png" width="550px"></div>
+
+如果一个有序集合包含的元素数量比较多，或者元素成员是比较长的字符串，Redis就会使用跳跃表来作为有序集合键的底层实现。
 
 与红黑树等平衡树相比，跳跃表具有以下优点：
 - 插入速度非常快，因为不需要进行旋转等操作来维护平衡性，更容易实现；

@@ -58,6 +58,7 @@
 * [综合](#综合)
     * [把字符串转换成整数](#把字符串转换成整数)
     * [数组中重复的数字](#数组中重复的数字)
+    * [构建乘积数组](#构建乘积数组)
 ----------------------
 
 # 查找和排序
@@ -1535,6 +1536,22 @@ private void swap (int[] numbers, int i, int j) {
     int temp = numbers[i];
     numbers[i] = numbers[j];
     numbers[j] = temp;
+}
+```
+## [构建乘积数组](https://www.nowcoder.com/practice/94a4d381a68b47b7a8bed86f2975db46?tpId=13&tqId=11204&rp=3&ru=/ta/coding-interviews&qru=/ta/coding-interviews/question-ranking)
+## 题目描述
+给定一个数组`A[0,1,...,n-1]`,请构建一个数组`B[0,1,...,n-1]`,其中B中的元素`B[i]=A[0]*A[1]*...*A[i-1]*A[i+1]*...*A[n-1]`。不能使用除法。
+### 解题思路
+两趟累乘
+```java
+public int[] multiply(int[] A) {
+    int n = A.length;
+    int[] B = new int[n];
+    for (int i = 0, product = 1; i < n; product *= A[i], i++)       /* 从左往右累乘 */
+        B[i] = product;
+    for (int i = n - 1, product = 1; i >= 0; product *= A[i], i--)  /* 从右往左累乘 */
+        B[i] *= product;
+    return B;
 }
 ```
 ----------------------------------

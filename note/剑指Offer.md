@@ -1070,7 +1070,6 @@ public int numberOf1Between1AndN_Solution(int n){
 ```
 [LeetCode: 233. Number of Digit One](https://leetcode.com/problems/number-of-digit-one/discuss/64381/4+-lines-O(log-n)-C++JavaPython)
 
-
 ------------------------
 
 # 时间空间效率的平衡
@@ -1555,7 +1554,5 @@ public int[] multiply(int[] A) {
 }
 ```
 ----------------------------------
-<!-- ## 题目描述
-
-### 解题思路 -->
+<!-- ## 题目描述 ### 解题思路 -->
 本文中一些解法参考于[CyC2018](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/%E5%89%91%E6%8C%87%20offer%20%E9%A2%98%E8%A7%A3.md)

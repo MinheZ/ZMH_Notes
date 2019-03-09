@@ -174,16 +174,30 @@ RDB方式的持久化是通过快照（snapshotting）完成的，当符合一�
 # 复制
 通过使用 slaveof host port 命令来让一个服务器成为另一个服务器的从服务器。一个服务器能有多个从服务器，但是只能有一个主服务器。
 
-## 连接过程
+## 旧版复制过程
 1. 从服务器向主服务器发送 `SYNC` 命令；
 2. 收到 `SYNC` 命令的煮服务器开始执行 `BGSAVE`命令，在后台生成一个 RDB 文件，并使用一个缓冲区记录现在开始执行的所有**写命令**，当保存完毕之后，会将该 RDB 文件发送给从服务器；
 3. 主服务器将缓冲区的所有的写命令发送给从服务器。
 
 <div align="center"><img src="../pics//1552100905(1).png" width="350px"></div>
 
+**缺点：**主从服务器断开连接后，重新`SYNN`会耗费大量资源。
 
+## 新版复制过程
+
+**解决方案：**Redis 2.8 使用`PSYNC`解决旧版复制功能在处理断线后重复制时出现的低效情况。
+
+<div align="center"><img src="../pics//1552113841(1).png" width="350px"></div>
+
+部分重同步功能由以下三个部分组成：
+
+- 主服务器的复制偏移量(replication offset)和从服务器的复制偏移量。
+- 主服务器的复制和积压缓冲区(replication backlog)。
+- 服务器的运行ID(run ID)。
+
+复制积压缓冲区大小一般设置为`second * write_size_per_second`来估算。
 
 ---------------------------
 # 参考资料
 - 黄健宏. Redis 设计与实现 [M]. 机械工业出版社, 2014.
-- CyC2018-Redis
+- [CyC2018-Redis](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/Redis.md)

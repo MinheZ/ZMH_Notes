@@ -82,7 +82,7 @@ public static <T> int countGreaterThan(T[] anArray, T elem) {
 ```
 但是这样很明显是错误的，因为除了short, int, double, long, float, byte, char等原始类型，其他的类并不一定能使用操作符>，所以编译器报错，那怎么解决这个问题呢？答案是使用边界符。
 ```java
-ublic interface Comparable<T> {
+public interface Comparable<T> {
     public int compareTo(T o);
 }
 ```
@@ -390,7 +390,7 @@ public static <E> void append(List<E> list, Class<E> cls) throws Exception {
     list.add(elem);
 }```
 我们可以像下面这样调用：
-```java
+​```java
 List<String> ls = new ArrayList<>();
 append(ls, String.class);
 ```

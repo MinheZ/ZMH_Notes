@@ -757,6 +757,21 @@ class TaskExecutionWebServer{
 - **newSingleThreadExecutor：** 创建单个线程执行任务，若这个线程异常结束，则创建另一个线程替代。能确保依照任务在队列中的顺序来串行执行。
 - **newScheduledThreadPool：** 创建了一个固定长度的线程池，而且可以延迟或者定时的方式执行任务。
 
+```java
+public static void main(String[] args) {
+
+    ExecutorService threadPool = Executors.newCachedThreadPool();
+    threadPool.execute(() -> {
+        for (int i = 0; i< 20;i++) {
+            System.out.println(Thread.currentThread().getName()+":"+i);
+        }
+    });
+    threadPool.shutdown();
+}
+```
+
+
+
 ### Executor生命周期
 为了解决执行服务的生命周期问题，Executor扩展了ExecutorService接口，添加了一些用于生命周期管理的方法。
 ```java
@@ -1652,6 +1667,7 @@ ABA问题是一种异常现象：如果在算法中的节点可以被循环使�
 
 ### [**公平锁/非公平锁**](https://github.com/MinheZ/Notes/blob/master/note/Java%E5%B9%B6%E5%8F%91.md#%E5%85%AC%E5%B9%B3%E6%80%A7)
 <!-- 对于`ReentrantLock`而言，可以通过构造函数指定锁是否为公平锁，默认是非公平锁 -->
+
 ### [**可重入锁**](https://github.com/MinheZ/Notes/blob/master/note/Java%E5%B9%B6%E5%8F%91.md#%E9%87%8D%E5%85%A5)
 
 ### **不可重入锁**

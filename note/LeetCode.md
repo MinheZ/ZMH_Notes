@@ -2,6 +2,8 @@
 * [2. 两数相加](#两数相加)
 * [3. 无重复字符的最长子串](#无重复字符的最长子串)
 * [4. 最长的回文子串](#最长的回文子串)
+* [20. 有效的括号](#有效的括号)
+* [21. 合并两个有序链表](#合并两个有序链表)
 
 --------------------
 
@@ -13,9 +15,9 @@
 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
 
     示例:
-    
+
     给定 `nums = [2, 7, 11, 15], target = 9`
-    
+
     因为 `nums[0] + nums[1] = 2 + 7 = 9`
     所以返回 `[0, 1]`
 
@@ -44,7 +46,7 @@ public int[] twoSum(int[] nums, int target) {
 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 
     示例：
-    
+
     输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
     输出：7 -> 0 -> 8
     原因：342 + 465 = 807
@@ -90,17 +92,17 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
 
     示例 1:
-    
+
     输入: "abcabcbb"
     输出: 3
     解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
     示例 2:
-    
+
     输入: "bbbbb"
     输出: 1
     解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
     示例 3:
-    
+
     输入: "pwwkew"
     输出: 3
     解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
@@ -152,12 +154,107 @@ public int lengthOfLongestSubstring(String s) {
 
 ### 解题思路
 
+## [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
 
+## 题目描述
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
 
+有效字符串需满足：
 
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+注意空字符串可被认为是有效字符串。
+
+    示例 1:
+
+    输入: "()"
+    输出: true
+    示例 2:
+
+    输入: "()[]{}"
+    输出: true
+    示例 3:
+
+    输入: "(]"
+    输出: false
+    示例 4:
+
+    输入: "([)]"
+    输出: false
+    示例 5:
+
+    输入: "{[]}"
+    输出: true
+
+### 解题思路
+```java
+public boolean isValid(String s) {
+    if (s.length() % 2 != 0)
+        return false;
+    Stack<Character> stack = new Stack<>();
+    for (int i=0; i<s.length(); i++){
+        char c = s.charAt(i);
+        switch (c){
+            case '(' :
+            case '[' :
+            case '{' :
+                stack.push(c);
+                break;
+            case ')' :
+            case ']' :
+            case '}' :
+                if (!stack.empty()){
+                    char pop = stack.pop();
+                    if (c == '}' && pop != '{' || c == ']' && pop != '[' ||c == ')' && pop != '(')
+                        return false;
+                }else
+                    return false;
+                break;
+        }
+    }
+    return stack.empty() ? true : false;
+}
+```
+## [合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+
+## 题目描述
+将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+
+    示例：
+
+    输入：1->2->4, 1->3->4
+    输出：1->1->2->3->4->4
+
+### 解题思路
+空间换时间
+```java
+ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+    // 类似归并排序中的合并过程
+    ListNode dummyHead = new ListNode(0);
+    ListNode cur = dummyHead;
+    while (l1 != null && l2 != null) {
+        if (l1.val < l2.val) {
+            cur.next = l1;
+            cur = cur.next;
+            l1 = l1.next;
+        } else {
+            cur.next = l2;
+            cur = cur.next;
+            l2 = l2.next;
+        }
+    }
+    // 任一为空，直接连接另一条链表
+    if (l1 == null) {
+        cur.next = l2;
+    } else {
+        cur.next = l1;
+    }
+    return dummyHead.next;
+}
+```
 
 -----------------------------
 
+<!-- ## 题目描述
 
-
-<!-- ## 题目描述 ### 解题思路 -->
+### 解题思路 -->

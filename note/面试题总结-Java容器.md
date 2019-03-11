@@ -1,5 +1,5 @@
-[Java容器有哪些](#Java容器有哪些)
-[Collection 和 Collections 有什么区别](#Collection-和-Collections-有什么区别)
+* [Java容器有哪些](#Java容器有哪些)
+* [Collection 和 Collections 有什么区别](#Collection-和-Collections-有什么区别)
 
 --------------
 

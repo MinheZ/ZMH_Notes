@@ -988,9 +988,12 @@ ThreadPoolExecutor允许提供一个BlockingQueue来保存等待执行的任务�
 对非常大或者无界的线程池，可以使用**SynchronousQueue**来避免任务排队。SynchronousQueue是一种在线程之间进行移交的机制。要将一个元素放入SynchronousQueue中，必须有另一个线程等待接收这个元素。如果没有，且线程池当前大小小于最大值，那么ThreadPoolExecutor将创建一个新的线程，否则根据**饱和策略**将拒绝这个任务。
 
 ### 饱和策略
-JDK提供了几种不同的RejectedExecutorHandler实现：AbortPolicy, CallerRunsPolicy, DiscardPolicy和DiscardOldestPolicy（抛弃下一个将被执行的任务，最好不要与优先级队列一起使用）。
+JDK提供了几种不同的RejectedExecutorHandler实现：
 
-“调用者运行(Caller-Runs)”既不会抛弃任务，也不会抛出异常。当线程池所有的线程都被占用，并且工作队列也被填满时，下一个任务会在调用executor时在主线程中执行。由于执行任务需要一定时间，因此在主线程至少一定时间内不能提交任务，从而使得工作者线程有时间来处理完成正在执行的任务。
+- **AbortPolicy:** 默认的饱和策略，将抛出未检查的 `RejectedExecutionException`。
+- **DiscardPolicy：** 提交新任务时，将无法保存到队列中等待执行。
+- **DiscardOldestPolicy：** 抛弃下一个将被执行的任务，最好不要与优先级队列一起使用。
+- **Caller-Runs：** 既不会抛弃任务，也不会抛出异常。当线程池所有的线程都被占用，并且工作队列也被填满时，下一个任务会在调用executor时在主线程中执行。由于执行任务需要一定时间，因此在主线程至少一定时间内不能提交任务，从而使得工作者线程有时间来处理完成正在执行的任务。
 ```java
 ThreadPoolExecutor executor = new ThreadPoolExecutor(N_THREADS, N_THREADS, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(CAPACITY));
 executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());

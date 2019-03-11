@@ -11,6 +11,7 @@
 * [136. 只出现一次的数字](#只出现一次的数字)
 * [141. 环形链表](#环形链表)
 * [155. 最小栈](#最小栈)
+* [166. 相交链表](#相交链表)
 
 --------------------
 
@@ -423,7 +424,60 @@ public boolean hasCycle(ListNode head) {
     minStack.getMin();   --> 返回 -2.
 ```
 ### 解题思路
+当有新的最小值的时候，先入栈之前最小值，再入栈最近最小值。当有最小值出栈时，要连续`stack.pop()`2次，且第二次的值为新的 `min`。
+```java
+Stack<Integer> stack;
+int min;
+/** initialize your data structure here. */
+public MinStack() {
+    stack = new Stack<>();
+    min = Integer.MAX_VALUE;
+}
 
+public void push(int x) {
+    if (x <= min) {
+        stack.push(min);
+        min = x;
+    }
+    stack.push(x);
+}
+
+public void pop() {
+    if (stack.empty())
+        return;
+    if (stack.pop() == min)
+        min = stack.pop();
+}
+
+public int top() {
+    if (!stack.empty())
+        return stack.peek();
+    else
+        throw new RuntimeException("error");
+}
+
+public int getMin() {
+    if (!stack.empty())
+        return min;
+    else
+        throw new RuntimeException("error");
+}
+```
+## [相交链表](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+### 题目描述
+编写一个程序，找到两个单链表相交的起始节点。
+### 解题思路
+```java
+public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+    ListNode l1 = headA;
+    ListNode l2 = headB;
+    while (l1 != l2) {
+        l1 = l1 == null ? l1 = headB : l1.next;
+        l2 = l2 == null ? l2 = headA : l2.next;
+    }
+    return l1;
+}
+```
 -----------------------------
 
 <!-- ### 题目描述

@@ -1,9 +1,16 @@
+# LeetCode Top100 stars
+
 * [1. 两数之和](#两数之和)
 * [2. 两数相加](#两数相加)
 * [3. 无重复字符的最长子串](#无重复字符的最长子串)
 * [4. 最长的回文子串](#最长的回文子串)
 * [20. 有效的括号](#有效的括号)
 * [21. 合并两个有序链表](#合并两个有序链表)
+* [104. 二叉树的最大深度](#二叉树的最大深度)
+* [121. 买卖股票的最佳时机](#买卖股票的最佳时机)
+* [136. 只出现一次的数字](#只出现一次的数字)
+* [141. 环形链表](#环形链表)
+* [155. 最小栈](#最小栈)
 
 --------------------
 
@@ -252,9 +259,173 @@ public boolean isValid(String s) {
     return dummyHead.next;
 }
 ```
+## [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+
+## 题目描述
+给定一个二叉树，找出其最大深度。
+
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+
+说明: 叶子节点是指没有子节点的节点。
+
+    示例：
+    给定二叉树 [3,9,20,null,null,15,7]，
+
+        3
+       / \
+      9  20
+        /  \
+       15   7
+返回它的最大深度 3 。
+### 解题思路
+递归，求子树的高度。
+```java
+public int maxDepth(TreeNode root) {
+    if (root == null)
+        return 0;
+    return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+```
+## [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+## 题目描述
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+如果你最多只允许完成一笔交易（即买入和卖出一支股票），设计一个算法来计算你所能获取的最大利润。
+
+注意你不能在买入股票前卖出股票。
+
+    示例 1:
+
+    输入: [7,1,5,3,6,4]
+    输出: 5
+    解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+         注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
+    示例 2:
+
+    输入: [7,6,4,3,1]
+    输出: 0
+    解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+### 解题思路
+如果没有更低的买入价格，则不需要比较卖出价钱。
+```java
+public int maxProfit(int[] prices) {
+    if (prices.length <= 1)
+        return 0;
+    int minBuy = prices[0];
+    int maxProfit = 0;
+    for (int i=1; i<prices.length; i++) {
+        if (minBuy > prices[i])
+            minBuy = prices[i];
+        else if (prices[i] - minBuy > maxProfit){
+            maxProfit = prices[i] - minBuy;
+        }
+    }
+    return maxProfit;
+}
+```
+## [只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+## 题目描述
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+说明：
+
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+    示例 1:
+
+    输入: [2,2,1]
+    输出: 1
+    示例 2:
+
+    输入: [4,1,2,1,2]
+    输出: 4
+### 解题思路
+相同的数字异或为0。
+```java
+public int singleNumber(int[] nums) {
+    int ret = 0;
+    for (int i : nums) {
+        ret ^= i;
+    }
+    return ret;
+}
+```
+
+## [环形链表](https://leetcode.com/problems/linked-list-cycle/)
+
+### 题目描述
+给定一个链表，判断链表中是否有环。
+
+为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
+
+    示例 1：
+
+    输入：head = [3,2,0,-4], pos = 1
+    输出：true
+    解释：链表中有一个环，其尾部连接到第二个节点。
+
+    示例 2：
+
+    输入：head = [1,2], pos = 0
+    输出：true
+    解释：链表中有一个环，其尾部连接到第一个节点。
+
+    示例 3：
+
+    输入：head = [1], pos = -1
+    输出：false
+    解释：链表中没有环。
+
+    进阶：
+
+    你能用 O(1)（即，常量）内存解决此问题吗？
+### 解题思路
+2个链表指针，一个一次走2步，一个一次走一步，有环则一定会相遇。注释的部分是取巧的办法，设想的是走过的节点设一个标志位，如果起始链表中有标志位，则会判断错误。
+```java
+public boolean hasCycle(ListNode head) {
+    if (head == null)
+        return false;
+
+//         while (head != null) {
+//             if (head.val == Integer.MAX_VALUE) {
+//                 return true;
+//             }
+//             head.val = Integer.MAX_VALUE;
+//             head = head.next;
+//         }
+//         return false;
+    ListNode fast = head;
+    ListNode slow = head;
+    while (fast != null && fast.next != null) {
+        fast = fast.next.next;
+        slow = slow.next;
+        if (fast == slow)
+            return true;
+    }
+    return false;
+}
+```
+## [最小栈](https://leetcode.com/problems/min-stack/)
+### 题目描述
+设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。
+- push(x) -- 将元素 x 推入栈中。
+- pop() -- 删除栈顶的元素。
+- top() -- 获取栈顶元素。
+- getMin() -- 检索栈中的最小元素。
+```
+    示例:
+    MinStack minStack = new MinStack();
+    minStack.push(-2);
+    minStack.push(0);
+    minStack.push(-3);
+    minStack.getMin();   --> 返回 -3.
+    minStack.pop();
+    minStack.top();      --> 返回 0.
+    minStack.getMin();   --> 返回 -2.
+```
+### 解题思路
 
 -----------------------------
 
-<!-- ## 题目描述
+<!-- ### 题目描述
 
 ### 解题思路 -->

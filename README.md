@@ -35,4 +35,4 @@
 - [Redis](https://github.com/MinheZ/Notes/blob/master/note/Redis.md)
 
 ### :book: 面经总结
-- [面经总结](https://github.com/MinheZ/Notes/blob/master/note/面经总结.md)
+- [面试题总结](https://github.com/MinheZ/Notes/blob/master/note/面试题总结.md)

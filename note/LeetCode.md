@@ -1,17 +1,20 @@
 # LeetCode Top100 stars
 
-* [1. 两数之和](#两数之和)
-* [2. 两数相加](#两数相加)
-* [3. 无重复字符的最长子串](#无重复字符的最长子串)
-* [4. 最长的回文子串](#最长的回文子串)
-* [20. 有效的括号](#有效的括号)
-* [21. 合并两个有序链表](#合并两个有序链表)
-* [104. 二叉树的最大深度](#二叉树的最大深度)
-* [121. 买卖股票的最佳时机](#买卖股票的最佳时机)
-* [136. 只出现一次的数字](#只出现一次的数字)
-* [141. 环形链表](#环形链表)
-* [155. 最小栈](#最小栈)
-* [166. 相交链表](#相交链表)
+* [1 两数之和](#两数之和)
+* [2 两数相加](#两数相加)
+* [3 无重复字符的最长子串](#无重复字符的最长子串)
+* [4 最长的回文子串](#最长的回文子串)
+* [20 有效的括号](#有效的括号)
+* [21 合并两个有序链表](#合并两个有序链表)
+* [104 二叉树的最大深度](#二叉树的最大深度)
+* [121 买卖股票的最佳时机](#买卖股票的最佳时机)
+* [136 只出现一次的数字](#只出现一次的数字)
+* [141 环形链表](#环形链表)
+* [155 最小栈](#最小栈)
+* [166 相交链表](#相交链表)
+* [198 打家劫舍](#打家劫舍)
+* [234 回文链表](#回文链表)
+* [283 移动零](#移动零)
 
 --------------------
 
@@ -478,6 +481,112 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
     return l1;
 }
 ```
+## [打家劫舍](https://leetcode.com/problems/house-robber/)
+### 题目描述
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你在不触动警报装置的情况下，能够偷窃到的最高金额。
+
+    示例 1:
+
+    输入: [1,2,3,1]
+    输出: 4
+    解释: 偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+         偷窃到的最高金额 = 1 + 3 = 4 。
+    示例 2:
+
+    输入: [2,7,9,3,1]
+    输出: 12
+    解释: 偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+         偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+### 解题思路
+典型的动态规划问题。
+```java
+public int rob(int[] nums) {
+    int n = nums.length;
+    if (n <= 1) return n == 0 ? 0 : nums[0];
+    int[] memo = new int[n];
+    memo[0] = nums[0];
+    memo[1] = Math.max(nums[0], nums[1]);
+    for (int i = 2; i < n; i++)
+        memo[i] = Math.max(memo[i - 1], nums[i] + memo[i - 2]);
+    return memo[n - 1];
+}
+```
+## [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/submissions/)
+### 题目描述
+请判断一个链表是否为回文链表。
+
+    示例 1:
+
+    输入: 1->2
+    输出: false
+    示例 2:
+
+    输入: 1->2->2->1
+    输出: true
+    进阶：
+    你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+### 解题思路
+先找出链表的中点，然后将后半段链表反转。
+```java
+public boolean isPalindrome(ListNode head) {
+    if (head == null || head.next == null)
+        return true;
+
+    ListNode fast = head;
+    ListNode slow = head;
+
+    while (fast.next != null && fast.next.next != null) {
+        fast = fast.next.next;
+        slow = slow.next;
+    }
+    // 反转后半段链表
+    ListNode pre = null;
+    ListNode cur = slow.next;
+
+    while (cur != null) {
+        ListNode temp = cur.next;
+        cur.next = pre;
+        pre = cur;
+        cur = temp;
+    }
+    while (pre != null) {
+        if (head.val != pre.val)
+            return false;
+        head = head.next;
+        pre = pre.next;
+    }
+    return true;
+}
+```
+## [移动零](https://leetcode-cn.com/problems/move-zeroes/submissions/)
+### 题目描述
+给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+    示例:
+
+    输入: [0,1,0,3,12]
+    输出: [1,3,12,0,0]
+    说明:
+
+    必须在原数组上操作，不能拷贝额外的数组。
+    尽量减少操作次数。
+### 解题思路
+```java
+public void moveZeroes(int[] nums) {
+    int i = 0, j = 0;
+    while (j < nums.length) {
+        if (nums[j] != 0)
+            nums[i++] = nums[j];
+        j++;
+    }
+    while (i < nums.length) {
+        nums[i++] = 0;
+    }
+}
+```
+
 -----------------------------
 
 <!-- ### 题目描述

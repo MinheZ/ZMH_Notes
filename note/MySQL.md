@@ -105,7 +105,7 @@ MyISAM 存储引擎支持全文索引，用于查找文本中的关键词，而�
 
 查找条件使用 MATCH AGAINST，而不是普通的 WHERE。
 
-**全文索引使用[倒排索引]()实现**，它记录着关键词到其所在文档的映射。
+**全文索引使用[倒排索引](https://github.com/MinheZ/Notes/blob/master/note/%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95.md)实现**，它记录着关键词到其所在文档的映射。
 
 InnoDB 存储引擎在 MySQL 5.6.4 版本中也开始支持全文索引。
 

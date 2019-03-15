@@ -15,6 +15,8 @@
 * [198 打家劫舍](#打家劫舍)
 * [234 回文链表](#回文链表)
 * [283 移动零](#移动零)
+* [437 路径总和](#路径总和)
+* [438 找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
 
 --------------------
 
@@ -586,6 +588,77 @@ public void moveZeroes(int[] nums) {
     }
 }
 ```
+## [路径总和](https://leetcode-cn.com/problems/path-sum-iii/)
+### 题目描述
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+    示例：
+
+    root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+          10
+         /  \
+        5   -3
+       / \    \
+      3   2   11
+     / \   \
+    3  -2   1
+
+    返回 3。和等于 8 的路径有:
+
+    1.  5 -> 3
+    2.  5 -> 2 -> 1
+    3.  -3 -> 11
+### 解题思路
+双重递归。思路：首先先序递归遍历每个节点，再以每个节点作为起始点递归寻找满足条件的路径。
+```java
+public int pathSum(TreeNode root, int sum) {
+    if (root == null)
+        return 0;
+    int res = 0;
+    return dfs(root, sum) + pathSum(root.left, sum) + pathSum(root.right, sum);
+}
+private int dfs (TreeNode root, int sum) {
+    if (root == null)
+        return 0;
+    int res = 0;
+    if (root.val == sum)  res++;
+    res += dfs(root.left, sum - root.val);
+    res += dfs(root.right, sum - root.val);
+    return res;
+}
+```
+动态规划，在一个数组中记录下每一条路径的长度，避免重复计算。
+```java
+int path = 0;
+    public int pathSum(TreeNode root, int sum) {
+        if (root == null)
+            return 0;
+        dfs(root, sum, new int[0]);
+        return path;
+    }
+private void dfs (TreeNode node, int sum, int[] array) {
+    if (node == null)
+        return ;
+    int[] newArray = new int[array.length + 1];
+    for (int i=0; i<array.length; i++) {
+        newArray[i] = array[i] + node.val;
+        path = newArray[i] == sum ? ++path : path;
+    }
+    newArray[array.length] = node.val;
+    path = node.val == sum ? ++path : path;
+    if (node.left != null) dfs(node.left, sum, newArray);
+    if (node.right != null) dfs(node.right, sum, newArray);
+}
+```
+## [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+
 
 -----------------------------
 

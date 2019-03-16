@@ -405,6 +405,10 @@ Node<E> node(int index) {
 
 值得注意的是HashMap不是线程安全的，如果想要线程安全的`HashMap`，可以通过`Collections`类的静态方法`synchronizedMap`获得线程安全的`HashMap`。
 
+**为什么 HashMap 不是线程安全的？**
+
+HashMap在put的时候，插入的元素超过了容量（由负载因子决定）的范围就会触发扩容操作，就是rehash，这个会重新将原数组的内容重新hash到新的扩容数组中，在多线程的环境下，存在同时其他的元素也在进行put操作，如果hash值相同，可能出现同时在同一数组下用链表表示，造成闭环，导致在get时会出现死循环，所以HashMap是线程不安全的。
+
 ## HashMap的数据结构
 HashMap的底层主要是基于数组和链表来实现的，它是通过计算散列码来决定存储的位置，HashMap底层是通过[链地址法](https://github.com/MinheZ/Notes/blob/master/note/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.md#%E9%93%BE%E5%9C%B0%E5%9D%80%E6%B3%95)来处理hash冲突的。
 

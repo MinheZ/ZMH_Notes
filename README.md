@@ -34,8 +34,6 @@
 ### :floppy_disk: 数据库
 - [MySQL](https://github.com/MinheZ/Notes/blob/master/note/MySQL.md)
 
-  转载自[CyC2018-MySQL](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/MySQL.md)
-
 - [Redis](https://github.com/MinheZ/Notes/blob/master/note/Redis.md)
 
 ### :book: 面经总结

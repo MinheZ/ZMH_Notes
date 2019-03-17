@@ -1,6 +1,6 @@
-| Ⅰ | Ⅱ | Ⅲ | Ⅳ | Ⅴ |
-| :--------: | :---------: | :---------: | :---------: |:---------: |
-| 算法[:pencil2:](#pencil2-算法) | Java [:coffee:](#coffee-Java) | 网络[:cloud:](#cloud-网络) | 框架[:wrench:](#wrench-框架) | 数据库[:floppy_disk:](#floppy_disk-数据库) |面经总结[:book:](#book-面经总结) |
+| Ⅰ | Ⅱ | Ⅲ | Ⅳ | Ⅴ | Ⅵ |
+| :--------: | :---------: | :---------: | :---------: |:---------: |:---------: |
+| 算法[:pencil2:](#pencil2-算法) | Java [:coffee:](#coffee-Java) | 网络[:cloud:](#cloud-网络) | 框架[:wrench:](#wrench-框架) | 数据库[:floppy_disk:](#floppy_disk-数据库) | 系统设计[:bulb:](#bulb-系统设计) |面经总结[:book:](#book-面经总结) |
 
 <!-- | Ⅰ | Ⅱ | Ⅲ | Ⅳ | Ⅴ | Ⅵ | Ⅶ | Ⅷ | Ⅸ | Ⅹ | -->
 <div align="center">
@@ -35,6 +35,9 @@
 - [MySQL](https://github.com/MinheZ/Notes/blob/master/note/MySQL.md)
 
 - [Redis](https://github.com/MinheZ/Notes/blob/master/note/Redis.md)
+
+### :bulb: 系统设计
+- [分布式](https://github.com/MinheZ/Notes/blob/master/note/分布式.md)
 
 ### :book: 面经总结
 - [面试题总结](https://github.com/MinheZ/Notes/blob/master/note/面试题总结.md)

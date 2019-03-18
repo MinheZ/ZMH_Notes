@@ -17,6 +17,7 @@
 * [283 移动零](#移动零)
 * [437 路径总和](#路径总和)
 * [438 找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
+* [448 找到所有数组中消失的数字](#448-找到所有数组中消失的数字)
 
 --------------------
 
@@ -649,15 +650,15 @@ private void dfs (TreeNode node, int sum, int[] array) {
     int[] newArray = new int[array.length + 1];
     for (int i=0; i<array.length; i++) {
         newArray[i] = array[i] + node.val;
-        path = newArray[i] == sum ? ++path : path;
     }
+        path = newArray[i] == sum ? ++path : path;
     newArray[array.length] = node.val;
     path = node.val == sum ? ++path : path;
     if (node.left != null) dfs(node.left, sum, newArray);
     if (node.right != null) dfs(node.right, sum, newArray);
 }
 ```
-## [找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
+## [438 找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/)
 
 ### 题目描述
 给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
@@ -718,6 +719,157 @@ public List<Integer> findAnagrams(String s, String p) {
     return list;
 }
 ```
+## [448 找到所有数组中消失的数字](https://leetcode-cn.com/problems/find-all-numbers-disappeared-in-an-array/)
+### 题目描述
+给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
+
+找到所有在 [1, n] 范围之间没有出现在数组中的数字。
+
+您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
+
+    示例:
+
+    输入:
+    [4,3,2,7,8,2,3,1]
+
+    输出:
+    [5,6]
+### 解题思路
+将`Math.abs(nums[i]) - 1`对应位置上面数字变为负数，不存在的索引上面的数字不会发生变化。
+```java
+public List<Integer> findDisappearedNumbers(int[] nums) {
+    List<Integer> res = new ArrayList<>();
+    for (int i=0; i<nums.length; i++) {
+        nums[Math.abs(nums[i]) - 1] = - Math.abs(nums[Math.abs(nums[i]) - 1]);
+    }
+    for (int i=0; i<nums.length; i++) {
+        if (nums[i] > 0)
+            res.add(i+1);
+    }
+    return res;
+}
+```
+## 461 [汉明距离](https://leetcode-cn.com/problems/hamming-distance/)
+### 题目描述
+两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
+
+给出两个整数 x 和 y，计算它们之间的汉明距离。
+
+    注意：
+    0 ≤ x, y < 2^31.
+
+    示例:
+
+    输入: x = 1, y = 4
+
+    输出: 2
+
+    解释:
+    1   (0 0 0 1)
+    4   (0 1 0 0)
+           ↑   ↑
+
+    上面的箭头指出了对应二进制位不同的位置。
+### 解题思路
+先异或，再数 `1` 的个数。
+```java
+public int hammingDistance(int x, int y) {
+    int cnt = 0;
+    int z = x ^ y;
+    while (z != 0) {
+        z &= z - 1;
+        cnt++;
+    }
+    return cnt;
+}
+```
+## [538. 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+### 题目描述
+给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+
+    例如：
+
+    输入: 二叉搜索树:
+                  5
+                /   \
+               2     13
+
+    输出: 转换为累加树:
+                 18
+                /   \
+              20     13
+### 解题思路
+注意：给出的是一个二叉搜索树，数据已经有序，则按照右节点->根节点->左节点的访问顺序遍历即可。
+```java
+private int num = 0;
+public TreeNode convertBST(TreeNode root) {
+    unPreOrder(root);
+    return root;
+}
+private void unPreOrder(TreeNode root) {
+    if (root == null) {
+        return;
+    }
+    unPreOrder(root.right);
+    // 当前节点的值先加上num
+    root.val += num;
+    num = root.val;
+    unPreOrder(root.left);
+}
+```
+## [543. 二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+### 题目描述
+给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过根结点。
+
+    示例 :
+    给定二叉树
+
+              1
+             / \
+            2   3
+           / \
+          4   5
+    返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
+
+    注意：两结点之间的路径长度是以它们之间边的数目表示。
+
+### 解题思路
+整体思路就是求根节点左右子树的最大高度。
+```java
+private int res = 0;
+public int diameterOfBinaryTree(TreeNode root) {
+    deepth(root);
+    return res;
+}
+private int deepth(TreeNode root) {
+    if (root == null)
+        return 0;
+    int l = root.left == null ? 0 : deepth(root.left) + 1;
+    int r = root.right == null ? 0 : deepth(root.right) + 1;
+    res = Math.max(res, l + r);
+    return Math.max(l,r);
+}
+```
+## [572. 另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
+### 题目描述
+给定两个非空二叉树 s 和 t，检验 s 中是否包含和 t 具有相同结构和节点值的子树。s 的一个子树包括 s 的一个节点和这个节点的所有子孙。s 也可以看做它自身的一棵子树。
+
+    示例 1:
+    给定的树 s:
+
+         3
+        / \
+       4   5
+      / \
+     1   2
+    给定的树 t：
+
+       4
+      / \
+     1   2
+    返回 true，因为 t 与 s 的一个子树拥有相同的结构和节点值。
+
+### 解题思路
 
 -----------------------------
 

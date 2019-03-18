@@ -181,11 +181,11 @@ RDB方式的持久化是通过快照（snapshotting）完成的，当符合一�
 
 <div align="center"><img src="../pics//1552100905(1).png" width="350px"></div>
 
-**缺点：**主从服务器断开连接后，重新`SYNN`会耗费大量资源。
+**缺点：** 主从服务器断开连接后，重新`SYNN`会耗费大量资源。
 
 ## 新版复制过程
 
-**解决方案：**Redis 2.8 使用`PSYNC`解决旧版复制功能在处理断线后重复制时出现的低效情况。
+**解决方案：** Redis 2.8 使用`PSYNC`解决旧版复制功能在处理断线后重复制时出现的低效情况。
 
 <div align="center"><img src="../pics//1552113841(1).png" width="350px"></div>
 

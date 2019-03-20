@@ -1,23 +1,21 @@
 * [Java基础](#Java基础)
 
-    * [1 JDK和JRE的区别](#JDK和JRE的区别)
-    * [2 equals和==的区别](#equals和==的区别)
-    * [3 equals与hashcode间的关系](#equals与hashcode间的关系)
-    * [4 String, StringBuilder和StringBuffer区别以及线程安全](#String,-StringBuilder和StringBuffer区别以及线程安全)
-    * [5 final 的作用](#final-的作用)
+    * [1 JDK和JRE的区别](#1-JDK和JRE的区别)
+    * [2 equals和==的区别](#2-equals和==的区别)
+    * [3 equals与hashcode间的关系](#3-equals与hashcode间的关系)
+    * [4 String, StringBuilder和StringBuffer区别以及线程安全](#4-String,-StringBuilder和StringBuffer区别以及线程安全)
+    * [5 final 的作用](#5-final-的作用)
     * [6 Math.round](#Math.round)
-    * [7 String 属于基础数据类型吗](#String-属于基础数据类型吗)
-    * [8 switch语句能否作用在byte上，能否作用在long上，能否作用在string上？](#switch语句能否作用在byte上，能否作用在long上，能否作用在string上？)
-    * [9 抽象类必须要有抽象方法吗](#抽象类必须要有抽象方法吗)
-    * [10 接口和抽象类有什么区别](#接口和抽象类有什么区别)
-    * [11 static 的含义](#static-的含义)
+    * [7 String 属于基础数据类型吗](#6-String-属于基础数据类型吗)
+    * [8 switch语句能否作用在byte上，能否作用在long上，能否作用在string上？](#7-switch语句能否作用在byte上，能否作用在long上，能否作用在string上)
+    * [9 抽象类必须要有抽象方法吗](#8-抽象类必须要有抽象方法吗)
+    * [10 接口和抽象类有什么区别](#9-接口和抽象类有什么区别)
+    * [11 static 的含义](#10-static-的含义)
 
 
 ----------------------------
 
-# Java基础
-
-### JDK和JRE的区别
+## 1 JDK和JRE的区别
 
 **JRE： Java Runtime Environment**
 
@@ -29,12 +27,12 @@ Java 开发工具包，是程序员使用 Java 语言编写 Java程序所需要�
 
 ----------------------
 
-### equals和==的区别
+## 2 equals和==的区别
 
 - 基本数据类型：boolean, byte, char, short, int, long, float, double。它们之间的比较用 `==`。
 - 引用数据类型：当它们用`==`的时候，比较的是在内存中的存放地址。
 
-#### equals()方法
+### equals()方法
 Java Object 类中定义了一个 equals 方法
 ```java
 public boolean equals(Object obj) {
@@ -49,7 +47,7 @@ public boolean equals(Object obj) {
 
 --------------------
 
-### equals与hashcode间的关系
+## 3 equals与hashcode间的关系
 hashCode()：计算出对象实例的哈希码，并返回哈希码，又称为散列函数。根类Object的hashCode()方法的计算依赖于对象实例的D（内存地址），故每个Object对象的hashCode都是唯一的；当然，当对象所对应的类重写了hashCode()方法时，结果就截然不同了。
 
 - 两个obj，如果equals()相等，hashCode()一定相等。
@@ -57,12 +55,12 @@ hashCode()：计算出对象实例的哈希码，并返回哈希码，又称为�
 
 所以在集合中，判断2个对象是否相等，一般都是先判断`hashCode`是否相等，相等则判断`equals()`，否则返回 false 。
 
-#### 如果重写equals没有重写hashcode会发生什么?
+### 如果重写equals没有重写hashcode会发生什么?
  在存储散列集合时(如Set类)，如果 原对象.equals(新对象)，但没有对hashCode重写，即两个对象拥有不同的hashcode，则在集合中将会存储两个值相同的对象，从而导致混淆。因此在重写equals方法时，必须重写hashcode方法。
 
 --------------------
 
-### String, StringBuilder和StringBuffer区别以及线程安全
+## 4 String, StringBuilder和StringBuffer区别以及线程安全
 - **String:** 字符串常量，每次对 String 类型进行改变的时候就等同于生成一个新的 String 对象，并将指针指向新的 String 对象。所以经常改变内容的的字符串最好不要用 String，因为每次生成对象都会对系统的性能产生影响，当内存中无引用对象增多之后， JVM 的 GC 就开始工作。
 - **StringBuffer:** 字符串变量，线程安全，所有的方法都有`synchronized`同步。
 - **StringBuilder:** 字符串变量，非线程安全，主要方法与`StringBuffer`相同，
@@ -82,7 +80,7 @@ JVM 直接把 String 翻译成`str = "Hello world";`，因此速度很快。但�
 
 -------------------
 
-### final 的作用
+## 5-final 的作用
 
 final 可修饰数据、方法和类。
 
@@ -92,7 +90,7 @@ final 可修饰数据、方法和类。
 
 -----------------------------------
 
-### Math.round
+## 6-Math.round
 
 口诀：+0.5后向下取整。	`Math.round(-2.5) = -2`
 
@@ -100,17 +98,17 @@ final 可修饰数据、方法和类。
 
 `Math.floor(double a)`向下取整。
 
-### String 属于基础数据类型吗
+## 7-String 属于基础数据类型吗
 不属于[基本数据类型](equals和==的区别)
 
-### switch语句能否作用在byte上，能否作用在long上，能否作用在string上？
+## 8-switch语句能否作用在byte上，能否作用在long上，能否作用在string上？
 byte的存储范围小于int，可以向int类型进行隐式转换，所以switch可以作用在byte上。
 
 long的存储范围大于int，不能向int进行隐式转换，只能强制转换，所以switch不可以作用在long上。
 
 **String在1.7版本之前不可以，1.7版本之后switch就可以作用在String上了。**
 
-### 抽象类必须要有抽象方法吗
+## 9-抽象类必须要有抽象方法吗
 不一定。包含抽象方法的类叫作抽象类
 ```java
 abstract class Test {
@@ -119,7 +117,7 @@ abstract class Test {
 ```
 但是也可以创建一个没有抽象方法的抽象类。
 
-### 接口和抽象类有什么区别
+## 10-接口和抽象类有什么区别
 接口和抽象类都是继承树的上层，他们的共同点如下：
 1) 都是上层的抽象层。
 2) 都不能被实例化
@@ -135,7 +133,7 @@ abstract class Test {
 
 对于已经存在的继承树，可以方便的从类中抽象出新的接口，但是从类中抽象出新的抽象类就不那么容易了，因此接口更有利于软件系统的维护和重构。
 
-## static 的含义
+## 11-static 的含义
 static 方法就是没有 this(只能在方法内部使用，表示对“调用方法的那个对象”的引用) 的方法。在 static 方法的内部不能调用非静态方法。
 
 可以在没有任何对象的前提下，仅仅通过类本身来调用 static 方法。

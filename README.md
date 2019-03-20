@@ -43,4 +43,4 @@
 - [分布式](https://github.com/MinheZ/Notes/blob/master/note/分布式.md)
 
 ### :book: 面经总结
-- [面试题总结](https://github.com/MinheZ/Notes/blob/master/note/面试题总结.md)
+- [面试总结](https://github.com/MinheZ/Notes/blob/master/note/面试总结.md)

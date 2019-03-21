@@ -17,7 +17,14 @@
 * [283 移动零](#移动零)
 * [437 路径总和](#路径总和)
 * [438 找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
+* [461 汉明距离](#461-汉明距离)
 * [448 找到所有数组中消失的数字](#448-找到所有数组中消失的数字)
+* [538 把二叉搜索树转换为累加树](#538-把二叉搜索树转换为累加树)
+* [543 二叉树的直径](#543-二叉树的直径)
+* [572 另一个树的子树](#572-另一个树的子树)
+* [581. 最短无序连续子数组](#581.-最短无序连续子数组)
+* [617. 合并二叉树](#617.-合并二叉树)
+* [771. 宝石与石头](#771.-宝石与石头)
 
 --------------------
 
@@ -29,9 +36,9 @@
 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
 
     示例:
-
+    
     给定 `nums = [2, 7, 11, 15], target = 9`
-
+    
     因为 `nums[0] + nums[1] = 2 + 7 = 9`
     所以返回 `[0, 1]`
 
@@ -60,7 +67,7 @@ public int[] twoSum(int[] nums, int target) {
 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 
     示例：
-
+    
     输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
     输出：7 -> 0 -> 8
     原因：342 + 465 = 807
@@ -106,17 +113,17 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
 
     示例 1:
-
+    
     输入: "abcabcbb"
     输出: 3
     解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
     示例 2:
-
+    
     输入: "bbbbb"
     输出: 1
     解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
     示例 3:
-
+    
     输入: "pwwkew"
     输出: 3
     解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
@@ -180,23 +187,23 @@ public int lengthOfLongestSubstring(String s) {
 注意空字符串可被认为是有效字符串。
 
     示例 1:
-
+    
     输入: "()"
     输出: true
     示例 2:
-
+    
     输入: "()[]{}"
     输出: true
     示例 3:
-
+    
     输入: "(]"
     输出: false
     示例 4:
-
+    
     输入: "([)]"
     输出: false
     示例 5:
-
+    
     输入: "{[]}"
     输出: true
 
@@ -235,7 +242,7 @@ public boolean isValid(String s) {
 将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 
     示例：
-
+    
     输入：1->2->4, 1->3->4
     输出：1->1->2->3->4->4
 
@@ -277,7 +284,7 @@ public boolean isValid(String s) {
 
     示例：
     给定二叉树 [3,9,20,null,null,15,7]，
-
+    
         3
        / \
       9  20
@@ -302,13 +309,13 @@ public int maxDepth(TreeNode root) {
 注意你不能在买入股票前卖出股票。
 
     示例 1:
-
+    
     输入: [7,1,5,3,6,4]
     输出: 5
     解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
          注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
     示例 2:
-
+    
     输入: [7,6,4,3,1]
     输出: 0
     解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
@@ -332,6 +339,7 @@ public int maxProfit(int[] prices) {
 ```
 ## [只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
 ## 题目描述
+
 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
 
 说明：
@@ -342,7 +350,7 @@ public int maxProfit(int[] prices) {
     输入: [2,2,1]
     输出: 1
     示例 2:
-
+    
     输入: [4,1,2,1,2]
     输出: 4
 ### 解题思路
@@ -365,25 +373,25 @@ public int singleNumber(int[] nums) {
 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
 
     示例 1：
-
+    
     输入：head = [3,2,0,-4], pos = 1
     输出：true
     解释：链表中有一个环，其尾部连接到第二个节点。
-
+    
     示例 2：
-
+    
     输入：head = [1,2], pos = 0
     输出：true
     解释：链表中有一个环，其尾部连接到第一个节点。
-
+    
     示例 3：
-
+    
     输入：head = [1], pos = -1
     输出：false
     解释：链表中没有环。
-
+    
     进阶：
-
+    
     你能用 O(1)（即，常量）内存解决此问题吗？
 ### 解题思路
 2个链表指针，一个一次走2步，一个一次走一步，有环则一定会相遇。注释的部分是取巧的办法，设想的是走过的节点设一个标志位，如果起始链表中有标志位，则会判断错误。
@@ -491,13 +499,13 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
 给定一个代表每个房屋存放金额的非负整数数组，计算你在不触动警报装置的情况下，能够偷窃到的最高金额。
 
     示例 1:
-
+    
     输入: [1,2,3,1]
     输出: 4
     解释: 偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
          偷窃到的最高金额 = 1 + 3 = 4 。
     示例 2:
-
+    
     输入: [2,7,9,3,1]
     输出: 12
     解释: 偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
@@ -521,11 +529,11 @@ public int rob(int[] nums) {
 请判断一个链表是否为回文链表。
 
     示例 1:
-
+    
     输入: 1->2
     输出: false
     示例 2:
-
+    
     输入: 1->2->2->1
     输出: true
     进阶：
@@ -568,11 +576,11 @@ public boolean isPalindrome(ListNode head) {
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 
     示例:
-
+    
     输入: [0,1,0,3,12]
     输出: [1,3,12,0,0]
     说明:
-
+    
     必须在原数组上操作，不能拷贝额外的数组。
     尽量减少操作次数。
 ### 解题思路
@@ -590,6 +598,7 @@ public void moveZeroes(int[] nums) {
 }
 ```
 ## [路径总和](https://leetcode-cn.com/problems/path-sum-iii/)
+
 ### 题目描述
 给定一个二叉树，它的每个结点都存放着一个整数值。
 
@@ -600,9 +609,9 @@ public void moveZeroes(int[] nums) {
 二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
 
     示例：
-
+    
     root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
-
+    
           10
          /  \
         5   -3
@@ -610,9 +619,9 @@ public void moveZeroes(int[] nums) {
       3   2   11
      / \   \
     3  -2   1
-
+    
     返回 3。和等于 8 的路径有:
-
+    
     1.  5 -> 3
     2.  5 -> 2 -> 1
     3.  -3 -> 11
@@ -673,21 +682,21 @@ private void dfs (TreeNode node, int sum, int[] array) {
 
     输入:
     s: "cbaebabacd" p: "abc"
-
+    
     输出:
     [0, 6]
-
+    
     解释:
     起始索引等于 0 的子串是 "cba", 它是 "abc" 的字母异位词。
     起始索引等于 6 的子串是 "bac", 它是 "abc" 的字母异位词。
      示例 2:
-
+    
     输入:
     s: "abab" p: "ab"
-
+    
     输出:
     [0, 1, 2]
-
+    
     解释:
     起始索引等于 0 的子串是 "ab", 它是 "ab" 的字母异位词。
     起始索引等于 1 的子串是 "ba", 它是 "ab" 的字母异位词。
@@ -728,10 +737,10 @@ public List<Integer> findAnagrams(String s, String p) {
 您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
 
     示例:
-
+    
     输入:
     [4,3,2,7,8,2,3,1]
-
+    
     输出:
     [5,6]
 ### 解题思路
@@ -749,7 +758,8 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     return res;
 }
 ```
-## 461 [汉明距离](https://leetcode-cn.com/problems/hamming-distance/)
+##  [461 汉明距离](https://leetcode-cn.com/problems/hamming-distance/)
+
 ### 题目描述
 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
 
@@ -757,18 +767,18 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
 
     注意：
     0 ≤ x, y < 2^31.
-
+    
     示例:
-
+    
     输入: x = 1, y = 4
-
+    
     输出: 2
-
+    
     解释:
     1   (0 0 0 1)
     4   (0 1 0 0)
            ↑   ↑
-
+    
     上面的箭头指出了对应二进制位不同的位置。
 ### 解题思路
 先异或，再数 `1` 的个数。
@@ -783,17 +793,18 @@ public int hammingDistance(int x, int y) {
     return cnt;
 }
 ```
-## [538. 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+## [538 把二叉搜索树转换为累加树](https://leetcode-cn.com/problems/convert-bst-to-greater-tree/)
+
 ### 题目描述
 给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
 
     例如：
-
+    
     输入: 二叉搜索树:
                   5
                 /   \
                2     13
-
+    
     输出: 转换为累加树:
                  18
                 /   \
@@ -817,20 +828,21 @@ private void unPreOrder(TreeNode root) {
     unPreOrder(root.left);
 }
 ```
-## [543. 二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+## [543 二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+
 ### 题目描述
 给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过根结点。
 
     示例 :
     给定二叉树
-
+    
               1
              / \
             2   3
            / \
           4   5
     返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
-
+    
     注意：两结点之间的路径长度是以它们之间边的数目表示。
 
 ### 解题思路
@@ -850,26 +862,168 @@ private int deepth(TreeNode root) {
     return Math.max(l,r);
 }
 ```
-## [572. 另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
+## [572 另一个树的子树](https://leetcode-cn.com/problems/subtree-of-another-tree/)
+
 ### 题目描述
 给定两个非空二叉树 s 和 t，检验 s 中是否包含和 t 具有相同结构和节点值的子树。s 的一个子树包括 s 的一个节点和这个节点的所有子孙。s 也可以看做它自身的一棵子树。
 
     示例 1:
     给定的树 s:
-
+    
          3
         / \
        4   5
       / \
      1   2
     给定的树 t：
-
+    
        4
       / \
      1   2
     返回 true，因为 t 与 s 的一个子树拥有相同的结构和节点值。
 
 ### 解题思路
+
+```java
+public boolean isSubtree(TreeNode s, TreeNode t) {
+        return s != null && (isSameTree(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t));
+    }
+    private boolean isSameTree(TreeNode s, TreeNode t) {
+        return s == null && t == null || s != null && t != null && s.val == t.val && isSameTree(s.left, t.left) && isSameTree(s.right, t.right);
+    }
+```
+
+## [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+
+### 题目描述
+
+给定一个整数数组，你需要寻找一个**连续的子数组**，如果对这个子数组进行升序排序，那么整个数组都会变为升序排序。
+
+你找到的子数组应是**最短**的，请输出它的长度。
+
+**示例 1:**
+
+```
+输入: [2, 6, 4, 8, 10, 9, 15]
+输出: 5
+解释: 你只需要对 [6, 4, 8, 10, 9] 进行升序排序，那么整个表都会变为升序排序。
+```
+
+**说明 :**
+
+1. 输入的数组长度范围在 [1, 10,000]。
+2. 输入的数组可能包含**重复**元素 ，所以**升序**的意思是**<=。**
+
+### 解题思路
+
+```java
+public int findUnsortedSubarray(int[] nums) {
+        int n = nums.length, start = -1, end = -2;
+        int mn = nums[n - 1], mx = nums[0];
+        for (int i = 1; i < n; ++i) {
+            mx = (mx > nums[i]) ? mx : nums[i];
+            mn = (mn < nums[n - 1 - i]) ? mn : nums[n - 1- i];
+            if (mx > nums[i]) end = i;
+            if (mn < nums[n - 1 - i]) start = n - 1 - i;
+        }
+        return end - start + 1;
+    }
+```
+
+## [617. 合并二叉树](https://leetcode-cn.com/problems/merge-two-binary-trees/)
+
+### 题目描述
+
+给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
+
+你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则**不为** NULL 的节点将直接作为新二叉树的节点。
+
+**示例 1:**
+
+```
+输入: 
+	Tree 1                     Tree 2                  
+          1                         2                             
+         / \                       / \                            
+        3   2                     1   3                        
+       /                           \   \                      
+      5                             4   7                  
+输出: 
+合并后的树:
+	     3
+	    / \
+	   4   5
+	  / \   \ 
+	 5   4   7
+```
+
+**注意:** 合并必须从两个树的根节点开始。
+
+### 解题思路
+
+递归，中序遍历二叉树。
+
+```java
+public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 != null)
+            return t2;
+        if (t1 != null && t2 == null)
+            return t1;
+        if (t1 == null && t2 == null)
+            return null;
+        TreeNode root = new TreeNode(t1.val + t2.val);
+        root.left = mergeTrees(t1.left, t2.left);
+        root.right = mergeTrees(t1.right, t2.right);
+        return root;
+    }
+```
+
+## [771. 宝石与石头](https://leetcode-cn.com/problems/jewels-and-stones/)
+
+### 题目描述
+
+给定字符串`J` 代表石头中宝石的类型，和字符串 `S`代表你拥有的石头。 `S` 中每个字符代表了一种你拥有的石头的类型，你想知道你拥有的石头中有多少是宝石。
+
+`J` 中的字母不重复，`J` 和 `S`中的所有字符都是字母。字母区分大小写，因此`"a"`和`"A"`是不同类型的石头。
+
+**示例 1:**
+
+```
+输入: J = "aA", S = "aAAbbbb"
+输出: 3
+```
+
+**示例 2:**
+
+```
+输入: J = "z", S = "ZZ"
+输出: 0
+```
+
+**注意:**
+
+- `S` 和 `J` 最多含有50个字母。
+-  `J` 中的字符不重复。
+
+### 解题思路
+
+hash的思想。
+
+```java
+public int numJewelsInStones(String J, String S) {
+        int[] arr = new int[125];
+        int cnt = 0;
+        for (int i=0; i<S.length(); i++) {
+            arr[S.charAt(i)]++;
+        }
+        for (int i=0; i<J.length(); i++) {
+            cnt += arr[J.charAt(i)];
+        }
+        return cnt;
+    }
+```
+
+
 
 -----------------------------
 

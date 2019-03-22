@@ -145,7 +145,37 @@ if(!vector.contains(element))
 加锁的含义不仅仅局限于互斥行为，还包括内存可见性。为了确保所有的线程都能看到共享变量的最新值，所有执行读操作或者写操作的线程都必须在同一个锁上同步。
 
 ### Volatile变量
-Java语言提供了一种稍弱的同步机制，即volatile变量，用来确保将变量的更新操作通知其它线程。当把一个变量声明为volatile类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其它内存操作一起**重排序**。volatile不会被缓存在寄存器或者对其它处理器不可见的地方，因此在读取volatile类型的变量时，总会返回最新写入的值。
+
+Java语言提供了一种稍弱的同步机制，即volatile变量，用来确保将变量的更新操作通知其它线程。当把一个变量声明为volatile类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其它内存操作一起**重排序**。
+
+#### 指令重排序
+
+```java
+package reordering;
+
+public class NoVisibility {
+    private static boolean ready;
+    private static int number;
+
+    private static class ReaderThread extends Thread{
+        public void run(){
+            while (!ready)
+                Thread.yield();
+            System.out.println(number);
+        }
+    }
+    public static void main(String[] args){
+        // coding here
+        new ReaderThread().start();
+        number = 42;
+        ready = true;
+    }
+}
+```
+
+上述代码中，NoVisibility可能会持续循环下去，因为读线程可能永远都看不到ready的值。或者读线程看到ready的值，却没有看到number的值，输出为0.这种现状称为“重排序”。
+
+volatile不会被缓存在寄存器或者对其它处理器不可见的地方，因此在读取volatile类型的变量时，总会返回最新写入的值。
 
 **重排序**
 

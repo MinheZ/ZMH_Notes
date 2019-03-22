@@ -1,22 +1,22 @@
 # LeetCode Top100 stars
 
-* [1 两数之和](#两数之和)
-* [2 两数相加](#两数相加)
-* [3 无重复字符的最长子串](#无重复字符的最长子串)
-* [4 最长的回文子串](#最长的回文子串)
-* [20 有效的括号](#有效的括号)
-* [21 合并两个有序链表](#合并两个有序链表)
-* [104 二叉树的最大深度](#二叉树的最大深度)
-* [121 买卖股票的最佳时机](#买卖股票的最佳时机)
-* [136 只出现一次的数字](#只出现一次的数字)
-* [141 环形链表](#环形链表)
-* [155 最小栈](#最小栈)
-* [166 相交链表](#相交链表)
-* [198 打家劫舍](#打家劫舍)
-* [234 回文链表](#回文链表)
-* [283 移动零](#移动零)
-* [437 路径总和](#路径总和)
-* [438 找到字符串中所有字母异位词](#找到字符串中所有字母异位词)
+* [1 两数之和](#1-两数之和)
+* [2 两数相加](#2-两数相加)
+* [3 无重复字符的最长子串](#3-无重复字符的最长子串)
+* [4 最长的回文子串](#4-最长的回文子串)
+* [20 有效的括号](#20-有效的括号)
+* [21 合并两个有序链表](#21-合并两个有序链表)
+* [104 二叉树的最大深度](#104-二叉树的最大深度)
+* [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
+* [136 只出现一次的数字](#136-只出现一次的数字)
+* [141 环形链表](#141-环形链表)
+* [155 最小栈](#155-最小栈)
+* [166 相交链表](#166-相交链表)
+* [198 打家劫舍](#198打家劫舍)
+* [234 回文链表](#234-回文链表)
+* [283 移动零](#283-移动零)
+* [437 路径总和](#437-路径总和)
+* [438 找到字符串中所有字母异位词](#438-找到字符串中所有字母异位词)
 * [461 汉明距离](#461-汉明距离)
 * [448 找到所有数组中消失的数字](#448-找到所有数组中消失的数字)
 * [538 把二叉搜索树转换为累加树](#538-把二叉搜索树转换为累加树)
@@ -28,7 +28,7 @@
 
 --------------------
 
-## [两数之和](https://leetcode-cn.com/problems/two-sum/)
+## [1 两数之和](https://leetcode-cn.com/problems/two-sum/)
 
 ## 题目描述-Easy
 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
@@ -57,7 +57,7 @@ public int[] twoSum(int[] nums, int target) {
     return null;
 }
 ```
-## [两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
+## [2-两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
 
 ## 题目描述-Medium
 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
@@ -73,6 +73,7 @@ public int[] twoSum(int[] nums, int target) {
     原因：342 + 465 = 807
 
 ### 解题思路
+
 遍历链表，时间复杂度`O(N)`
 ```java
 public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
@@ -107,7 +108,7 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
     return result;
 }
 ```
-## [无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+## [3 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
 
 ## 题目描述
 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
@@ -152,7 +153,7 @@ public int lengthOfLongestSubstring(String s) {
     }
 ```
 
-## [最长的回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+## [4 最长的回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
 ## 题目描述
 
@@ -175,7 +176,9 @@ public int lengthOfLongestSubstring(String s) {
 
 ### 解题思路
 
-## [有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+
+
+## [20-有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
 
 ## 题目描述
 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
@@ -236,7 +239,7 @@ public boolean isValid(String s) {
     return stack.empty() ? true : false;
 }
 ```
-## [合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+## [21-合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
 
 ## 题目描述
 将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
@@ -273,7 +276,7 @@ public boolean isValid(String s) {
     return dummyHead.next;
 }
 ```
-## [二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
+## [104-二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 
 ## 题目描述
 给定一个二叉树，找出其最大深度。
@@ -300,7 +303,8 @@ public int maxDepth(TreeNode root) {
     return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
     }
 ```
-## [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+## [121-买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
 ## 题目描述
 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
 
@@ -337,7 +341,8 @@ public int maxProfit(int[] prices) {
     return maxProfit;
 }
 ```
-## [只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+## [136-只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
+
 ## 题目描述
 
 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
@@ -365,7 +370,7 @@ public int singleNumber(int[] nums) {
 }
 ```
 
-## [环形链表](https://leetcode.com/problems/linked-list-cycle/)
+## [141-环形链表](https://leetcode.com/problems/linked-list-cycle/)
 
 ### 题目描述
 给定一个链表，判断链表中是否有环。
@@ -419,7 +424,8 @@ public boolean hasCycle(ListNode head) {
     return false;
 }
 ```
-## [最小栈](https://leetcode.com/problems/min-stack/)
+## [155-最小栈](https://leetcode.com/problems/min-stack/)
+
 ### 题目描述
 设计一个支持 push，pop，top 操作，并能在常数时间内检索到最小元素的栈。
 - push(x) -- 将元素 x 推入栈中。
@@ -477,7 +483,8 @@ public int getMin() {
         throw new RuntimeException("error");
 }
 ```
-## [相交链表](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+## [166-相交链表](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+
 ### 题目描述
 编写一个程序，找到两个单链表相交的起始节点。
 ### 解题思路
@@ -492,7 +499,8 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
     return l1;
 }
 ```
-## [打家劫舍](https://leetcode.com/problems/house-robber/)
+## [198-打家劫舍](https://leetcode.com/problems/house-robber/)
+
 ### 题目描述
 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
 
@@ -524,7 +532,8 @@ public int rob(int[] nums) {
     return memo[n - 1];
 }
 ```
-## [回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/submissions/)
+## [283-回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/submissions/)
+
 ### 题目描述
 请判断一个链表是否为回文链表。
 
@@ -571,7 +580,8 @@ public boolean isPalindrome(ListNode head) {
     return true;
 }
 ```
-## [移动零](https://leetcode-cn.com/problems/move-zeroes/submissions/)
+## [283-移动零](https://leetcode-cn.com/problems/move-zeroes/submissions/)
+
 ### 题目描述
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 
@@ -597,7 +607,7 @@ public void moveZeroes(int[] nums) {
     }
 }
 ```
-## [路径总和](https://leetcode-cn.com/problems/path-sum-iii/)
+## [437-路径总和](https://leetcode-cn.com/problems/path-sum-iii/)
 
 ### 题目描述
 给定一个二叉树，它的每个结点都存放着一个整数值。

@@ -4,6 +4,7 @@
 * [2 两数相加](#2-两数相加)
 * [3 无重复字符的最长子串](#3-无重复字符的最长子串)
 * [4 最长的回文子串](#4-最长的回文子串)
+* [15. 三数之和](#15.-三数之和)
 * [20 有效的括号](#20-有效的括号)
 * [21 合并两个有序链表](#21-合并两个有序链表)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
@@ -37,10 +38,10 @@
 
     示例:
     
-    给定 `nums = [2, 7, 11, 15], target = 9`
+    给定 nums = [2, 7, 11, 15], target = 9
     
-    因为 `nums[0] + nums[1] = 2 + 7 = 9`
-    所以返回 `[0, 1]`
+    因为 nums[0] + nums[1] = 2 + 7 = 9
+    所以返回 [0, 1]
 
 ### 解题思路
 用过的数字保存在map里面。
@@ -204,6 +205,83 @@ public int maxArea(int[] height) {
     return max;
 }
 ```
+
+## [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+### 题目描述
+
+给定一个包含 *n* 个整数的数组 `nums`，判断 `nums` 中是否存在三个元素 *a，b，c ，*使得 *a + b + c =* 0 ？找出所有满足条件且不重复的三元组。
+
+**注意：**答案中不可以包含重复的三元组。
+
+```
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+### 解题思路
+
+该解法的时间复杂度为 O(N<sup>2</sup>) 
+
+```java
+public List<List<Integer>> threeSum(int[] nums) {
+    List<List<Integer>> lists = new ArrayList<>();
+    Arrays.sort(nums);
+    if (nums == null || nums.length == 0 || nums[0] >= 0)
+        return lists;
+    for (int i = 0; i < nums.length; i++) {
+        int left = i + 1, right = nums.length - 1;
+        int target = -nums[i];
+        if (i > 0 && nums[i] == nums[i - 1])   // 判断相邻2个数是否重复
+            continue;
+        while (left < right) {
+            List<Integer> list = new ArrayList<>();
+            if (nums[left] + nums[right] == target) {
+                list.add(nums[i]);
+                list.add(nums[left]);
+                list.add(nums[right]);
+                lists.add(list);
+                while (left < right && nums[left] == nums[left + 1]) left++;
+                while (left < right && nums[right] == nums[right - 1]) right--;
+                left++;
+                right--;
+            } else if (nums[left] + nums[right] > target) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+    }
+    return lists;
+}
+```
+
+## [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+### 题目描述
+
+给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+<div align="center"><img src="../pics//200px-Telephone-keypad2.svg.png" width="300px"></div>
+
+**示例:**
+
+```
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+```
+
+**说明:**
+尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+### 解题思路
 
 
 

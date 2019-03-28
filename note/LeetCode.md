@@ -5,6 +5,7 @@
 * [3 无重复字符的最长子串](#3-无重复字符的最长子串)
 * [4 最长的回文子串](#4-最长的回文子串)
 * [15. 三数之和](#15.-三数之和)
+* [17. 电话号码的字母组合](#17.-电话号码的字母组合)
 * [20 有效的括号](#20-有效的括号)
 * [21 合并两个有序链表](#21-合并两个有序链表)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
@@ -37,9 +38,9 @@
 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
 
     示例:
-    
+
     给定 nums = [2, 7, 11, 15], target = 9
-    
+
     因为 nums[0] + nums[1] = 2 + 7 = 9
     所以返回 [0, 1]
 
@@ -68,7 +69,7 @@ public int[] twoSum(int[] nums, int target) {
 您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
 
     示例：
-    
+
     输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
     输出：7 -> 0 -> 8
     原因：342 + 465 = 807
@@ -115,17 +116,17 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
 
     示例 1:
-    
+
     输入: "abcabcbb"
     输出: 3
     解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
     示例 2:
-    
+
     输入: "bbbbb"
     输出: 1
     解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
     示例 3:
-    
+
     输入: "pwwkew"
     输出: 3
     解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
@@ -226,7 +227,7 @@ public int maxArea(int[] height) {
 
 ### 解题思路
 
-该解法的时间复杂度为 O(N<sup>2</sup>) 
+该解法的时间复杂度为 O(N<sup>2</sup>)
 
 ```java
 public List<List<Integer>> threeSum(int[] nums) {
@@ -261,9 +262,9 @@ public List<List<Integer>> threeSum(int[] nums) {
 }
 ```
 
-## [17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+## 17. 电话号码的字母组合
 
-### 题目描述
+### [题目描述](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
 
 给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。
 
@@ -282,7 +283,43 @@ public List<List<Integer>> threeSum(int[] nums) {
 尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
 
 ### 解题思路
-
+```java
+public List<String> letterCombinations(String digits) {
+    List<String> list = new ArrayList<>();
+    int length = digits.length();
+    String[] s = new String[length];
+    if (s.length == 0)
+        return list;
+    for (int i=0; i<length; i++) {
+        switch (digits.charAt(i)) {
+            case '2' : s[i] = "abc";    break;
+            case '3' : s[i] = "def";    break;
+            case '4' : s[i] = "ghi";    break;
+            case '5' : s[i] = "jkl";    break;
+            case '6' : s[i] = "mno";    break;
+            case '7' : s[i] = "pqrs";   break;
+            case '8' : s[i] = "tuv";    break;
+            case '9' : s[i] = "wxyz";    break;
+        }
+    }
+    list = getStringWithFor(s, 0, list, "");
+    return list;
+}
+private List<String> getStringWithFor(String[] s, int i, List<String> list, String temp) {
+    if (i < s.length - 1) {
+        for (int j=0; j<s[i].length(); j++) {
+            list = getStringWithFor(s, i+1, list, temp + s[i].charAt(j));
+        }
+        i++;
+    }
+    else {
+        for (int j=0; j<s[i].length(); j++) {
+            list.add(temp + s[i].charAt(j));
+        }
+    }
+    return list;
+}
+```
 
 
 ## [20 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
@@ -298,23 +335,23 @@ public List<List<Integer>> threeSum(int[] nums) {
 注意空字符串可被认为是有效字符串。
 
     示例 1:
-    
+
     输入: "()"
     输出: true
     示例 2:
-    
+
     输入: "()[]{}"
     输出: true
     示例 3:
-    
+
     输入: "(]"
     输出: false
     示例 4:
-    
+
     输入: "([)]"
     输出: false
     示例 5:
-    
+
     输入: "{[]}"
     输出: true
 
@@ -354,7 +391,7 @@ public boolean isValid(String s) {
 将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 
     示例：
-    
+
     输入：1->2->4, 1->3->4
     输出：1->1->2->3->4->4
 
@@ -396,7 +433,7 @@ public boolean isValid(String s) {
 
     示例：
     给定二叉树 [3,9,20,null,null,15,7]，
-    
+
         3
        / \
       9  20
@@ -422,13 +459,13 @@ public int maxDepth(TreeNode root) {
 注意你不能在买入股票前卖出股票。
 
     示例 1:
-    
+
     输入: [7,1,5,3,6,4]
     输出: 5
     解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
          注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
     示例 2:
-    
+
     输入: [7,6,4,3,1]
     输出: 0
     解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
@@ -464,7 +501,7 @@ public int maxProfit(int[] prices) {
     输入: [2,2,1]
     输出: 1
     示例 2:
-    
+
     输入: [4,1,2,1,2]
     输出: 4
 ### 解题思路
@@ -487,25 +524,25 @@ public int singleNumber(int[] nums) {
 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
 
     示例 1：
-    
+
     输入：head = [3,2,0,-4], pos = 1
     输出：true
     解释：链表中有一个环，其尾部连接到第二个节点。
-    
+
     示例 2：
-    
+
     输入：head = [1,2], pos = 0
     输出：true
     解释：链表中有一个环，其尾部连接到第一个节点。
-    
+
     示例 3：
-    
+
     输入：head = [1], pos = -1
     输出：false
     解释：链表中没有环。
-    
+
     进阶：
-    
+
     你能用 O(1)（即，常量）内存解决此问题吗？
 ### 解题思路
 2个链表指针，一个一次走2步，一个一次走一步，有环则一定会相遇。注释的部分是取巧的办法，设想的是走过的节点设一个标志位，如果起始链表中有标志位，则会判断错误。
@@ -616,13 +653,13 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
 给定一个代表每个房屋存放金额的非负整数数组，计算你在不触动警报装置的情况下，能够偷窃到的最高金额。
 
     示例 1:
-    
+
     输入: [1,2,3,1]
     输出: 4
     解释: 偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
          偷窃到的最高金额 = 1 + 3 = 4 。
     示例 2:
-    
+
     输入: [2,7,9,3,1]
     输出: 12
     解释: 偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
@@ -647,11 +684,11 @@ public int rob(int[] nums) {
 请判断一个链表是否为回文链表。
 
     示例 1:
-    
+
     输入: 1->2
     输出: false
     示例 2:
-    
+
     输入: 1->2->2->1
     输出: true
     进阶：
@@ -695,11 +732,11 @@ public boolean isPalindrome(ListNode head) {
 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
 
     示例:
-    
+
     输入: [0,1,0,3,12]
     输出: [1,3,12,0,0]
     说明:
-    
+
     必须在原数组上操作，不能拷贝额外的数组。
     尽量减少操作次数。
 ### 解题思路
@@ -728,9 +765,9 @@ public void moveZeroes(int[] nums) {
 二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
 
     示例：
-    
+
     root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
-    
+
           10
          /  \
         5   -3
@@ -738,9 +775,9 @@ public void moveZeroes(int[] nums) {
       3   2   11
      / \   \
     3  -2   1
-    
+
     返回 3。和等于 8 的路径有:
-    
+
     1.  5 -> 3
     2.  5 -> 2 -> 1
     3.  -3 -> 11
@@ -801,21 +838,21 @@ private void dfs (TreeNode node, int sum, int[] array) {
 
     输入:
     s: "cbaebabacd" p: "abc"
-    
+
     输出:
     [0, 6]
-    
+
     解释:
     起始索引等于 0 的子串是 "cba", 它是 "abc" 的字母异位词。
     起始索引等于 6 的子串是 "bac", 它是 "abc" 的字母异位词。
      示例 2:
-    
+
     输入:
     s: "abab" p: "ab"
-    
+
     输出:
     [0, 1, 2]
-    
+
     解释:
     起始索引等于 0 的子串是 "ab", 它是 "ab" 的字母异位词。
     起始索引等于 1 的子串是 "ba", 它是 "ab" 的字母异位词。
@@ -856,10 +893,10 @@ public List<Integer> findAnagrams(String s, String p) {
 您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
 
     示例:
-    
+
     输入:
     [4,3,2,7,8,2,3,1]
-    
+
     输出:
     [5,6]
 ### 解题思路
@@ -886,18 +923,18 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
 
     注意：
     0 ≤ x, y < 2^31.
-    
+
     示例:
-    
+
     输入: x = 1, y = 4
-    
+
     输出: 2
-    
+
     解释:
     1   (0 0 0 1)
     4   (0 1 0 0)
            ↑   ↑
-    
+
     上面的箭头指出了对应二进制位不同的位置。
 ### 解题思路
 先异或，再数 `1` 的个数。
@@ -918,12 +955,12 @@ public int hammingDistance(int x, int y) {
 给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
 
     例如：
-    
+
     输入: 二叉搜索树:
                   5
                 /   \
                2     13
-    
+
     输出: 转换为累加树:
                  18
                 /   \
@@ -954,14 +991,14 @@ private void unPreOrder(TreeNode root) {
 
     示例 :
     给定二叉树
-    
+
               1
              / \
             2   3
            / \
           4   5
     返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
-    
+
     注意：两结点之间的路径长度是以它们之间边的数目表示。
 
 ### 解题思路
@@ -988,14 +1025,14 @@ private int deepth(TreeNode root) {
 
     示例 1:
     给定的树 s:
-    
+
          3
         / \
        4   5
       / \
      1   2
     给定的树 t：
-    
+
        4
       / \
      1   2
@@ -1060,19 +1097,19 @@ public int findUnsortedSubarray(int[] nums) {
 **示例 1:**
 
 ```
-输入: 
-	Tree 1                     Tree 2                  
-          1                         2                             
-         / \                       / \                            
-        3   2                     1   3                        
-       /                           \   \                      
-      5                             4   7                  
-输出: 
+输入:
+	Tree 1                     Tree 2
+          1                         2
+         / \                       / \
+        3   2                     1   3
+       /                           \   \
+      5                             4   7
+输出:
 合并后的树:
 	     3
 	    / \
 	   4   5
-	  / \   \ 
+	  / \   \
 	 5   4   7
 ```
 

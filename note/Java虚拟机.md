@@ -9,6 +9,7 @@
 * [垃圾收集](#垃圾收集)
     * [判断一个对象是否可以被回收](#判断一个对象是否可以被回收)
     * [垃圾收集算法](#垃圾收集算法)
+    * [垃圾收集器](#垃圾收集器)
 * [内存分配与回收策略](#内存分配与回收策略)
     * [Minor GC 和 Full GC 的区别](#MinorGC和FullGC的区别)
     * [内存分配策略](#内存分配策略)
@@ -120,6 +121,7 @@ public class ReferenceCountingGC {
 在大量使用反射、动态代理、CGLib 等 ByteCode 框架、动态生成 JSP 以及 OSGi 这类频繁自定义 ClassLoader 的场景都需要虚拟机具备类卸载功能，以保证不会出现内存溢出。
 
 ## 垃圾收集算法
+
 ### 标记-清除
 <div align="center"><img src="../pics//1550667071(1).png" width="500px"></div>
 
@@ -152,14 +154,90 @@ HotSpot 虚拟机的 Eden 和 Survivor 的大小比例默认为 8:1，保证了�
 - 新生代：复制算法。
 - 老年代：标记-清除或者标记-整理算法。
 
+## 垃圾收集器
+
+<div align="center"><img src="../pics//1554195238(1).png" width="450px"></div>
+
+### Serial 收集器
+
+单线程的新生代收集器。缺点是“Stop the World”，优点是简单高效。
+
+<div align="center"><img src="../pics//1554195358(1).png" width="750px"></div>
+
+### ParNew 收集器
+
+Serial 的多线程版本。
+
+<div align="center"><img src="../pics//1554196739(1).png" width="750px"></div>
+
+### Parallel Scavenge 收集器
+
+Parallel Scavenge 收集器的目标是达到一个可控制的吞吐量。
+
+Parallel Scavenge 收集器提供了2个参数用于精确控制吞吐量：
+
+- -XX:MaxGCPauseMills, 最大垃圾收集停顿时间，是一个大于 0 毫秒的数。
+- -XX:GCTimeRatio, 吞吐量大小。
+
+### Serial Old 收集器
+
+单线程的老年代收集器。
+
+<div align="center"><img src="../pics//1554203997(1).png" width="750px"></div>
+
+### CMS 收集器
+
+CMS(Concurrent Mark Sweep)收集器是一种以获得最短回收停顿时间为目标的收集器。该收集器是基于”标记清除“算法实现的，它运作过程可分为以下 4 个步骤：
+
+- 初始标记。标记 GC Root 能直接关联到的对象，有 Stop the world。
+- 并发标记。GC Root Tracing 的过程。
+- 重新标记。修正并发标记期间用户程序运作产生的垃圾。有 Stop the world，比初始标记长一些。
+- 并发清除。
+
+<div align="center"><img src="../pics//1554204748(1).png" width="750px"></div>
+
+CMS 收集器虽然已经很牛逼，但是有以下几个缺点：
+
+- 对 CPU 资源十分敏感。
+- 无法清理浮动垃圾（GC 过程中，用户程序产生的垃圾出现在**标记**过程之后 ，便无法在当次 GC 清除它们）。
+- 基于标记-清除算法，收集完成之后会有大量的空间碎片。
+
+### G1 收集器
+
+G1 收集器特点：
+
+- **并行与并发**：充分利用多 CPU、多核环境下的硬件优势缩短 Stop the world 停顿时间。
+- **分代收集**：能独立管理整个 GC 堆。
+- **空间整合**：G1 从整体看是基于“标记-整理”算法实现，从局部（两个 Region 之间）看是基于“复制”算法实现，不会产生浮动垃圾。
+- **可预测的停顿**：能建立可预测的停顿时间模型。
+
+将 Java 堆划分为多个大小相等的 Region，保留新生代和老年代的概念，但是不存在物理隔离。
+
+G1 收集器跟踪每个 Region 回收所获得的空间大小以及回收所需要时间的经验值，在后台维护一个优先列表，每次根据允许的收集时间，优先回收价值最大的 Region。
+
+G1 收集器中，Region 之间的对象引用，虚拟机使用 Remembered Set 来避免全堆扫描。G1 中每一个 Region 都有一个与之对应的 Remembered Set 。
+
+不计算维护 Remembered Set 的操作，G1收集器的运作如下几个步骤：
+
+- 初始标记。标记 GC Root 能直接关联到的对象，需要短暂地停顿线程。
+- 并发标记。从 GC Root 开始对对象进行可达性分析，耗时较长，可与用户程序并发执行。
+- 最终标记。修正并发标记期间因用户程序继续运作，标记发生变动的那一部分。
+- 筛选回收。
+
+<div align="center"><img src="../pics//1554209307(1).png" width="750px"></div>
+
+
+
 ---------------------
 
 # 内存分配与回收策略
+
 ## Minor GC 和 Full GC 的区别
 - 新生代(Minor GC)：回收新生代的垃圾，因为Java对象大多数都是朝生夕灭，因此Minor GC非常频繁，执行速度快。
 - 老年代(Full GC)：回收老年代和新生代。因为老年代存活的时间都比较长，一般在内存不够用的情况下会触发一次Full GC。
 
 ## 内存分配策略
+
 ### 1.对象优先在Eden分配
 大多数情况下，新生代在Eden中分配，当Eden没有足够的空间，则发起一次Minor GC。
 

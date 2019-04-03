@@ -11,6 +11,7 @@
 * [21 合并两个有序链表](#21-合并两个有序链表)
 * [22. 括号生成](#22.-括号生成)
 * [23. 合并K个排序链表](#23.-合并K个排序链表)
+* [33. 搜索旋转排序数组](#33.-搜索旋转排序数组)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -571,7 +572,125 @@ private ListNode mergeTwo(ListNode l1, ListNode l2) {
 }
 ```
 
+## 33. 搜索旋转排序数组
 
+## [题目描述](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+
+假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+
+( 例如，数组 `[0,1,2,4,5,6,7]` 可能变为 `[4,5,6,7,0,1,2]` )。
+
+搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回 `-1` 。
+
+你可以假设数组中不存在重复的元素。
+
+你的算法时间复杂度必须是 *O*(log *n*) 级别。
+
+**示例 1:**
+
+```
+输入: nums = [4,5,6,7,0,1,2], target = 0
+输出: 4
+```
+
+**示例 2:**
+
+```
+输入: nums = [4,5,6,7,0,1,2], target = 3
+输出: -1
+```
+
+### 解题思路
+
+将数组一分为二，其中一定有一个是有序的，另一个可能是有序，也能是部分有序。此时有序部分用二分法查找。无序部分再一分为二，其中一个一定有序，另一个可能有序，可能无序。就这样循环。
+
+```java
+public int search(int[] nums, int target) {
+    if (nums == null || nums.length == 0)  return -1;
+    int left = 0, right = nums.length - 1;
+    while (left <= right) {
+        int mid = (left + right) / 2;
+        if (nums[mid] == target)    return mid;
+        if (nums[left] <= nums[mid]) {
+            if (nums[left] <= target && target <= nums[mid]) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        } else {
+            if (nums[mid] <= target && target <= nums[right]) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+    }
+    return -1;
+}
+```
+
+## 34. 在排序数组中查找元素的第一个和最后一个位置
+
+### [题目描述](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+给定一个按照升序排列的整数数组 `nums`，和一个目标值 `target`。找出给定目标值在数组中的开始位置和结束位置。
+
+你的算法时间复杂度必须是 *O*(log *n*) 级别。
+
+如果数组中不存在目标值，返回 `[-1, -1]`。
+
+**示例 1:**
+
+```
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: [3,4]
+```
+
+**示例 2:**
+
+```
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: [-1,-1]
+```
+
+### 解题思路
+
+
+
+```java
+public int[] searchRange(int[] nums, int target) {
+    int[] num = new int[2];
+    int ans = -1;
+    if(nums.length != 0){//数组不为空才执行
+        ans = search(nums,0,nums.length-1,target);
+    }
+    int i=0,j=0;
+    if(ans != -1){
+        i=ans;
+        j=ans;
+        while(i>=0 && nums[i]==target) i--;//循环找头位置
+        while(j<nums.length && nums[j]==target)j++;//循环找结束位置
+        num[0]=i+1;
+        num[1]=j-1;
+    } else{
+        num[0]=-1;
+        num[1]=-1;
+    }
+    return num;
+}
+private int search(int[] nums, int left, int right, int target) {
+    if (nums == null || nums.length == 0 || nums[left] > target || nums[right] < target)   return -1;
+    int mid = (left + right) / 2;
+
+    if (nums[mid] == target) {
+        return mid;
+    } else if (nums[mid] > target) {
+        return search(nums, left, mid - 1, target);
+    } else {
+        return search(nums, mid + 1,right, target);
+    }
+}
+```
 
 
 

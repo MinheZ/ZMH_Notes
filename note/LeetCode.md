@@ -12,6 +12,8 @@
 * [22. 括号生成](#22.-括号生成)
 * [23. 合并K个排序链表](#23.-合并K个排序链表)
 * [33. 搜索旋转排序数组](#33.-搜索旋转排序数组)
+* [34. 在排序数组中查找元素的第一个和最后一个位置](#34.-在排序数组中查找元素的第一个和最后一个位置)
+* [39. 组合总和](#39.-组合总和)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -691,6 +693,85 @@ private int search(int[] nums, int left, int right, int target) {
     }
 }
 ```
+
+## 39. 组合总和
+
+### [题目描述](https://leetcode-cn.com/problems/combination-sum/)
+
+给定一个**无重复元素**的数组 `candidates` 和一个目标数 `target` ，找出 `candidates` 中所有可以使数字和为 `target` 的组合。
+
+`candidates` 中的数字可以无限制重复被选取。
+
+**说明：**
+
+- 所有数字（包括 `target`）都是正整数。
+- 解集不能包含重复的组合。 
+
+**示例 1:**
+
+```
+输入: candidates = [2,3,6,7], target = 7,
+所求解集为:
+[
+  [7],
+  [2,2,3]
+]
+```
+
+**示例 2:**
+
+```tex
+输入: candidates = [2,3,5], target = 8,
+所求解集为:
+[
+  [2,2,2,2],
+  [2,3,3],
+  [3,5]
+]
+```
+
+### 解题思路
+
+```java
+public List<List<Integer>> combinationSum(int[] candidates, int target) {
+    List<List<Integer>> list = new ArrayList<>();
+    if (candidates == null) 
+        return list;
+    Arrays.sort(candidates);
+    List<Integer> li = new ArrayList<>();
+    int index = 0;
+    if (candidates.length == 0 || target < candidates[0])
+        return list;
+    putNum(candidates, target, index, list, li);
+    return list;
+}
+private void putNum(int[] candidates, int leaveTarget, int index, List<List<Integer>> list,
+                    List<Integer> li) {
+    if (index >= candidates.length) 
+        return;
+    // 判断是否大于剩余目标
+    if (leaveTarget < candidates[index]) 
+        return;
+    if (leaveTarget == candidates[index]) {
+        li.add(candidates[index]);
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        for (int k : li) 
+            arr.add(k);
+        list.add(arr);
+        li.remove(li.size() - 1);
+        return;
+    }
+    li.add(candidates[index]);
+    leaveTarget -= candidates[index];
+    putNum(candidates, leaveTarget, index, list, li);
+    li.remove(li.size() - 1);
+    leaveTarget += candidates[index];
+    putNum(candidates, leaveTarget, index + 1, list, li);
+    return;
+}
+```
+
+
 
 
 

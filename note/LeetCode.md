@@ -14,6 +14,10 @@
 * [33. 搜索旋转排序数组](#33.-搜索旋转排序数组)
 * [34. 在排序数组中查找元素的第一个和最后一个位置](#34.-在排序数组中查找元素的第一个和最后一个位置)
 * [39. 组合总和](#39.-组合总和)
+* [49. 字母异位词分组](#49.-字母异位词分组)
+* [55. 跳跃游戏](#55.-跳跃游戏)
+* [56. 合并区间](#56.-合并区间)
+* [62. 不同路径](#62.-不同路径)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -770,6 +774,251 @@ private void putNum(int[] candidates, int leaveTarget, int index, List<List<Inte
     return;
 }
 ```
+
+## 49. 字母异位词分组
+
+### [题目描述](https://leetcode-cn.com/problems/group-anagrams/)
+
+给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+**示例:**
+
+```
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"],
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+```
+
+**说明：**
+
+- 所有输入均为小写字母。
+- 不考虑答案输出的顺序。
+
+### 解题思路
+
+```java
+public List<List<String>> groupAnagrams(String[] strs) {
+    List<List<String>> lists = new ArrayList<>();
+    if (strs == null || strs.length == 0)     return lists;
+
+    String[] s = new String[strs.length];   // 用来存储排序过后的 strs
+    // 给 strs 里面的每个子串排序
+    for (int i=0; i<strs.length; i++) {
+        char[] temp = strs[i].toCharArray();
+        Arrays.sort(temp);
+        s[i] = new String(temp);
+    }
+    int num = 0;
+    Map<String, Integer> map = new HashMap<>();
+    // 统计有多少种类
+    for (int i=0; i<s.length; i++) {
+        if (!map.containsKey(s[i])) {
+            map.put(s[i], num++);
+        }
+    }
+    // 建容器
+    for (int i=0; i<num; i++) {
+        lists.add(new ArrayList());
+    }
+
+    for (int i=0; i<s.length; i++) {
+        lists.get(map.get(s[i])).add(strs[i]);
+    }
+
+    return lists;
+}
+```
+
+## 55. 跳跃游戏
+
+### [题目描述](https://leetcode-cn.com/problems/jump-game/)
+
+给定一个非负整数数组，你最初位于数组的第一个位置。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个位置。
+
+**示例 1:**
+
+```
+输入: [2,3,1,1,4]
+输出: true
+解释: 从位置 0 到 1 跳 1 步, 然后跳 3 步到达最后一个位置。
+```
+
+**示例 2:**
+
+```
+输入: [3,2,1,0,4]
+输出: false
+解释: 无论怎样，你总会到达索引为 3 的位置。但该位置的最大跳跃长度是 0 ， 所以你永远不可能到达最后一个位置。
+```
+
+### 解题思路
+
+从后向前遍历，如果`nums[i] >= n`则证明能够到达，否则距离`n++`。
+
+```java
+public boolean canJump(int[] nums) {
+    if (nums == null || nums.length == 0)   return false;
+    int n = 1;
+    for (int i=nums.length-2; i>=0; i--) {
+        if (nums[i] >= n)
+            n = 1;
+        else
+            n++;
+        if (i == 0 && n > 1)
+            return false;
+    }
+    return true;
+}
+```
+
+## 56. 合并区间
+
+### [题目描述](https://leetcode-cn.com/problems/merge-intervals/)
+
+给出一个区间的集合，请合并所有重叠的区间。
+
+**示例 1:**
+
+```
+输入: [[1,3],[2,6],[8,10],[15,18]]
+输出: [[1,6],[8,10],[15,18]]
+解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+```
+
+**示例 2:**
+
+```
+输入: [[1,4],[4,5]]
+输出: [[1,5]]
+解释: 区间 [1,4] 和 [4,5] 可被视为重叠区间。
+```
+
+### 解题思路
+
+先将原来 list 中的对象根据 `start` 关键字排序，这样可以防止后面合并不到的情况。
+
+```java
+class IntervalsComparator implements Comparator<Interval>
+{
+    public int compare(Interval i1,Interval i2)
+    {
+       return i1.start-i2.start;
+    }
+}
+public List<Interval> merge(List<Interval> intervals) {
+    if (intervals == null || intervals.size() == 0) return intervals;
+
+    Collections.sort(intervals, new IntervalsComparator()); // 对原 list 先排序
+    List<Interval> list = new ArrayList<>();    // 存放结果
+    Interval temp = intervals.get(0);   // 存放合并后的一个小并集
+
+    for (int i=1; i<intervals.size(); i++) {
+        if (temp.end >= intervals.get(i).start && temp.start <= intervals.get(i).end) {
+            int start, end;
+            start = temp.start > intervals.get(i).start ? intervals.get(i).start : temp.start;
+            end = temp.end > intervals.get(i).end ? temp.end : intervals.get(i).end;
+            temp = new Interval(start, end);
+
+        } else {
+            list.add(temp);
+            temp = intervals.get(i);
+        }
+    }
+    list.add(temp);
+    return list;
+}
+```
+
+## 62. 不同路径
+
+### [题目描述](https://leetcode-cn.com/problems/unique-paths/)
+
+一个机器人位于一个 *m x n* 网格的左上角 （起始点在下图中标记为“Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+问总共有多少条不同的路径？
+
+<div align="center"><img src="../pics//1554553868(1).png" width="400px"></div>
+
+例如，上图是一个7 x 3 的网格。有多少可能的路径？
+
+**说明：***m* 和 *n* 的值均不超过 100。
+
+**示例 1:**
+
+```
+输入: m = 3, n = 2
+输出: 3
+解释:
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向右 -> 向下
+2. 向右 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向右
+```
+
+**示例 2:**
+
+```
+输入: m = 7, n = 3
+输出: 28
+```
+
+### 解题思路
+
+**方法一**
+
+该问题的数学模型是一个组合问题，容易得出在  *m x n* 网格中，走到终点一共需要`m + n - 2`步，其中有`n - 1`步为向下走，则总共的走法为：
+
+<div align="center"><img src="../pics//1554554315(1).png" width="100px"></div>
+
+```java
+public int uniquePaths(int m, int n) {
+        if (m == 0 || n == 0)
+            return 0;
+        int count = m + n - 2;
+        int min = Math.min(m, n);
+        long a = 1;	// 用 int 会溢出
+        long b = 1;
+         int c = min;
+        for (int i=1; i<=c-1; i++) {
+            a *= count--;
+            b *= --min;
+        }
+        return (int)(a / b);
+    }
+```
+
+**方法二**
+
+动态规划。
+
+```java
+public int uniquePaths(int m, int n) {
+    if (m == 0 || n == 0)
+        return 0;
+    int[][] dp = new int[m][n];
+    for (int i=0; i<m; i++) {
+        for (int j=0; j<n; j++) {
+            if (i == 0 || j == 0) 
+                dp[i][j] = 1;	// 沿着边路走的方案唯一
+            else 
+                dp[i][j] = dp[i][j-1] + dp[i-1][j];
+        }
+    }
+    return dp[m-1][n-1];
+}
+```
+
+
 
 
 

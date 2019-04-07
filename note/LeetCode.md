@@ -18,6 +18,8 @@
 * [55. 跳跃游戏](#55.-跳跃游戏)
 * [56. 合并区间](#56.-合并区间)
 * [62. 不同路径](#62.-不同路径)
+* [64. 最小路径和](#64.-最小路径和)
+* [75. 颜色分类](#75.-颜色分类)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -1018,7 +1020,102 @@ public int uniquePaths(int m, int n) {
 }
 ```
 
+## 64. 最小路径和
 
+### [题目描述](https://leetcode-cn.com/problems/minimum-path-sum/)
+
+给定一个包含非负整数的 *m* x *n* 网格，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+**说明：**每次只能向下或者向右移动一步。
+
+**示例:**
+
+```
+输入:
+[
+  [1,3,1],
+  [1,5,1],
+  [4,2,1]
+]
+输出: 7
+解释: 因为路径 1→3→1→1→1 的总和最小。
+```
+
+### 解题思路
+
+动态规划入门，同上题。
+
+```java
+public int minPathSum(int[][] grid) {
+    int m = grid.length, n = grid[0].length;
+    if (m == 0 && n == 0)
+        return 0;
+    int[][] path = new int[m][n];
+
+    path[0][0] = grid[0][0];
+
+    // 上边路
+    for (int i=1; i<n; na beijingi++) {
+        path[0][i] = path[0][i-1] + grid[0][i];
+    }
+    // 下边路
+    for (int i=1; i<m; i++) {
+        path[i][0] = path[i-1][0] + grid[i][0];
+    }
+
+    for (int i=1; i<m; i++) {
+        for (int j=1; j<n; j++) {
+            path[i][j] = path[i][j-1] > path[i-1][j] ? path[i-1][j] + grid[i][j] : 
+                         path[i][j-1] + grid[i][j];
+        }
+    }
+    return path[m-1][n-1];
+}
+```
+
+## 75. 颜色分类
+
+### [题目描述](https://leetcode-cn.com/problems/sort-colors/)
+
+给定一个包含红色、白色和蓝色，一共 *n* 个元素的数组，**原地**对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+**注意:**
+不能使用代码库中的排序函数来解决这道题。
+
+**示例:**
+
+```
+输入: [2,0,2,1,1,0]
+输出: [0,0,1,1,2,2]
+```
+
+### 解题思路
+
+遍历一次，0放数组前端，2放末尾。
+
+```java
+public void sortColors(int[] nums) {
+    if (nums.length == 0 || nums == null)  return;
+
+    int left = 0, right = nums.length - 1;
+    int i = 0;
+    while (i <= right) {
+        if (nums[i] == 0) {
+            swap(nums, i++, left++);
+        } else if (nums[i] == 2) {
+            swap(nums, i, right--);	// 如果 nums[i] == 2，则交换完成之后还需要再判断被换过来的数是不是 1
+        } else 
+            i++;
+    }
+}
+private void swap(int[] nums, int i, int j) {
+    int temp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = temp;
+}
+```
 
 
 

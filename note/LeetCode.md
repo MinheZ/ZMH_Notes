@@ -20,6 +20,9 @@
 * [62. 不同路径](#62.-不同路径)
 * [64. 最小路径和](#64.-最小路径和)
 * [75. 颜色分类](#75.-颜色分类)
+* [78. 子集](#78.-子集)
+* [79. 单词搜索](#79.-单词搜索)
+* [94. 二叉树的中序遍历](#94.-二叉树的中序遍历)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -1116,6 +1119,159 @@ private void swap(int[] nums, int i, int j) {
     nums[j] = temp;
 }
 ```
+
+## 78. 子集
+
+### [题目描述](https://leetcode-cn.com/problems/subsets/)
+
+给定一组**不含重复元素**的整数数组 *nums*，返回该数组所有可能的子集（幂集）。
+
+**说明：**解集不能包含重复的子集。
+
+**示例:**
+
+```
+输入: nums = [1,2,3]
+输出:
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+```
+
+### 解题思路
+
+① 外层循环逐一往中间集合 temp 中加入元素 nums[i]，使这个元素处于存在状态
+
+② 开始递归，递归中携带加入新元素的 temp，并且下一次循环的起始是 i 元素的下一个，因而递归中更新 i 值为 i + 1
+
+③ 将这个从中间集合 temp 中移除，使该元素处于不存在状态
+
+```java
+public List<List<Integer>> subsets(int[] nums) {
+    List<List<Integer>> list = new ArrayList<>();
+    if (nums == null || nums.length == 0)
+        return list;
+    List<Integer> temp = new ArrayList<>();
+    dfs(list, temp, nums, 0);
+    return list;
+}
+private void dfs(List<List<Integer>> res, List<Integer> temp, int[] nums, int j) {
+    res.add(new ArrayList<Integer>(temp));
+    for (int i=j; i<nums.length; i++) {
+        temp.add(nums[i]);
+        dfs(res, temp, nums, i+1);
+        temp.remove(temp.size() - 1);
+    }
+}
+```
+
+## 79. 单词搜索
+
+### [题目描述](https://leetcode-cn.com/problems/word-search/)
+
+给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+**示例:**
+
+```
+board =
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+给定 word = "ABCCED", 返回 true.
+给定 word = "SEE", 返回 true.
+给定 word = "ABCB", 返回 false.
+```
+
+### 解题思路
+
+深度优先搜索
+
+```java
+public boolean exist(char[][] board, String word) {
+    boolean[][] visited = new boolean[board.length][board[0].length];
+
+    for (int i=0; i<board.length; i++) {
+        for (int j=0; j<board[0].length; j++) {
+            if (board[i][j] == word.charAt(0)) {
+                // 先找到第一个相等的字符
+                if (isExist(visited, board, word, i, j, 0))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+private boolean isExist(boolean[][] visited, char[][] board, String word, int x, int y, int index) {
+    if (index == word.length())
+        return true;
+    // 判断是否越界，当前值是否跟 Word 的对应字符相等
+    else if (x < 0 || x >= board.length || y < 0 || y >= board[0].length || visited[x][y] || board[x][y] != word.charAt(index))
+        return false;
+    else {
+        // 标记当前点为访问
+        visited[x][y] = true;
+        boolean exist = (isExist(visited, board, word, x + 1, y, index + 1) ||
+            isExist(visited, board, word, x - 1, y, index + 1) ||
+            isExist(visited, board, word, x, y + 1, index + 1) ||
+            isExist(visited, board, word, x, y - 1, index + 1)) ? true : false;
+        visited[x][y] = false;
+        return exist;
+    }
+}
+```
+
+## 94. 二叉树的中序遍历
+
+### [题目描述](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/)
+
+给定一个二叉树，返回它的*中序* 遍历。
+
+**示例:**
+
+```
+输入: [1,null,2,3]
+   1
+    \
+     2
+    /
+   3
+
+输出: [1,3,2]
+```
+
+### 解题思路
+
+**递归遍历**
+
+```java
+List<Integer> list = new ArrayList<>();
+public List<Integer> inorderTraversal(TreeNode root) {
+    inOrder(root);
+    return list;
+}
+private void inOrder(TreeNode root) {
+    if (root == null)
+        return;
+    inOrder(root.left);
+    list.add(root.val);
+    inOrder(root.right);
+}
+```
+
+**非递归遍历**
 
 
 

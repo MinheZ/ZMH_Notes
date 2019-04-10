@@ -5,15 +5,18 @@
     * [3 泛型方法](#泛型方法)
     * [4 通配符](#通配符)
 * [关键字](#关键字)
+* [动态代理](#动态代理)
 
 -----------------------------
 
-# 泛型
+## 泛型
+
 许多原因促进了泛型的出现，最引人入目的原因就是为了创建容器类。
 
 **声明：** 本章[转载](http://www.importnew.com/24029.html)自他处，侵权即删。
 
-## 简单泛型
+### 简单泛型
+
 首先定义一个简单的Box类：
 ```java
 public class Box<T> {
@@ -25,7 +28,8 @@ public class Box<T> {
 ```
 Java泛型的核心概念：告诉编译器想使用什么类型，然后编译器帮你实现所有的细节。
 
-## 泛型接口
+### 泛型接口
+
 泛型也可以用于接口。例如生成器(generator)，这是一种专门负责创建对象的类。一般而言，一个生成器只定义一种方法。
 ```java
 public interface Generator<T>{
@@ -34,7 +38,8 @@ public interface Generator<T>{
 ```
 Java泛型的一个局限性：基本类型无法作为参数类型。但是在Java SE5具备了自动装箱和拆箱的功能了。
 
-## 泛型方法
+### 泛型方法
+
 要定义泛型方法，只需要将泛型参数列表置于返回值之前：
 ```java
 public class Util {
@@ -69,7 +74,8 @@ Pair<Integer, String> p2 = new Pair<>(2, "pear");
 boolean same = Util.compare(p1, p2);
 ```
 
-## 边界符
+### 边界符
+
 查找一个泛型数组中大于某个特定元素的个数，我们可以这样实现：
 ```java
 public static <T> int countGreaterThan(T[] anArray, T elem) {
@@ -97,7 +103,8 @@ public static <T extends Comparable<T>> int countGreaterThan(T[] anArray, T elem
 }
 ```
 
-## 通配符
+### 通配符
+
 在了解通配符之前，我们首先必须要澄清一个概念，还是借用我们上面定义的Box类，假设我们添加一个这样的方法：
 ```java
 public void boxTest(Box<Number> n){}
@@ -146,7 +153,8 @@ public static void main(String[] args) {
 ```
 这样就相当与告诉编译器， fruitReader的readCovariant方法接受的参数只要是满足Fruit的子类就行(包括Fruit自身)，这样子类和父类之间的关系也就关联上了。
 
-## PECS 原则
+### PECS 原则
+
 上面我们看到了类似<? extends T>的用法，利用它我们可以从list里面get元素，那么我们可不可以往list里面add元素呢？：
 ```java
 public class GenericsAndCovariance {
@@ -220,7 +228,8 @@ public class Collections {
     }
 }
 ```
-## 类型擦除
+### 类型擦除
+
 Java泛型中最令人苦恼的地方或许就是类型擦除了，特别是对于有C++经验的程序员。类型擦除就是说Java泛型只能用于在编译期间的静态类型检查，然后编译器生成的代码会擦除相应的类型信息，这样到了运行期间实际上JVM根本就知道泛型所代表的具体类型。这样做的目的是因为Java泛型是1.5之后才被引入的，为了保持向下的兼容性，所以只能做类型擦除来兼容以前的非泛型代码。对于这一点，如果阅读Java集合框架的源码，可以发现有些类其实并不支持泛型。
 
 说了这么多，那么泛型擦除到底是什么意思呢？我们先来看一下下面这个简单的例子：
@@ -416,7 +425,8 @@ public static void rtti(List<?> list) {
 }
 ```
 
-## 工厂模式
+### 工厂模式
+
 接下来我们利用泛型来简单的实现一下工厂模式，首先我们先声明一个接口Factory：
 ```java
 package typeinfo.factory;
@@ -492,11 +502,101 @@ public class RegisteredFactories {
 
 -----------------------
 
-# 关键字
+## 关键字
 
-## [transient关键字](http://www.importnew.com/21517.html)
+### [transient关键字](http://www.importnew.com/21517.html)
+
 我们都知道一个对象只要实现了Serilizable接口，这个对象就可以被序列化，java的这种序列化模式为开发者提供了很多便利，我们可以不必关系具体序列化的过程，只要这个类实现了Serilizable接口，这个类的所有属性和方法都会自动序列化。
 
 然而在实际开发过程中，我们常常会遇到这样的问题，这个类的有些属性需要序列化，而其他属性不需要被序列化，打个比方，如果一个用户有一些敏感信息（如密码，银行卡号等），为了安全起见，不希望在网络操作（主要涉及到序列化操作，本地序列化缓存也适用）中被传输，这些信息对应的变量就可以加上transient关键字。换句话说，这个字段的生命周期仅存于调用者的内存中而不会写到磁盘里持久化。
 
 总之，java 的transient关键字为我们提供了便利，你只需要实现Serilizable接口，将不需要序列化的属性前添加关键字transient，序列化对象的时候，这个属性就不会序列化到指定的目的地中。
+
+--------------------------------
+
+## 动态代理
+
+Java 的动态代理可以动态地创建代理并动态地处理对所代理方法的调用。
+
+接口
+
+```java
+public interface Interface {
+    void doSomething();
+
+    void doSomethingElse(String arg);
+}
+```
+
+实体对象类：
+
+```java
+public class RealObject implements Interface {
+    @Override
+    public void doSomething() {
+        System.out.println("doSomething");
+    }
+
+    @Override
+    public void doSomethingElse(String arg) {
+        System.out.println("doSomethingElse " + arg);
+    }
+}
+```
+
+代理对象类：
+
+```java
+public class DynamicProxyHandler implements InvocationHandler {
+    private Object proxied;
+
+    public DynamicProxyHandler(Object proxied) {
+        this.proxied = proxied;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("**** proxy: " + proxy.getClass() + " , method: " + method + ", arg: " + args);
+        if (args != null)
+            for (Object object : args)
+                System.out.println("  " + object);
+        return method.invoke(proxied, args);
+    }
+}
+```
+
+测试类
+
+```java
+public class SimpleDynamicProxy {
+    public static void consumer(Interface interf) {
+        interf.doSomething();
+        interf.doSomethingElse("hello");
+    }
+
+    public static void main(String[] args) {
+        // coding here
+        RealObject realObject = new RealObject();
+        consumer(realObject);	// 常规方法
+
+        Interface proxy = (Interface)  // 动态代理方法	Proxy.newProxyInstance(Interface.class.getClassLoader(), new Class[]{Interface.class},
+                new DynamicProxyHandler(realObject));	// 创建代理对象
+        consumer(proxy);
+    }
+}
+```
+
+输出结果：
+
+```
+doSomething
+doSomethingElse hello
+**** proxy: class com.sun.proxy.$Proxy0 , method: public abstract void chapter14.proxy.Interface.doSomething(), arg: null
+doSomething
+**** proxy: class com.sun.proxy.$Proxy0 , method: public abstract void chapter14.proxy.Interface.doSomethingElse(java.lang.String), arg: [Ljava.lang.Object;@458ad742
+  hello
+doSomethingElse hello
+```
+
+动态代理可以将所有调用重定向到调用处理器，因此通常向调用处理器的构造器传递给一个“实际”对象的引用，从而使得调用处理器在执行其中任务时，可以将请求转发。
+

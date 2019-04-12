@@ -24,6 +24,8 @@
 * [79. 单词搜索](#79.-单词搜索)
 * [94. 二叉树的中序遍历](#94.-二叉树的中序遍历)
 * [96. 不同的二叉搜索树](#96.-不同的二叉搜索树)
+* [98. 验证二叉搜索树](#98.-验证二叉搜索树)
+* [101. 对称二叉树](#101.-对称二叉树)
 * [104 二叉树的最大深度](#104-二叉树的最大深度)
 * [121 买卖股票的最佳时机](#121-买卖股票的最佳时机)
 * [136 只出现一次的数字](#136-只出现一次的数字)
@@ -1315,6 +1317,104 @@ public int numTrees(int n) {
         arr[i] = sum;
     }
     return arr[n];
+}
+```
+
+## 98. 验证二叉搜索树
+
+### [题目描述](https://leetcode-cn.com/problems/validate-binary-search-tree/)
+
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+假设一个二叉搜索树具有如下特征：
+
+- 节点的左子树只包含**小于**当前节点的数。
+- 节点的右子树只包含**大于**当前节点的数。
+- 所有左子树和右子树自身必须也是二叉搜索树。
+
+**示例 1:**
+
+```
+输入:
+    2
+   / \
+  1   3
+输出: true
+```
+
+**示例 2:**
+
+```
+输入:
+    5
+   / \
+  1   4
+     / \
+    3   6
+输出: false
+解释: 输入为: [5,1,4,null,null,3,6]。
+     根节点的值为 5 ，但是其右子节点值为 4 。
+```
+
+### 解题思路
+
+搜索二叉树的特点为，中序遍历二叉树是升序的。
+
+```java
+double last = -Double.MAX_VALUE;
+public boolean isValidBST(TreeNode root) {
+    if (root == null) {
+        return true;
+    }
+    if (isValidBST(root.left)) {	// 判断 root 是否还有左子节点，如果没有则进入下一行
+        if (root.val > last) {
+            last = root.val;
+            return isValidBST(root.right);	
+        }
+    }
+    return false;
+}
+```
+
+## 101. 对称二叉树
+
+### [题目描述](https://leetcode-cn.com/problems/symmetric-tree/)
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+例如，二叉树 `[1,2,2,3,4,4,3]` 是对称的。
+
+```
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+```
+
+但是下面这个 `[1,2,2,null,3,null,3]` 则不是镜像对称的:
+
+```
+    1
+   / \
+  2   2
+   \   \
+   3    3
+```
+
+### 解题思路
+
+递归。
+
+```java
+public boolean isSymmetric(TreeNode root) {
+    return isMirror(root, root);
+}
+
+private boolean isMirror(TreeNode r1, TreeNode r2) {
+    if (r1 == null && r2 == null) return true;
+    if (r1 == null || r2 == null) return false;
+    return (r1.val == r2.val) && isMirror(r1.left, r2.right) && isMirror(r1.right, r2.left);
 }
 ```
 

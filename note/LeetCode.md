@@ -1,4 +1,4 @@
-# LeetCode Top100 stars
+# LeetCode Top100 stars :fountain_pen:
 
 * [1 两数之和](#1-两数之和)
 * [2 两数相加](#2-两数相加)

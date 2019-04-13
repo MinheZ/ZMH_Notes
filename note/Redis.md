@@ -7,6 +7,7 @@
 * [数据持久化](#数据持久化)
     * [RDB持久化](#RDB持久化)
     * [AOF持久化](#AOF持久化)
+* [应用问题](#应用问题)
 * [参考资料](#参考资料)
 
 ----------------------------------
@@ -198,6 +199,21 @@ RDB方式的持久化是通过快照（snapshotting）完成的，当符合一�
 复制积压缓冲区大小一般设置为`second * write_size_per_second`来估算。
 
 ---------------------------
+# 应用问题
+
+- [为什么做分布式用Redis](https://mp.weixin.qq.com/s?__biz=MzI4Njc5NjM1NQ==&mid=2247487821&idx=2&sn=c85a4314f1fab26aebfeadbf199b7434&chksm=ebd62e61dca1a7773de0682d97e464c4025b91395de6cc663b1ec19e8d1e2799b1c494003af6&mpshare=1&scene=2&srcid=&from=timeline&key=399cb567d11fde8e55fcb97d427f3a9c447416e2065e0faef706017d903c2017b1be85d5020a580f4354ad7303322e924af98aa0abe9f214a108b10b6a959903acce040676313c67736832ff20680cce&ascene=14&uin=MjA1MDM0MTIzNg%3D%3D&devicetype=Windows+10&version=62060739&lang=zh_CN&pass_ticket=pDQLsacGFBXFiOCQmrZ4BnVqNszXS3SrzHNw9QhxsuzveBqlVTP5EEov8PKvFaAt)
+  - 为什么使用 Redis，Redis常见的问题。
+  - 单线程的 Redis 为什么这么快。
+  - Redis 的数据类型及使用场景。
+  - Redis 的过期策略和内存淘汰机制。
+  - Redis 和数据库双写一致性问题。
+  - 如何应对缓存穿透和缓存雪崩问题。
+    - [布隆过滤器](https://www.cnblogs.com/cpselvis/p/6265825.html)。
+  - 如何解决 Redis 的并发竞争 Key 问题
+
+----------------------------
+
 # 参考资料
+
 - 黄健宏. Redis 设计与实现 [M]. 机械工业出版社, 2014.
 - [CyC2018-Redis](https://github.com/CyC2018/CS-Notes/blob/master/docs/notes/Redis.md)

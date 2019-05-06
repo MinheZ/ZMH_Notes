@@ -1,6 +1,7 @@
 * [1 Java容器有哪些](#1-Java容器有哪些)
 * [2 Collection 和 Collections 有什么区别](#2-Collection-和-Collections-有什么区别)
 * [3 HashMap在JDK1.7和在1.8有哪些区别](#3-HashMap在JDK1.7和在1.8有哪些区别)
+* [4 怎么让 HashMap 变得线程安全](#4-怎么让-HashMap-变得线程安全)
 
 --------------
 
@@ -22,6 +23,7 @@
         - Hashtable(已过时)
 
 ## 2 Collection 和 Collections 有什么区别
+
 **java.util.Collection** 是一个集合接口。它提供了对集合对象进行基本操作的通用接口方法。Collection接口在Java 类库中有很多具体的实现。Collection接口的意义是为各种具体的集合提供了最大化的统一操作方式。
 
 **java.util.Collections** 是一个包装类。它包含有各种有关集合操作的静态多态方法。此类不能实例化，就像一个工具类，服务于Java的Collection框架。
@@ -68,3 +70,8 @@ public class SimpleCache<K, V> extends LinkedHashMap<K, V> {
     }
 }
 ```
+
+## 4 怎么让 HashMap 变得线程安全
+
+[如何让HashMap变成线程安全的？](https://blog.csdn.net/u010653908/article/details/53419685)
+

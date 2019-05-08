@@ -1898,3 +1898,5 @@ public class StripedMap{
 
 # AQS原理
 - [AQS详解](https://www.cnblogs.com/waterystone/p/4920797.html)
+- [[AbstractQueuedSynchronizer源码解读](https://www.cnblogs.com/micrari/p/6937995.html)](https://www.cnblogs.com/micrari/p/6937995.html)
+

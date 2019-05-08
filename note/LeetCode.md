@@ -4,6 +4,7 @@
 * [2 两数相加](#2-两数相加)
 * [3 无重复字符的最长子串](#3-无重复字符的最长子串)
 * [4 最长的回文子串](#4-最长的回文子串)
+* [14. 最长公共前缀](#14. 最长公共前缀)
 * [15. 三数之和](#15.-三数之和)
 * [17. 电话号码的字母组合](#17.-电话号码的字母组合)
 * [19. 删除链表的倒数第N个节点](#19.-删除链表的倒数第N个节点)
@@ -224,6 +225,72 @@ public int maxArea(int[] height) {
     return max;
 }
 ```
+
+## 14. 最长公共前缀
+
+### [题目描述](https://leetcode-cn.com/problems/longest-common-prefix/)
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 `""`。
+
+**示例 1:**
+
+```
+输入: ["flower","flow","flight"]
+输出: "fl"
+```
+
+**示例 2:**
+
+```
+输入: ["dog","racecar","car"]
+输出: ""
+解释: 输入不存在公共前缀。
+```
+
+**说明:**
+
+所有输入只包含小写字母 `a-z` 。
+
+### 解题思路
+
+```java
+public String longestCommonPrefix(String[] strs) {
+    if (strs.length == 0 || null == strs)
+        return "";
+    if (strs.length == 1)	// 特殊情况
+        return strs[0];
+    String subString;	// 记录最小公共前缀
+    int minLengthIndex = strs[0].length();
+    int index = 0;  
+    for (int i = 1; i < strs.length; i++) {		// 先找到最短的字符串
+        if (minLengthIndex > strs[i].length()) {
+            minLengthIndex = strs[i].length();
+            index = i;
+        }
+    }
+    swap(strs, index);	// 与第一个字符串交换位置，防止后面重复比较
+    for (int i = strs[0].length(); i > 0; i--) {  // 依次求最短字符串的子串
+        subString = strs[0].substring(0, i);
+        for (int j = 1; j < strs.length; j++) {	// 与所有的其它字符串对应子串比较
+            if (!subString.equals(strs[j].substring(0, i)))  // 遇到不一样的直接调出
+                break;
+            if (subString.equals(strs[j].substring(0, i)) && j == strs.length - 1)
+                return subString;  // 只有子串相等，且已经遍历到最后一个字符串才算成功找到
+        }
+    }
+    return "";
+}
+
+private void swap(String[] strs, int j) {
+    String temp = strs[0];
+    strs[0] = strs[j];
+    strs[j] = temp;
+}
+```
+
+
 
 ## [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
 

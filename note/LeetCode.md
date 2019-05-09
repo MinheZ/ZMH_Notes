@@ -20,6 +20,7 @@
 * [49. 字母异位词分组](#49.-字母异位词分组)
 * [55. 跳跃游戏](#55.-跳跃游戏)
 * [56. 合并区间](#56.-合并区间)
+* [58. 最后一个单词的长度](#58.-最后一个单词的长度)
 * [62. 不同路径](#62.-不同路径)
 * [64. 最小路径和](#64.-最小路径和)
 * [75. 颜色分类](#75.-颜色分类)
@@ -1129,6 +1130,47 @@ public List<Interval> merge(List<Interval> intervals) {
     return list;
 }
 ```
+
+## 58. 最后一个单词的长度
+
+### [题目描述](https://leetcode-cn.com/problems/length-of-last-word/)
+
+给定一个仅包含大小写字母和空格 `' '` 的字符串，返回其最后一个单词的长度。
+
+如果不存在最后一个单词，请返回 0 。
+
+**说明：**一个单词是指由字母组成，但不包含任何空格的字符串。
+
+**示例:**
+
+```
+输入: "Hello World"
+输出: 5
+```
+
+### 解题思路
+
+```java
+public int lengthOfLastWord(String s) {
+    if (null == s) {
+        return 0;
+    }
+
+    int cnt = 0;
+    for (int i=s.length()-1; i>=0; i--) {
+        if (s.charAt(i) == ' ' && cnt == 0)
+            continue;
+        if (s.charAt(i) != ' ') {
+            cnt++;
+        }
+        else 
+            break;
+    }
+    return cnt;
+}
+```
+
+
 
 ## 62. 不同路径
 

@@ -12,6 +12,8 @@
 * [21 合并两个有序链表](#21-合并两个有序链表)
 * [22. 括号生成](#22.-括号生成)
 * [23. 合并K个排序链表](#23.-合并K个排序链表)
+* [27. 移除元素](#27.-移除元素)
+* [28. 实现strStr()](#28.-实现strStr())
 * [33. 搜索旋转排序数组](#33.-搜索旋转排序数组)
 * [34. 在排序数组中查找元素的第一个和最后一个位置](#34.-在排序数组中查找元素的第一个和最后一个位置)
 * [39. 组合总和](#39.-组合总和)
@@ -652,6 +654,122 @@ private ListNode mergeTwo(ListNode l1, ListNode l2) {
     return result.next;
 }
 ```
+
+## 27. 移除元素
+
+### [题目描述](https://leetcode-cn.com/problems/remove-element/)
+
+给定一个数组 *nums* 和一个值 *val*，你需要**原地**移除所有数值等于 *val* 的元素，返回移除后数组的新长度。
+
+不要使用额外的数组空间，你必须在**原地修改输入数组**并在使用 O(1) 额外空间的条件下完成。
+
+元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+
+**示例 1:**
+
+```
+给定 nums = [3,2,2,3], val = 3,
+
+函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+**示例 2:**
+
+```
+给定 nums = [0,1,2,2,3,0,4,2], val = 2,
+
+函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。
+
+注意这五个元素可为任意顺序。
+
+你不需要考虑数组中超出新长度后面的元素。
+```
+
+### 解题思路
+
+双指针，如果左指针遇到 val，且右指针不是 val，则交换。
+
+```java
+public int removeElement(int[] nums, int val) {
+    if (null == nums || nums.length == 0)
+        return 0;
+
+    int cnt = 0;
+    int left = 0, right = nums.length - 1;
+
+    while (left <= right) {
+        if (nums[left] != val) {
+            cnt++;
+            left++;
+        }
+        else {
+            if (nums[right] == val) {
+                right--;
+            }
+            else {
+                swap(nums, left, right);
+                cnt++;
+                left++;
+            }
+        }
+    }
+    return cnt;
+}
+private void swap(int[] nums, int i, int j) {
+    int temp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = temp;
+}
+```
+
+## 28. 实现strStr()
+
+### [题目描述](https://leetcode-cn.com/problems/implement-strstr/)
+
+实现 [strStr()](https://baike.baidu.com/item/strstr/811469) 函数。
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  **-1**。
+
+**示例 1:**
+
+```
+输入: haystack = "hello", needle = "ll"
+输出: 2
+```
+
+**示例 2:**
+
+```
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+```
+
+### 解题思路
+
+```java
+public int strStr(String haystack, String needle) {
+    if ("".equals(needle))
+        return 0;
+    if ("".equals(haystack))
+        return -1;
+    for (int i=0; i<haystack.length(); i++) {
+        // 判断第一个字符是否相等
+        if (haystack.charAt(i) == needle.charAt(0)) {
+            // 确保后续长度＞子
+            if (haystack.length() - i >= needle.length())
+                if (haystack.substring(i, i + needle.length()).equals(needle))
+                    return i;
+        }
+    }
+    return -1;
+}
+```
+
+
+
+
 
 ## 33. 搜索旋转排序数组
 

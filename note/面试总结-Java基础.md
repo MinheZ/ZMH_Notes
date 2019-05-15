@@ -1,6 +1,5 @@
-* [Java基础](#Java基础)
-
-    * [1 JDK和JRE的区别](#1-JDK和JRE的区别)
+* [Java基础](#Java基础) :baby_chick:
+* [1 JDK和JRE的区别](#1-JDK和JRE的区别)
     * [2 equals和==的区别](#2-equals和==的区别)
     * [3 equals与hashcode间的关系](#3-equals与hashcode间的关系)
     * [4 String, StringBuilder和StringBuffer区别以及线程安全](#4-String,-StringBuilder和StringBuffer区别以及线程安全)
@@ -55,6 +54,7 @@ hashCode()：计算出对象实例的哈希码，并返回哈希码，又称为�
 所以在集合中，判断2个对象是否相等，一般都是先判断`hashCode`是否相等，相等则判断`equals()`，否则返回 false 。
 
 ### 如果重写equals没有重写hashcode会发生什么?
+
  在存储散列集合时(如Set类)，如果 原对象.equals(新对象)，但没有对hashCode重写，即两个对象拥有不同的hashcode，则在集合中将会存储两个值相同的对象，从而导致混淆。因此在重写equals方法时，必须重写hashcode方法。
 
 --------------------

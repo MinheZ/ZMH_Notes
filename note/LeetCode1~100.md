@@ -21,6 +21,7 @@
 - [55. 跳跃游戏](#55.-跳跃游戏)
 - [56. 合并区间](#56.-合并区间)
 - [58. 最后一个单词的长度](#58.-最后一个单词的长度)
+- [61. 旋转链表](#61.-旋转链表)
 - [62. 不同路径](#62.-不同路径)
 - [64. 最小路径和](#64.-最小路径和)
 - [69. x 的平方和](#69.-x-的平方和)
@@ -1187,6 +1188,77 @@ public int lengthOfLastWord(String s) {
     return cnt;
 }
 ```
+
+## 61. 旋转链表
+
+### [题目描述](https://leetcode-cn.com/problems/rotate-list/)
+
+给定一个链表，旋转链表，将链表每个节点向右移动 *k* 个位置，其中 *k* 是非负数。
+
+**示例 1:**
+
+```
+输入: 1->2->3->4->5->NULL, k = 2
+输出: 4->5->1->2->3->NULL
+解释:
+向右旋转 1 步: 5->1->2->3->4->NULL
+向右旋转 2 步: 4->5->1->2->3->NULL
+```
+
+**示例 2:**
+
+```
+输入: 0->1->2->NULL, k = 4
+输出: 2->0->1->NULL
+解释:
+向右旋转 1 步: 2->0->1->NULL
+向右旋转 2 步: 1->2->0->NULL
+向右旋转 3 步: 0->1->2->NULL
+向右旋转 4 步: 2->0->1->NULL
+```
+
+### 解题思路
+
+先统计链表长度，再连接成环。最后遍历到 length - k 个位置，断开链表。
+
+```java
+public ListNode rotateRight(ListNode head, int k) {
+        
+    if (head == null || k == 0 || head.next == null)
+        return head;
+
+    int length = 0;
+    ListNode cur = head;
+    ListNode tail = null;
+    ListNode newHead = null;
+
+    while (cur.next != null) {   // 统计链表长度
+        cur = cur.next;
+        length++;
+    }
+    length++;
+    k = k > length ? length - k % length : length - k;	// 求出第二次要遍历的长度
+    if (0 == k)
+        return head;
+    tail = cur;
+    tail.next = head;	// 链表成环
+    cur = head;
+    int cnt = 0;
+
+    while (cur != null) {
+        cnt++;
+        if (cnt == k) {
+            newHead = cur.next;
+            cur.next = null;
+            return newHead;
+        }
+        cur = cur.next;
+    }
+    return head;
+}
+```
+
+
 
 
 

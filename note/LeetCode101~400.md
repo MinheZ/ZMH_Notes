@@ -6,8 +6,10 @@
 - [136 只出现一次的数字](#136-只出现一次的数字)
 - [141 环形链表](#141-环形链表)
 - [155 最小栈](#155-最小栈)
-- [166 相交链表](#166-相交链表)
+- [160 相交链表](#160-相交链表)
 - [198 打家劫舍](#198打家劫舍)
+- [203. 移除链表元素](#203.-移除链表元素)
+- [206. 反转链表](#206.-反转链表)
 - [234 回文链表](#234-回文链表)
 - [283 移动零](#283-移动零)
 
@@ -300,7 +302,7 @@ public int getMin() {
 }
 ```
 
-## [166-相交链表](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+## [160-相交链表](https://leetcode.com/problems/intersection-of-two-linked-lists/)
 
 ### 题目描述
 
@@ -359,6 +361,81 @@ public int rob(int[] nums) {
     return memo[n - 1];
 }
 ```
+
+## 203. 移除链表元素
+
+### [题目描述](https://leetcode-cn.com/problems/remove-linked-list-elements/)
+
+删除链表中等于给定值 **val** 的所有节点。
+
+**示例:**
+
+```
+输入: 1->2->6->3->4->5->6, val = 6
+输出: 1->2->3->4->5
+```
+
+### 解题思路
+
+主要额外考虑的点在于，当头结点就是需要删除的节点时，需要多判断一下。
+
+```java
+public ListNode removeElements(ListNode head, int val) {
+    if (head == null) 
+        return null;
+
+    ListNode dummy = new ListNode(-1);  // 哨兵节点
+    dummy.next = head;
+    ListNode cur = dummy;    // 当前节点
+    ListNode last = dummy;  // 上一个节点
+
+    while (cur != null) {
+        if (cur.val == val) {             
+            last.next = cur.next;
+            cur = cur.next;
+        }
+        else {
+            last = cur; // last向后移动一格
+            cur = cur.next;
+        }
+    }
+}
+```
+
+## 206. 反转链表
+
+### [题目描述](https://leetcode-cn.com/problems/reverse-linked-list/)
+
+反转一个单链表。
+
+**示例:**
+
+```
+输入: 1->2->3->4->5->NULL
+输出: 5->4->3->2->1->NULL
+```
+
+### 解题思路
+
+```java
+public ListNode reverseList(ListNode head) {
+    if (head == null || head.next == null)
+        return head;
+
+    ListNode last = null, cur = head, curNext = null;
+    while (cur != null) {
+        curNext = cur.next;
+        cur.next = last;
+        last = cur;
+        cur = curNext;
+    }
+    return last;
+}
+```
+
+
+
+
 
 ## [283-回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/submissions/)
 

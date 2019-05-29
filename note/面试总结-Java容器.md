@@ -2,6 +2,7 @@
 * [2 Collection 和 Collections 有什么区别](#2-Collection-和-Collections-有什么区别)
 * [3 HashMap在JDK1.7和在1.8有哪些区别](#3-HashMap在JDK1.7和在1.8有哪些区别)
 * [4 怎么让 HashMap 变得线程安全](#4-怎么让-HashMap-变得线程安全)
+* [5 HashMap 和 Hashtable 有什么区别](#5-HashMap-和-Hashtable 有什么区别)
 
 --------------
 
@@ -76,4 +77,8 @@ public class SimpleCache<K, V> extends LinkedHashMap<K, V> {
 [漫画：高并发下的HashMap](https://mp.weixin.qq.com/s?__biz=MzI2NjA3NTc4Ng==&mid=2652079766&idx=1&sn=879783e0b0ebf11bf1a5767933d4e61f&chksm=f1748d73c6030465fe6b9b3fa7fc816d4704c91bfe46cb287aefccee459153d3287172d91d23&scene=21#wechat_redirect)，描述了为什么不是安全的。
 
 [如何让HashMap变成线程安全的？](https://blog.csdn.net/u010653908/article/details/53419685)
+
+## 5 HashMap 和 Hashtable 有什么区别
+
+HashMap 可以接受 null 为键值，线程不安全。HashTable 则相反。
 

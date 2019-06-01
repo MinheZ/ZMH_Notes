@@ -16,6 +16,8 @@
 
 - [LeetCode](https://github.com/MinheZ/Notes/blob/master/note/LeetCode.md)
 
+- [算法](https://github.com/MinheZ/Notes/blob/master/note/算法.md)
+
 ### :coffee: Java
 - [Java 基础](https://github.com/MinheZ/Notes/blob/master/note/Java基础.md)
 

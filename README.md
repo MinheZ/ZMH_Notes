@@ -19,7 +19,7 @@
 - [算法](https://github.com/MinheZ/Notes/blob/master/note/算法.md)
 
 ### :goat: Golang
-- [#Golang-学习笔记](https://github.com/MinheZ/Notes/blob/master/note/Golang-学习笔记.md)
+- [Golang-学习笔记](https://github.com/MinheZ/Notes/blob/master/note/Golang-学习笔记.md)
 
 ### :coffee: Java
 - [Java 基础](https://github.com/MinheZ/Notes/blob/master/note/Java基础.md)

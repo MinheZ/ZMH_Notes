@@ -71,3 +71,26 @@ v := make([]int, 100)
 
 `make` 只适用于映射、切片和信道且不返回指针。若要获得明确的指针， 请使用 `new` 分配内存。
 
+## 3 闭包
+
+例子：
+
+```go
+func Add() func (int) int {
+    var n int = 10					// 闭包
+    return func (x int) int {		// 闭包
+        n += x						// 闭包
+        return n					// 闭包
+    }								// 闭包
+}
+func main {
+    f := Add()
+    fmt.Println(f(1))  // 11
+    fmt.Println(f(1))  // 12
+    fmt.Println(f(1))  // 13
+}
+```
+
+**理解：**
+
+闭包是类，函数是操作，n 是字段，函数和它是用到 n 构成闭包。

@@ -55,6 +55,19 @@ for index, value := range intArr {
 }
 ```
 
+### 1.2 切片
+
+创建方式
+
+```go
+// 1
+var arr = [...]int{1, 2, 3}
+var slice = arr[1:3]
+// 2
+slice ：= make([]int, len, cap)
+
+```
+
 
 
 ## 2 数据

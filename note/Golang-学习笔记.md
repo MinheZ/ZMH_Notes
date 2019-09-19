@@ -62,13 +62,12 @@ for index, value := range intArr {
 ```go
 // 1
 var arr = [...]int{1, 2, 3}
-var slice = arr[1:3]
+var slice = arr[1:3]  // 这个arr对外可见，因为事先存在   [1, 3)
 // 2
 slice ：= make([]int, len, cap)
-
 ```
 
-
+**切片引用的数组对外不可见**，只能通过 slice 进行访问。
 
 ## 2 数据
 

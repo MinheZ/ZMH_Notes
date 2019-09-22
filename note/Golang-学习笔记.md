@@ -69,6 +69,18 @@ slice ：= make([]int, len, cap)
 
 **切片引用的数组对外不可见**，只能通过 slice 进行访问。
 
+### 1.3 结构体
+
+```go
+type A struct {
+    Name string
+    Age int
+    slice []int		// 默认初始值为 nil，使用时需要先 a.slice = make([]int, 100)
+}
+```
+
+默认为值传递。
+
 ## 2 数据
 
 ### new 分配
